@@ -33,11 +33,11 @@
             {{ area.name }}
           </span>
           <div style="display: flex; gap: 0.25rem; flex-shrink: 0;" onclick="event.stopPropagation();">
-            <button class="btn-icon-add" onclick="openEditAreaModal('{{ area.id }}', '{{ area.name|replace("'", "\\'") }}', '{{ area.description|replace("'", "\\'") }}')" title="Editar área" style="width: 24px; height: 24px; font-size: 0.85rem;">
+            <button class="nav-item-action-btn btn-edit" onclick="openEditAreaModal('{{ area.id }}', '{{ area.name|replace("'", "\\'") }}', '{{ area.description|replace("'", "\\'") }}')" title="Editar área">
               <i class="bi bi-pencil"></i>
             </button>
             {% if area.id != 'general' %}
-            <button class="btn-icon-add" onclick="openDeleteAreaModal('{{ area.id }}', '{{ area.name|replace("'", "\\'") }}')" title="Eliminar área" style="width: 24px; height: 24px; font-size: 0.85rem; background: rgba(239, 68, 68, 0.2);">
+            <button class="nav-item-action-btn btn-delete" onclick="openDeleteAreaModal('{{ area.id }}', '{{ area.name|replace("'", "\\'") }}')" title="Eliminar área">
               <i class="bi bi-trash3"></i>
             </button>
             {% endif %}
@@ -62,11 +62,11 @@
             {{ group.name }}
           </span>
           <div style="display: flex; gap: 0.25rem; flex-shrink: 0;" onclick="event.stopPropagation();">
-            <button class="btn-icon-add" onclick="openEditGroupModal('{{ group.id }}', '{{ group.name|replace("'", "\\'") }}', '{{ group.area_id }}', '{{ group.description|replace("'", "\\'") }}')" title="Editar grupo" style="width: 24px; height: 24px; font-size: 0.85rem;">
+            <button class="nav-item-action-btn btn-edit" onclick="openEditGroupModal('{{ group.id }}', '{{ group.name|replace("'", "\\'") }}', '{{ group.area_id }}', '{{ group.description|replace("'", "\\'") }}')" title="Editar grupo">
               <i class="bi bi-pencil"></i>
             </button>
             {% if group.id != 'general' %}
-            <button class="btn-icon-add" onclick="openDeleteGroupModal('{{ group.id }}', '{{ group.name|replace("'", "\\'") }}')" title="Eliminar grupo" style="width: 24px; height: 24px; font-size: 0.85rem; background: rgba(239, 68, 68, 0.2);">
+            <button class="nav-item-action-btn btn-delete" onclick="openDeleteGroupModal('{{ group.id }}', '{{ group.name|replace("'", "\\'") }}')" title="Eliminar grupo">
               <i class="bi bi-trash3"></i>
             </button>
             {% endif %}

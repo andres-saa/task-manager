@@ -54,40 +54,58 @@
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 2rem;
-            box-shadow: var(--shadow-lg);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .header-title-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
         .header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            font-weight: 700;
         }
 
         .header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
+            opacity: 0.85;
+            font-size: 0.875rem;
+            margin: 0;
         }
 
         .header-actions {
-            margin-top: 1rem;
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .btn {
             display: inline-block;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: var(--radius);
             text-decoration: none;
             font-weight: 600;
             transition: all 0.2s;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
         }
 
         .btn-primary {
@@ -236,11 +254,37 @@
             }
 
             .header {
-                padding: 1.5rem;
+                padding: 0.75rem 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .header-title-section {
+                width: 100%;
             }
 
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.125rem;
+            }
+
+            .header p {
+                font-size: 0.8rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .header-actions .btn {
+                width: 100%;
+                text-align: center;
+                padding: 0.625rem 1rem;
             }
 
             .section {
@@ -251,11 +295,15 @@
 </head>
 <body>
     <div class="header">
-        <h1>📖 Guía de Usuario</h1>
-        <p>Sistema de Gestión de Proyectos - Manual de uso para trabajadores</p>
-        <div class="header-actions">
-            <a href="/documentation" class="btn btn-secondary">Ver Documentación Técnica</a>
-            <a href="/" class="btn btn-primary">Ir al Sistema</a>
+        <div class="header-content">
+            <div class="header-title-section">
+                <h1>📖 Guía de Usuario</h1>
+                <p>Sistema de Gestión de Proyectos - Manual de uso para trabajadores</p>
+            </div>
+            <div class="header-actions">
+                <a href="/documentation" class="btn btn-secondary">Ver Documentación Técnica</a>
+                <a href="/" class="btn btn-primary">Ir al Sistema</a>
+            </div>
         </div>
     </div>
 
