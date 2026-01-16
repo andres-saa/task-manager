@@ -1,0 +1,232 @@
+{
+  "id": "20c555eabff2",
+  "name": "fa",
+  "description": "",
+  "area_id": "general",
+  "group_id": "general",
+  "deadline": null,
+  "created_at": 1768488735.660291,
+  "created_by": "lKcOg_oVer0lRAYS",
+  "assigned_users": [
+    "lKcOg_oVer0lRAYS"
+  ],
+  "tasks": [
+    {
+      "id": "e3976b6f3e",
+      "title": "fa",
+      "description": "",
+      "status": "completed",
+      "accumulated_sec": 44,
+      "started_at": null,
+      "completed_at": 1768490951.6989288,
+      "completed_by": "lKcOg_oVer0lRAYS",
+      "completion_comment": "da",
+      "completion_evidence": [],
+      "assigned_to": [
+        "lKcOg_oVer0lRAYS"
+      ],
+      "children": [],
+      "attachments": [
+        {
+          "id": "6209bd3d89",
+          "filename": "6209bd3d89.jpg",
+          "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+          "url": "/attachments/6209bd3d89.jpg",
+          "size": 60385,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768490733.4457092,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "f46a642dd6",
+          "filename": "f46a642dd6.jpg",
+          "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+          "url": "/attachments/f46a642dd6.jpg",
+          "size": 171698,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768490733.4482772,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "05ad4b5096",
+          "filename": "05ad4b5096.jpg",
+          "original_name": "dea5259d-a4b6-4a23-9173-c34125a864fd.jpg",
+          "url": "/attachments/05ad4b5096.jpg",
+          "size": 201695,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768490733.449394,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        }
+      ],
+      "reopen_evidence": []
+    },
+    {
+      "id": "75f8018e9b",
+      "title": "fag",
+      "description": "fass",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [],
+      "children": [],
+      "attachments": [],
+      "reopen_evidence": []
+    },
+    {
+      "id": "f63180ec39",
+      "title": "fa",
+      "description": "gafas",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [],
+      "children": [],
+      "attachments": [],
+      "reopen_evidence": []
+    }
+  ],
+  "logs": [
+    {
+      "id": "62126fd045",
+      "text": "Administrador completó la tarea 'fa'. Comentario: da",
+      "created_at": 1768490951.7023208,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "e3976b6f3e",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "dff5d00fac",
+      "text": "Administrador completó la tarea 'fa'. Comentario: adaa",
+      "created_at": 1768490933.8622177,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "e3976b6f3e",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "5be4e778da",
+      "text": "Administrador pausó la tarea 'fa'",
+      "created_at": 1768490916.1203938,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "e3976b6f3e",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "ef49cf56a1",
+      "text": "Administrador pausó la tarea 'fa'",
+      "created_at": 1768490880.4068718,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "e3976b6f3e",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "4c63899b7a",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768490758.04882,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "f63180ec39",
+      "action_type": "task_create"
+    },
+    {
+      "id": "86050c7773",
+      "text": "Administrador agregó 3 archivo(s) a la tarea 'fa'",
+      "created_at": 1768490733.4558349,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "e3976b6f3e",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "7ec303d89e",
+      "text": "Administrador creó la tarea 'fag'",
+      "created_at": 1768490715.390495,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "75f8018e9b",
+      "action_type": "task_create"
+    },
+    {
+      "id": "25dcfef8fe",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768488773.311077,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "e3976b6f3e",
+      "action_type": "task_create"
+    },
+    {
+      "id": "f481dbdb8c",
+      "text": "Proyecto creado",
+      "created_at": 1768488735.6637805,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    }
+  ],
+  "attachments": [
+    {
+      "id": "b7a9bca9b6",
+      "filename": "b7a9bca9b6.xlsx",
+      "original_name": "ffs.xlsx",
+      "url": "/attachments/b7a9bca9b6.xlsx",
+      "size": 43345,
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "uploaded_at": 1768491187.0378869,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "a3a08f66d0",
+      "filename": "a3a08f66d0.jpg",
+      "original_name": "dea5259d-a4b6-4a23-9173-c34125a864fd.jpg",
+      "url": "/attachments/a3a08f66d0.jpg",
+      "size": 201695,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768491187.0191338,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "f3ad9a854c",
+      "filename": "f3ad9a854c.jpg",
+      "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+      "url": "/attachments/f3ad9a854c.jpg",
+      "size": 171698,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768491187.0003972,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "7e5eae61f6",
+      "filename": "7e5eae61f6.jpg",
+      "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+      "url": "/attachments/7e5eae61f6.jpg",
+      "size": 60385,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768491186.9791715,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "ce9eac3c7e",
+      "filename": "ce9eac3c7e.jpg",
+      "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+      "url": "/attachments/ce9eac3c7e.jpg",
+      "size": 53239,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768491186.947019,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    }
+  ],
+  "dirty": false
+}

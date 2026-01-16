@@ -1,0 +1,80 @@
+{
+  "xlsx": { "bg": "#217346", "text": "#FFFFFF" },
+  "xls":  { "bg": "#217346", "text": "#FFFFFF" },
+  "xlsm": { "bg": "#217346", "text": "#FFFFFF" },
+  "csv":  { "bg": "#217346", "text": "#FFFFFF" },
+
+  "docx": { "bg": "#2B579A", "text": "#FFFFFF" },
+  "doc":  { "bg": "#2B579A", "text": "#FFFFFF" },
+  "rtf":  { "bg": "#2B579A", "text": "#FFFFFF" },
+  "odt":  { "bg": "#2B579A", "text": "#FFFFFF" },
+
+  "pptx": { "bg": "#D24726", "text": "#FFFFFF" },
+  "ppt":  { "bg": "#D24726", "text": "#FFFFFF" },
+  "odp":  { "bg": "#D24726", "text": "#FFFFFF" },
+
+  "pdf":  { "bg": "#E11D48", "text": "#FFFFFF" },
+
+  "txt":  { "bg": "#6B7280", "text": "#FFFFFF" },
+  "md":   { "bg": "#111827", "text": "#FFFFFF" },
+  "log":  { "bg": "#6B7280", "text": "#FFFFFF" },
+
+  "jpg":  { "bg": "#EC4899", "text": "#FFFFFF" },
+  "jpeg": { "bg": "#EC4899", "text": "#FFFFFF" },
+  "png":  { "bg": "#A855F7", "text": "#FFFFFF" },
+  "gif":  { "bg": "#F59E0B", "text": "#111827" },
+  "webp": { "bg": "#10B981", "text": "#FFFFFF" },
+  "svg":  { "bg": "#0EA5E9", "text": "#FFFFFF" },
+  "ico":  { "bg": "#64748B", "text": "#FFFFFF" },
+
+  "zip":  { "bg": "#F59E0B", "text": "#111827" },
+  "rar":  { "bg": "#F59E0B", "text": "#111827" },
+  "7z":   { "bg": "#F59E0B", "text": "#111827" },
+  "tar":  { "bg": "#F59E0B", "text": "#111827" },
+  "gz":   { "bg": "#F59E0B", "text": "#111827" },
+
+  "mp3":  { "bg": "#8B5CF6", "text": "#FFFFFF" },
+  "wav":  { "bg": "#8B5CF6", "text": "#FFFFFF" },
+  "flac": { "bg": "#8B5CF6", "text": "#FFFFFF" },
+  "aac":  { "bg": "#8B5CF6", "text": "#FFFFFF" },
+  "m4a":  { "bg": "#8B5CF6", "text": "#FFFFFF" },
+
+  "mp4":  { "bg": "#7C3AED", "text": "#FFFFFF" },
+  "mov":  { "bg": "#7C3AED", "text": "#FFFFFF" },
+  "mkv":  { "bg": "#7C3AED", "text": "#FFFFFF" },
+  "avi":  { "bg": "#7C3AED", "text": "#FFFFFF" },
+  "webm": { "bg": "#7C3AED", "text": "#FFFFFF" },
+
+  "html": { "bg": "#F97316", "text": "#111827" },
+  "htm":  { "bg": "#F97316", "text": "#111827" },
+  "css":  { "bg": "#2563EB", "text": "#FFFFFF" },
+  "js":   { "bg": "#FACC15", "text": "#111827" },
+  "ts":   { "bg": "#3178C6", "text": "#FFFFFF" },
+  "json": { "bg": "#22C55E", "text": "#111827" },
+  "xml":  { "bg": "#F97316", "text": "#111827" },
+  "yaml": { "bg": "#A3A3A3", "text": "#111827" },
+  "yml":  { "bg": "#A3A3A3", "text": "#111827" },
+
+  "py":   { "bg": "#3776AB", "text": "#FFFFFF" },
+  "java": { "bg": "#B07219", "text": "#FFFFFF" },
+  "c":    { "bg": "#A8B9CC", "text": "#111827" },
+  "cpp":  { "bg": "#00599C", "text": "#FFFFFF" },
+  "cs":   { "bg": "#9B4F96", "text": "#FFFFFF" },
+  "go":   { "bg": "#00ADD8", "text": "#111827" },
+  "rb":   { "bg": "#CC342D", "text": "#FFFFFF" },
+  "php":  { "bg": "#777BB4", "text": "#FFFFFF" },
+  "rs":   { "bg": "#DEA584", "text": "#111827" },
+  "swift":{ "bg": "#F05138", "text": "#FFFFFF" },
+  "kt":   { "bg": "#7F52FF", "text": "#FFFFFF" },
+  "sql":  { "bg": "#64748B", "text": "#FFFFFF" },
+
+  "exe":  { "bg": "#64748B", "text": "#FFFFFF" },
+  "msi":  { "bg": "#64748B", "text": "#FFFFFF" },
+  "apk":  { "bg": "#34A853", "text": "#FFFFFF" },
+  "ipa":  { "bg": "#111827", "text": "#FFFFFF" },
+
+  "ttf":  { "bg": "#0EA5E9", "text": "#FFFFFF" },
+  "otf":  { "bg": "#0EA5E9", "text": "#FFFFFF" },
+  "woff": { "bg": "#0EA5E9", "text": "#FFFFFF" },
+  "woff2":{ "bg": "#0EA5E9", "text": "#FFFFFF" }
+}

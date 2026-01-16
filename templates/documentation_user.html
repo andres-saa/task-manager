@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Usuario - Sistema de Gestión de Proyectos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: rgb(255, 98, 0);
+            --primary-dark: rgb(220, 80, 0);
+            --bg-main: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --border: #dee2e6;
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-main: #1a1a1a;
+                --bg-secondary: #2d2d2d;
+                --bg-card: #252525;
+                --text-main: #e0e0e0;
+                --text-secondary: #b0b0b0;
+                --text-muted: #808080;
+                --border: #404040;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background: var(--bg-secondary);
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section h3 {
+            color: var(--text-main);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .section h4 {
+            color: var(--text-main);
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .section ul, .section ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .step-box {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: var(--radius);
+        }
+
+        .step-box h4 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-box {
+            background: rgba(23, 162, 184, 0.1);
+            border-left: 4px solid var(--info);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .success-box {
+            background: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .icon-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .icon-list li {
+            display: flex;
+            align-items: flex-start;
+            margin: 1rem 0;
+            padding: 0.5rem;
+        }
+
+        .icon-list li::before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            background: var(--bg-card);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📖 Guía de Usuario</h1>
+        <p>Sistema de Gestión de Proyectos - Manual de uso para trabajadores</p>
+        <div class="header-actions">
+            <a href="/documentation" class="btn btn-secondary">Ver Documentación Técnica</a>
+            <a href="/" class="btn btn-primary">Ir al Sistema</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>1. Iniciar Sesión</h2>
+            <p>Para acceder al sistema, necesitas tus credenciales de usuario. Si no las tienes, contacta a tu administrador.</p>
+            
+            <div class="step-box">
+                <h4>Paso 1: Acceder a la página de inicio</h4>
+                <p>Ingresa a la dirección web que te proporcionó tu administrador.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 2: Ingresar credenciales</h4>
+                <p>Ingresa tu <strong>usuario</strong> y <strong>contraseña</strong> en el formulario de login.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 3: Acceder al sistema</h4>
+                <p>Una vez ingresadas las credenciales correctas, serás redirigido automáticamente al panel principal.</p>
+            </div>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> Si olvidaste tu contraseña, contacta a tu administrador para que te proporcione una nueva.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Ver Mis Proyectos</h2>
+            <p>En el panel principal (Dashboard) verás todos los proyectos en los que estás asignado.</p>
+            
+            <div class="step-box">
+                <h4>Información que verás:</h4>
+                <ul class="icon-list">
+                    <li><strong>Nombre del proyecto:</strong> Identifica fácilmente cada proyecto</li>
+                    <li><strong>Progreso:</strong> Barra que muestra qué porcentaje del proyecto está completado</li>
+                    <li><strong>Fecha límite:</strong> Fecha de entrega del proyecto (si está definida)</li>
+                    <li><strong>Estado:</strong> Indica si hay alguien trabajando en el proyecto en este momento</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Nota:</strong> Solo verás los proyectos en los que has sido asignado. Si no ves un proyecto que esperabas, contacta al creador del proyecto o a tu administrador.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Trabajar con Tareas</h2>
+            <p>Las tareas son las actividades específicas que debes realizar dentro de un proyecto.</p>
+
+            <h3>Ver Tareas Asignadas</h3>
+            <div class="step-box">
+                <h4>Paso 1: Abrir un proyecto</h4>
+                <p>Haz clic en el nombre del proyecto desde el panel principal para ver sus detalles.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 2: Revisar las tareas</h4>
+                <p>En la página del proyecto verás todas las tareas. Las tareas asignadas a ti aparecerán destacadas.</p>
+            </div>
+
+            <h3>Iniciar una Tarea</h3>
+            <div class="step-box">
+                <h4>Paso 1: Localizar la tarea</h4>
+                <p>Encuentra la tarea que quieres comenzar a trabajar.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 2: Abrir el menú de opciones</h4>
+                <p>Haz clic en el botón de tres puntos (⋯) que aparece en la esquina superior derecha de la tarjeta de la tarea.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 3: Iniciar el temporizador</h4>
+                <p>Selecciona la opción <strong>"Iniciar"</strong> del menú. El temporizador comenzará a contar el tiempo que dedicas a la tarea.</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>⚠️ Importante:</strong> Solo puedes iniciar tareas que te hayan sido asignadas. Si una tarea tiene subtareas, solo podrás iniciar las subtareas, no la tarea principal.</p>
+            </div>
+
+            <h3>Pausar una Tarea</h3>
+            <div class="step-box">
+                <h4>Cuando necesites hacer una pausa:</h4>
+                <ol>
+                    <li>Abre el menú de opciones de la tarea (tres puntos)</li>
+                    <li>Selecciona <strong>"Pausar"</strong></li>
+                    <li>El temporizador se detendrá y el tiempo trabajado se guardará</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> Puedes pausar y reanudar una tarea las veces que necesites. El sistema sumará todo el tiempo que trabajes en ella.</p>
+            </div>
+
+            <h3>Completar una Tarea</h3>
+            <div class="step-box">
+                <h4>Requisitos para completar:</h4>
+                <ul class="icon-list">
+                    <li>La tarea debe haber sido iniciada al menos una vez (debe tener tiempo registrado)</li>
+                    <li>Si la tarea tiene subtareas, todas deben estar completadas primero</li>
+                    <li>Debes estar asignado a la tarea</li>
+                </ul>
+            </div>
+
+            <div class="step-box">
+                <h4>Pasos para completar:</h4>
+                <ol>
+                    <li>Abre el menú de opciones de la tarea</li>
+                    <li>Selecciona <strong>"Completar"</strong></li>
+                    <li>Opcionalmente, puedes agregar un comentario explicando lo que realizaste</li>
+                    <li>Opcionalmente, puedes subir archivos como evidencia de tu trabajo (fotos, documentos, etc.)</li>
+                    <li>Confirma la acción</li>
+                </ol>
+            </div>
+
+            <div class="success-box">
+                <p><strong>✅ Una vez completada:</strong> La tarea aparecerá marcada como completada y el tiempo total trabajado quedará registrado permanentemente.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>4. Subir Evidencias</h2>
+            <p>Las evidencias son archivos (fotos, documentos, etc.) que demuestran que completaste una tarea correctamente.</p>
+
+            <h3>Al Completar una Tarea</h3>
+            <div class="step-box">
+                <h4>Paso 1: Completar la tarea</h4>
+                <p>Sigue los pasos para completar una tarea (ver sección anterior).</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 2: Agregar evidencias</h4>
+                <p>En el formulario de completar tarea, verás una sección para subir archivos. Puedes:</p>
+                <ul class="icon-list">
+                    <li>Arrastrar y soltar archivos directamente</li>
+                    <li>Hacer clic para seleccionar archivos desde tu computadora</li>
+                    <li>Subir múltiples archivos a la vez</li>
+                </ul>
+            </div>
+
+            <div class="step-box">
+                <h4>Paso 3: Ver el progreso</h4>
+                <p>Verás una barra de progreso que indica cuántos archivos se han subido. Espera a que termine antes de cerrar la ventana.</p>
+            </div>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> Los archivos de imagen se mostrarán como vista previa. Puedes eliminar archivos antes de guardar si te equivocaste.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>5. Reabrir una Tarea</h2>
+            <p>Si una tarea completada necesita ser revisada o corregida, puedes reabrirla.</p>
+
+            <div class="step-box">
+                <h4>Pasos para reabrir:</h4>
+                <ol>
+                    <li>Localiza la tarea completada que necesitas reabrir</li>
+                    <li>Abre el menú de opciones (tres puntos)</li>
+                    <li>Selecciona <strong>"Reabrir"</strong></li>
+                    <li>Explica el motivo por el cual necesitas reabrir la tarea (opcional pero recomendado)</li>
+                    <li>Opcionalmente, puedes subir archivos que justifiquen la reapertura</li>
+                    <li>Confirma la acción</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>⚠️ Importante:</strong> Solo puedes reabrir tareas que hayas completado tú mismo. Una vez reabierta, la tarea volverá a estado "pendiente" y podrás trabajar en ella nuevamente.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>6. Ver Archivos Adjuntos</h2>
+            <p>Los proyectos y tareas pueden tener archivos adjuntos que te ayudan a entender mejor el trabajo a realizar.</p>
+
+            <div class="step-box">
+                <h4>En un Proyecto:</h4>
+                <p>En la página del proyecto, busca la sección <strong>"Adjuntos"</strong> en el panel lateral derecho. Allí verás todos los archivos relacionados con el proyecto.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>En una Tarea:</h4>
+                <p>En la tarjeta de la tarea, verás una sección de archivos adjuntos. Puedes hacer clic en cualquier archivo para descargarlo o verlo.</p>
+            </div>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> Los archivos de imagen se muestran como miniaturas. Los documentos se muestran con un icono según su tipo (PDF, Word, Excel, etc.).</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>7. Ver la Bitácora (Logs)</h2>
+            <p>La bitácora registra todas las actividades importantes que ocurren en el proyecto.</p>
+
+            <div class="step-box">
+                <h4>¿Qué verás en la bitácora?</h4>
+                <ul class="icon-list">
+                    <li>Cuándo se creó una tarea</li>
+                    <li>Quién inició o pausó una tarea</li>
+                    <li>Cuándo se completó una tarea y quién la completó</li>
+                    <li>Cuándo se reabrió una tarea</li>
+                    <li>Comentarios y notas importantes</li>
+                </ul>
+            </div>
+
+            <div class="step-box">
+                <h4>Dónde encontrarla:</h4>
+                <p>En la página del proyecto, busca la sección <strong>"Bitácora"</strong> en el panel lateral derecho. Las entradas más recientes aparecen primero.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>8. Preguntas Frecuentes</h2>
+
+            <h3>¿Por qué no puedo iniciar una tarea?</h3>
+            <div class="info-box">
+                <p>Puede ser porque:</p>
+                <ul>
+                    <li>La tarea no te ha sido asignada</li>
+                    <li>La tarea es una tarea padre que tiene subtareas (debes iniciar las subtareas directamente)</li>
+                    <li>La tarea ya está completada</li>
+                </ul>
+            </div>
+
+            <h3>¿Puedo trabajar en varias tareas a la vez?</h3>
+            <div class="info-box">
+                <p>Sí, puedes tener múltiples tareas iniciadas simultáneamente. Cada una tendrá su propio temporizador corriendo.</p>
+            </div>
+
+            <h3>¿Qué pasa si olvido pausar una tarea?</h3>
+            <div class="warning-box">
+                <p>El temporizador seguirá contando tiempo. Es importante que pauses las tareas cuando termines de trabajar en ellas para tener registros precisos del tiempo dedicado.</p>
+            </div>
+
+            <h3>¿Puedo ver cuánto tiempo he trabajado en total?</h3>
+            <div class="info-box">
+                <p>Sí, en cada tarea verás el tiempo acumulado que has trabajado. El tiempo se muestra en formato horas:minutos:segundos.</p>
+            </div>
+
+            <h3>¿Qué tipos de archivos puedo subir?</h3>
+            <div class="info-box">
+                <p>Puedes subir cualquier tipo de archivo: imágenes (JPG, PNG, etc.), documentos (PDF, Word, Excel), videos, etc. No hay límite de tipo de archivo.</p>
+            </div>
+
+            <h3>¿Puedo eliminar archivos que subí?</h3>
+            <div class="info-box">
+                <p>Sí, solo tú puedes eliminar los archivos que subiste. En el modal de archivos, verás un botón de eliminar (🗑️) en los archivos que subiste.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>9. Consejos y Buenas Prácticas</h2>
+
+            <div class="success-box">
+                <h4>✅ Mejores Prácticas:</h4>
+                <ul class="icon-list">
+                    <li><strong>Inicia el temporizador</strong> cuando comiences a trabajar en una tarea</li>
+                    <li><strong>Pausa el temporizador</strong> cuando tomes descansos o cambies de tarea</li>
+                    <li><strong>Sube evidencias claras</strong> cuando completes una tarea para demostrar tu trabajo</li>
+                    <li><strong>Revisa la bitácora</strong> regularmente para estar al tanto de los cambios en el proyecto</li>
+                    <li><strong>Comunica problemas</strong> a través de comentarios o contactando al creador del proyecto</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Evita:</h4>
+                <ul>
+                    <li>Dejar tareas iniciadas sin trabajar en ellas</li>
+                    <li>Completar tareas sin haber iniciado el temporizador</li>
+                    <li>Subir archivos que no estén relacionados con la tarea</li>
+                    <li>Reabrir tareas sin una justificación clara</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>10. Obtener Ayuda</h2>
+            <p>Si tienes problemas o preguntas sobre el uso del sistema:</p>
+            
+            <div class="step-box">
+                <h4>Contacta a:</h4>
+                <ul>
+                    <li><strong>El creador del proyecto:</strong> Para preguntas sobre tareas específicas o asignaciones</li>
+                    <li><strong>Tu administrador:</strong> Para problemas de acceso, credenciales o permisos</li>
+                    <li><strong>Soporte técnico:</strong> Para problemas técnicos con el sistema</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <p><strong>💡 Tip:</strong> Antes de contactar, revisa esta guía y la bitácora del proyecto. Muchas veces la información que necesitas ya está disponible en el sistema.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Guía de Usuario</strong> - Sistema de Gestión de Proyectos</p>
+        <p>Versión 2.0 | Última actualización: 15 de enero de 2026</p>
+    </div>
+</body>
+</html>

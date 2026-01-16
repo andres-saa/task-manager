@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación del Sistema - Gestión de Proyectos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: rgb(255, 98, 0);
+            --primary-dark: rgb(220, 80, 0);
+            --bg-main: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --border: #dee2e6;
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-main: #1a1a1a;
+                --bg-secondary: #2d2d2d;
+                --bg-card: #252525;
+                --text-main: #e0e0e0;
+                --text-secondary: #b0b0b0;
+                --text-muted: #808080;
+                --border: #404040;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background: var(--bg-secondary);
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .toc {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .toc h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .toc ol {
+            list-style: none;
+            counter-reset: item;
+        }
+
+        .toc li {
+            counter-increment: item;
+            margin: 0.5rem 0;
+        }
+
+        .toc li::before {
+            content: counter(item) ". ";
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .toc a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: var(--primary);
+        }
+
+        .section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section h3 {
+            color: var(--text-main);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .section h4 {
+            color: var(--text-main);
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .section ul, .section ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-error {
+            background: var(--error);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: #1a1a1a;
+        }
+
+        .badge-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-block code {
+            color: var(--text-main);
+        }
+
+        .endpoint {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        .method-get {
+            background: #61affe;
+            color: white;
+        }
+
+        .method-post {
+            background: #49cc90;
+            color: white;
+        }
+
+        .method-patch {
+            background: #fca130;
+            color: white;
+        }
+
+        .method-delete {
+            background: #f93e3e;
+            color: white;
+        }
+
+        .permission-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-card);
+        }
+
+        .permission-table th,
+        .permission-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .permission-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .permission-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .check {
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .cross {
+            color: var(--error);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .highlight {
+            background: rgba(255, 98, 0, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .info-box {
+            background: rgba(23, 162, 184, 0.1);
+            border-left: 4px solid var(--info);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .success-box {
+            background: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
+        .footer {
+            background: var(--bg-card);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .permission-table {
+                font-size: 0.875rem;
+            }
+
+            .permission-table th,
+            .permission-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.2s;
+            z-index: 50;
+        }
+
+        .scroll-to-top:hover {
+            transform: scale(1.1);
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: rgba(255, 98, 0, 0.1);
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 98, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Documentación del Sistema</h1>
+        <p>Sistema de Gestión de Proyectos - Versión 2.0</p>
+        <div class="header-actions">
+            <a href="/documentation/user" class="btn btn-primary">
+                👥 Guía para Usuarios No Técnicos
+            </a>
+            <a href="/" class="btn btn-secondary">
+                Ir al Sistema
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="toc">
+            <h2>Tabla de Contenidos</h2>
+            <ol>
+                <li><a href="#introduccion">Introducción</a></li>
+                <li><a href="#autenticacion">Sistema de Autenticación</a></li>
+                <li><a href="#roles">Roles y Permisos</a></li>
+                <li><a href="#proyectos">Gestión de Proyectos</a></li>
+                <li><a href="#tareas">Gestión de Tareas</a></li>
+                <li><a href="#equipos">Gestión de Equipos</a></li>
+                <li><a href="#usuarios">Gestión de Usuarios</a></li>
+                <li><a href="#restricciones">Restricciones y Validaciones</a></li>
+                <li><a href="#flujos">Flujos de Trabajo</a></li>
+                <li><a href="#integraciones">Integraciones Externas</a></li>
+                <li><a href="#modelo-datos">Modelo de Datos</a></li>
+                <li><a href="#tecnicas">Consideraciones Técnicas</a></li>
+                <li><a href="#matriz">Matriz de Permisos</a></li>
+            </ol>
+        </div>
+
+        <div class="section" id="introduccion">
+            <h2>1. Introducción</h2>
+            <p class="date-badge">Inicio del proyecto: 13 de marzo de 2025</p>
+            <p>Este sistema es una aplicación de gestión de proyectos desarrollada con <strong>FastAPI</strong>, <strong>Jinja2</strong> y <strong>Tailwind CSS</strong>. Permite la creación y gestión de proyectos, tareas, equipos y usuarios con un sistema de permisos basado en roles y propiedad de proyectos.</p>
+        </div>
+
+        <div class="section" id="autenticacion">
+            <h2>2. Sistema de Autenticación</h2>
+            <p class="date-badge">Implementado: 15 de marzo de 2025</p>
+            
+            <h3>Credenciales por Defecto</h3>
+            <div class="info-box">
+                <p><strong>Nota de Seguridad:</strong> Las credenciales de administrador se configuran mediante variables de entorno para mayor seguridad.</p>
+                <p><small>Variables de entorno disponibles: <code>ADMIN_USER</code> y <code>ADMIN_PASS</code></small></p>
+                <p><small><strong>Importante:</strong> Cambiar las credenciales por defecto antes de desplegar en producción.</small></p>
+            </div>
+
+            <h3>Métodos de Login</h3>
+            <p class="date-badge">Login básico: 15 de marzo de 2025 | Integración externa: 20 de abril de 2025</p>
+            
+            <h4>1. Login con Parámetros GET (Integración Externa)</h4>
+            <div class="endpoint">
+                <span class="endpoint-method method-get">GET</span>
+                <code>/login?username={username}&password={password}</code>
+            </div>
+            <ul>
+                <li>Si hay un usuario previamente autenticado, <strong>se desautentica automáticamente</strong> antes de intentar el nuevo login</li>
+                <li>Si las credenciales son válidas, redirige a <code>/</code> (dashboard)</li>
+                <li>Si las credenciales son inválidas, redirige a <code>https://gestion.salchimonster.com/tasks/</code></li>
+                <li><strong>No muestra interfaz de login</strong> cuando hay parámetros GET</li>
+            </ul>
+            <div class="code-block">
+                <code>http://localhost:8000/login?username={username}&password={password}</code>
+            </div>
+            <div class="warning-box">
+                <p><strong>Nota:</strong> Reemplazar <code>{username}</code> y <code>{password}</code> con las credenciales reales del usuario.</p>
+            </div>
+
+            <h4>2. Login con Formulario POST</h4>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/login</code>
+            </div>
+            <ul>
+                <li>Si las credenciales son válidas, redirige a <code>/</code> (dashboard)</li>
+                <li>Si las credenciales son inválidas, redirige a <code>https://gestion.salchimonster.com/tasks/</code></li>
+            </ul>
+
+            <h4>3. Login Directo Admin</h4>
+            <div class="endpoint">
+                <span class="endpoint-method method-get">GET</span>
+                <code>/admin/login</code>
+            </div>
+            <ul>
+                <li>Cierra cualquier sesión existente</li>
+                <li>Autentica automáticamente como admin usando credenciales por defecto</li>
+                <li>Si falla, redirige a <code>/login</code></li>
+            </ul>
+
+            <h3>Logout</h3>
+            <div class="endpoint">
+                <span class="endpoint-method method-get">GET</span>
+                <code>/logout</code>
+            </div>
+            <ul>
+                <li>Cierra la sesión actual</li>
+                <li>Elimina la cookie de sesión</li>
+                <li>Redirige a <code>https://gestion.salchimonster.com/tasks/</code></li>
+            </ul>
+
+            <h3>Sincronización de Usuarios</h3>
+            <p>El sistema sincroniza usuarios automáticamente desde:</p>
+            <ul>
+                <li><strong>URL:</strong> <code>https://backend.salchimonster.com/employers-basic</code></li>
+                <li><strong>Frecuencia:</strong> Cada hora (3600 segundos) o cuando se fuerza manualmente</li>
+                <li><strong>Variable de entorno:</strong> <code>EMPLOYERS_SYNC_TTL_SECONDS</code> (por defecto: 3600)</li>
+            </ul>
+            <div class="warning-box">
+                <p><strong>Contraseñas de usuarios sincronizados:</strong></p>
+                <p>Se generan automáticamente desde el DNI: <code>{DNI_invertido}---{DNI}</code></p>
+                <p>Ejemplo: DNI <code>1003153254</code> → Contraseña: <code>4523513001---1003153254</code></p>
+            </div>
+        </div>
+
+        <div class="section" id="roles">
+            <h2>3. Roles y Permisos</h2>
+            <p class="date-badge">Sistema de roles: 18 de marzo de 2025 | Restricciones avanzadas: 12 de diciembre de 2025</p>
+            
+            <h3>Roles Disponibles</h3>
+            <ol>
+                <li><span class="badge badge-primary">ADMIN</span>: Administrador del sistema</li>
+                <li><span class="badge badge-primary">MANAGER</span>: Gerente (mismo nivel de permisos que ADMIN)</li>
+                <li><span class="badge badge-info">USER</span>: Usuario regular</li>
+                <li><span class="badge badge-warning">Roles personalizados</span>: Basados en la posición del empleado (ej: "JEFE DE COCINA")</li>
+            </ol>
+
+            <h3>Permisos por Rol</h3>
+            
+            <h4>ADMIN / MANAGER</h4>
+            <div class="success-box">
+                <p><strong>Pueden:</strong></p>
+                <ul>
+                    <li>Acceder a todas las páginas administrativas (<code>/admin/users</code>, <code>/admin/teams</code>)</li>
+                    <li>Ver todos los proyectos (incluso si no están asignados)</li>
+                    <li>Sincronizar usuarios manualmente</li>
+                    <li>Promover/degradar usuarios (con restricción: no pueden degradar el último admin activo)</li>
+                    <li>Asignar usuarios a proyectos (además del creador)</li>
+                </ul>
+            </div>
+            <div class="warning-box">
+                <p><strong>No pueden:</strong></p>
+                <ul>
+                    <li>Degradar el último administrador activo del sistema</li>
+                </ul>
+            </div>
+
+            <h4>USER (Usuario Regular)</h4>
+            <div class="success-box">
+                <p><strong>Pueden:</strong></p>
+                <ul>
+                    <li>Ver proyectos a los que están asignados</li>
+                    <li>Gestionar tareas asignadas (iniciar, pausar, completar, reabrir)</li>
+                    <li>Subir evidencias para tareas asignadas</li>
+                    <li>Ver información de proyectos asignados</li>
+                </ul>
+            </div>
+            <div class="warning-box">
+                <p><strong>No pueden:</strong></p>
+                <ul>
+                    <li>Crear proyectos</li>
+                    <li>Agregar tareas a proyectos</li>
+                    <li>Asignar usuarios a proyectos</li>
+                    <li>Acceder a páginas administrativas</li>
+                    <li>Ver proyectos no asignados</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="proyectos">
+            <h2>4. Gestión de Proyectos</h2>
+            <p class="date-badge">CRUD básico: 22 de marzo de 2025 | Permisos de creador: 8 de noviembre de 2025</p>
+            
+            <h3>Creación de Proyectos</h3>
+            <p><strong>Quién puede crear:</strong> Cualquier usuario autenticado</p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/projects/create</code>
+            </div>
+            <p><strong>Campos requeridos:</strong></p>
+            <ul>
+                <li><code>name</code>: Nombre del proyecto</li>
+                <li><code>area_id</code>: ID del área (opcional, usa área por defecto si no se proporciona)</li>
+                <li><code>group_id</code>: ID del grupo (opcional, usa grupo por defecto si no se proporciona)</li>
+                <li><code>description</code>: Descripción del proyecto (opcional)</li>
+                <li><code>deadline</code>: Fecha límite (opcional)</li>
+                <li><code>assigned_users</code>: Lista de IDs de usuarios asignados (opcional)</li>
+            </ul>
+            <div class="info-box">
+                <p><strong>Comportamiento:</strong> El usuario que crea el proyecto se convierte automáticamente en el <strong>creador del proyecto</strong> (<code>created_by</code>). El creador tiene permisos exclusivos sobre el proyecto.</p>
+            </div>
+
+            <h3>Visualización de Proyectos</h3>
+            <p><strong>Quién puede ver un proyecto:</strong></p>
+            <ul>
+                <li>El <span class="highlight">creador del proyecto</span></li>
+                <li><span class="badge badge-primary">Administradores</span> (ADMIN/MANAGER)</li>
+                <li><span class="badge badge-info">Usuarios asignados al proyecto</span></li>
+            </ul>
+            <div class="warning-box">
+                <p><strong>Restricción:</strong> Si un usuario no es admin y no está asignado al proyecto, recibe error 403</p>
+            </div>
+
+            <h3>Edición y Eliminación</h3>
+            <p><strong>Quién puede editar/eliminar:</strong></p>
+            <ul>
+                <li>El <span class="highlight">creador del proyecto</span></li>
+                <li><span class="badge badge-primary">Administradores</span></li>
+            </ul>
+        </div>
+
+        <div class="section" id="tareas">
+            <h2>5. Gestión de Tareas</h2>
+            <p class="date-badge">Tareas básicas: 28 de marzo de 2025 | Subtareas: 10 de abril de 2025 | Temporizadores: 15 de mayo de 2025 | Restricciones completas: 12 de diciembre de 2025</p>
+            
+            <h3>Creación de Tareas</h3>
+            <h4>Tareas Raíz</h4>
+            <p><strong>Quién puede crear:</strong> <span class="highlight">Solo el creador del proyecto</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/projects/{project_id}/tasks</code>
+            </div>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>No se pueden crear tareas con archivos adjuntos al momento de la creación</li>
+                    <li>Los archivos deben agregarse después de crear la tarea</li>
+                </ul>
+            </div>
+
+            <h4>Subtareas</h4>
+            <p><strong>Quién puede crear:</strong> <span class="highlight">Solo el creador del proyecto</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/projects/{project_id}/tasks/{parent_id}/child</code>
+            </div>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>No se pueden agregar subtareas a tareas completadas</li>
+                    <li>No se pueden crear subtareas con archivos adjuntos al momento de la creación</li>
+                </ul>
+            </div>
+
+            <h3>Asignación de Usuarios a Tareas</h3>
+            <p><strong>Quién puede asignar:</strong> <span class="highlight">Solo el creador del proyecto</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/tasks/{task_id}/assign_users</code>
+            </div>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>Solo se pueden asignar usuarios que <strong>ya estén asignados al proyecto</strong></li>
+                    <li>No se pueden asignar usuarios que no pertenezcan al proyecto</li>
+                </ul>
+            </div>
+
+            <h3>Gestión de Tareas</h3>
+            
+            <h4>Iniciar Temporizador</h4>
+            <p><strong>Quién puede iniciar:</strong> <span class="badge badge-info">Solo usuarios asignados a la tarea</span></p>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>No se puede iniciar una tarea padre que tenga subtareas (solo se pueden iniciar las subtareas)</li>
+                    <li>Para subtareas:
+                        <ul>
+                            <li>Si la subtarea no tiene asignación, el usuario debe estar asignado a la tarea padre</li>
+                            <li>Si la subtarea tiene asignación, solo el usuario asignado puede iniciarla</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <h4>Pausar Temporizador</h4>
+            <p><strong>Quién puede pausar:</strong> <span class="badge badge-info">Solo usuarios asignados a la tarea</span></p>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>No se puede pausar una tarea padre que tenga subtareas</li>
+                    <li>La tarea debe estar en estado "running" para poder pausarla</li>
+                    <li>Para subtareas: mismas reglas que iniciar</li>
+                </ul>
+            </div>
+
+            <h4>Completar Tarea</h4>
+            <p><strong>Quién puede completar:</strong> <span class="badge badge-info">Solo usuarios asignados a la tarea</span></p>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>Todas las subtareas deben estar completadas antes de completar la tarea padre</li>
+                    <li>La tarea debe haber iniciado su temporizador al menos una vez (tener tiempo acumulado > 0)</li>
+                    <li>Se puede agregar un comentario opcional al completar</li>
+                    <li>Se pueden subir múltiples archivos como evidencia al completar</li>
+                </ul>
+            </div>
+
+            <h4>Reabrir Tarea</h4>
+            <p><strong>Quién puede reabrir:</strong> <span class="badge badge-info">Solo usuarios asignados a la tarea</span></p>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li>Solo se pueden reabrir tareas completadas</li>
+                    <li>Se requiere una justificación (opcional, si no se proporciona se usa un texto por defecto)</li>
+                    <li>Se pueden subir múltiples archivos como evidencia de reapertura</li>
+                    <li>Al reabrir una tarea padre, también se reabren automáticamente todas sus subtareas</li>
+                </ul>
+            </div>
+
+            <h3>Archivos Adjuntos a Tareas</h3>
+            <p><strong>Quién puede agregar:</strong> <span class="highlight">Solo el creador del proyecto</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/tasks/{task_id}/attachments</code>
+            </div>
+            <p><strong>Quién puede eliminar:</strong> Solo quien subió el archivo (verificado por <code>uploaded_by</code>)</p>
+            <div class="endpoint">
+                <span class="endpoint-method method-delete">DELETE</span>
+                <code>/api/tasks/{task_id}/attachments/{attachment_id}</code>
+            </div>
+        </div>
+
+        <div class="section" id="equipos">
+            <h2>6. Gestión de Equipos</h2>
+            <p class="date-badge">Implementado: 18 de junio de 2025</p>
+            
+            <h3>Creación de Equipos</h3>
+            <p><strong>Quién puede crear:</strong> <span class="badge badge-primary">Solo administradores</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/teams/create</code>
+            </div>
+
+            <h3>Edición y Eliminación</h3>
+            <p><strong>Quién puede editar/eliminar:</strong></p>
+            <ul>
+                <li>El <span class="highlight">creador del equipo</span></li>
+                <li><span class="badge badge-primary">Administradores</span></li>
+            </ul>
+
+            <h3>Asignación de Equipos a Proyectos</h3>
+            <p><strong>Quién puede asignar:</strong></p>
+            <ul>
+                <li>El <span class="highlight">creador del proyecto</span></li>
+                <li><span class="badge badge-primary">Administradores</span></li>
+            </ul>
+            <div class="info-box">
+                <p><strong>Comportamiento:</strong> Al asignar un equipo a un proyecto, todos los miembros del equipo se asignan automáticamente al proyecto.</p>
+            </div>
+        </div>
+
+        <div class="section" id="usuarios">
+            <h2>7. Gestión de Usuarios</h2>
+            <p class="date-badge">Sincronización: 25 de marzo de 2025 | Promoción de usuarios: 3 de julio de 2025</p>
+            
+            <h3>Sincronización de Usuarios</h3>
+            <p><strong>Quién puede sincronizar:</strong> <span class="badge badge-primary">Solo administradores</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/users/sync</code>
+            </div>
+            <div class="info-box">
+                <p><strong>Comportamiento:</strong> Fuerza una sincronización inmediata desde el backend externo. Actualiza usuarios existentes y crea nuevos usuarios. Desactiva usuarios que ya no están en el backend. <strong>No sobrescribe</strong> usuarios con <code>role_locked: true</code> (promovidos manualmente).</p>
+            </div>
+
+            <h3>Creación Manual de Usuarios</h3>
+            <div class="warning-box">
+                <p><strong>Estado: DESHABILITADO</strong></p>
+                <p>Los usuarios solo se pueden crear mediante sincronización desde el backend.</p>
+            </div>
+
+            <h3>Promoción/Degradación de Usuarios</h3>
+            <p><strong>Quién puede promover/degradar:</strong> <span class="badge badge-primary">Solo administradores</span></p>
+            <div class="endpoint">
+                <span class="endpoint-method method-post">POST</span>
+                <code>/api/users/{user_id}/promote</code>
+            </div>
+            <div class="warning-box">
+                <p><strong>Restricciones:</strong></p>
+                <ul>
+                    <li><strong>No se puede degradar el último administrador activo del sistema</strong></li>
+                    <li>Los roles válidos son: <code>ADMIN</code>, <code>MANAGER</code>, <code>USER</code></li>
+                    <li>Al promover un usuario, su rol se marca como <code>role_locked: true</code> para evitar que la sincronización lo sobrescriba</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="restricciones">
+            <h2>8. Restricciones y Validaciones</h2>
+            <p class="date-badge">Validaciones básicas: 5 de abril de 2025 | Restricciones completas: 12 de diciembre de 2025</p>
+            
+            <h3>Restricciones de Tareas</h3>
+            <h4>Jerarquía de Tareas</h4>
+            <ul>
+                <li>Las tareas pueden tener múltiples niveles de subtareas</li>
+                <li>Una tarea padre <strong>no puede iniciarse</strong> si tiene subtareas (solo las subtareas se pueden iniciar)</li>
+                <li>El tiempo de una tarea padre es la <strong>suma del tiempo de todas sus subtareas</strong></li>
+                <li>Una tarea padre <strong>no puede completarse</strong> hasta que todas sus subtareas estén completadas</li>
+            </ul>
+
+            <h4>Completado de Tareas</h4>
+            <div class="warning-box">
+                <p><strong>Condiciones obligatorias:</strong></p>
+                <ol>
+                    <li>Todas las subtareas deben estar completadas (si las hay)</li>
+                    <li>La tarea debe haber iniciado su temporizador al menos una vez</li>
+                    <li>El usuario debe estar asignado a la tarea</li>
+                </ol>
+            </div>
+            <div class="info-box">
+                <p><strong>Opcional:</strong> Comentario de completado y archivos de evidencia</p>
+            </div>
+
+            <h3>Restricciones de Archivos</h3>
+            <ul>
+                <li>Se aceptan todos los tipos de archivos</li>
+                <li>Los archivos de imagen se pueden previsualizar</li>
+                <li>Se pueden subir múltiples archivos simultáneamente</li>
+                <li>Se muestra progreso de carga para cada archivo</li>
+            </ul>
+        </div>
+
+        <div class="section" id="flujos">
+            <h2>9. Flujos de Trabajo</h2>
+            <p class="date-badge">Documentado: 20 de agosto de 2025 | Actualizado: 10 de enero de 2026</p>
+            
+            <h3>Flujo de Creación de Proyecto</h3>
+            <ol>
+                <li>Usuario autenticado crea un proyecto</li>
+                <li>El usuario se convierte automáticamente en el creador</li>
+                <li>El creador puede asignar usuarios al proyecto</li>
+                <li>El creador puede agregar tareas al proyecto</li>
+                <li>Los usuarios asignados pueden gestionar las tareas asignadas</li>
+            </ol>
+
+            <h3>Flujo de Gestión de Tarea</h3>
+            <ol>
+                <li><span class="highlight">Creador del proyecto</span> crea una tarea</li>
+                <li><span class="highlight">Creador del proyecto</span> asigna usuarios a la tarea (solo usuarios del proyecto)</li>
+                <li><span class="badge badge-info">Usuario asignado</span> inicia el temporizador de la tarea</li>
+                <li><span class="badge badge-info">Usuario asignado</span> trabaja en la tarea (el temporizador corre)</li>
+                <li><span class="badge badge-info">Usuario asignado</span> puede pausar/reanudar el temporizador</li>
+                <li><span class="badge badge-info">Usuario asignado</span> completa la tarea (con comentario y evidencias opcionales)</li>
+                <li>Si es necesario, <span class="badge badge-info">usuario asignado</span> puede reabrir la tarea con justificación</li>
+            </ol>
+        </div>
+
+        <div class="section" id="integraciones">
+            <h2>10. Integraciones Externas</h2>
+            <p class="date-badge">Backend de empleados: 25 de marzo de 2025 | Backend de imágenes: 2 de mayo de 2025 | Redirección master: 20 de abril de 2025</p>
+            
+            <h3>Backend de Empleados</h3>
+            <p><strong>URL:</strong> <code>https://backend.salchimonster.com/employers-basic</code></p>
+            <p><strong>Propósito:</strong> Sincronización automática de usuarios</p>
+            <p><strong>Frecuencia:</strong> Automática cada hora o manual mediante endpoint (solo admin)</p>
+
+            <h3>Backend de Imágenes</h3>
+            <p><strong>URL:</strong> <code>https://backend.salchimonster.com/read-product-image/300/employer-{dni}?timestamp={timestamp}</code></p>
+            <p><strong>Propósito:</strong> Obtener fotos de perfil de empleados (300px)</p>
+            <p><strong>Fallback:</strong> Si no hay DNI, se usa avatar basado en género</p>
+
+            <h3>Redirección al Master</h3>
+            <p><strong>URL:</strong> <code>https://gestion.salchimonster.com/tasks/</code></p>
+            <p><strong>Cuándo se redirige:</strong></p>
+            <ul>
+                <li>Login fallido (credenciales inválidas)</li>
+                <li>Logout exitoso</li>
+                <li>Login con parámetros GET fallido</li>
+            </ul>
+        </div>
+
+        <div class="section" id="modelo-datos">
+            <h2>11. Modelo de Datos</h2>
+            <p class="date-badge">Modelo JSON: 13 de marzo de 2025 | Esquema PostgreSQL: 10 de enero de 2026 (futuro)</p>
+            
+            <h3>Modelo Actual (JSON)</h3>
+            <p>El sistema actual utiliza almacenamiento en archivos JSON planos. La estructura de datos se basa en modelos Pydantic que garantizan la validación y consistencia de los datos.</p>
+            
+            <h4>Estructura de Archivos</h4>
+            <ul>
+                <li><code>data/users.json</code>: Usuarios y sesiones</li>
+                <li><code>data/index.json</code>: Índice global (áreas, grupos, mapeo de proyectos)</li>
+                <li><code>data/teams.json</code>: Equipos de trabajo</li>
+                <li><code>data/projects/{project_id}.json</code>: Archivo individual por proyecto</li>
+            </ul>
+
+            <h4>Modelos de Datos</h4>
+            
+            <h5>Attachment (Archivo Adjunto)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"filename": "string",<br>
+&nbsp;&nbsp;"original_name": "string",<br>
+&nbsp;&nbsp;"url": "string",<br>
+&nbsp;&nbsp;"size": "integer",<br>
+&nbsp;&nbsp;"content_type": "string",<br>
+&nbsp;&nbsp;"uploaded_at": "float (timestamp)",<br>
+&nbsp;&nbsp;"uploaded_by": "string (user_id)"<br>
+}
+                </code>
+            </div>
+
+            <h5>LogEntry (Entrada de Bitácora)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"text": "string",<br>
+&nbsp;&nbsp;"created_at": "float (timestamp)",<br>
+&nbsp;&nbsp;"created_by": "string (user_id)",<br>
+&nbsp;&nbsp;"attachment": "Attachment | null",<br>
+&nbsp;&nbsp;"task_id": "string | null",<br>
+&nbsp;&nbsp;"action_type": "string | null"<br>
+}
+                </code>
+            </div>
+
+            <h5>Task (Tarea)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"title": "string",<br>
+&nbsp;&nbsp;"description": "string",<br>
+&nbsp;&nbsp;"status": "pending | running | paused | completed",<br>
+&nbsp;&nbsp;"accumulated_sec": "integer",<br>
+&nbsp;&nbsp;"started_at": "float | null",<br>
+&nbsp;&nbsp;"completed_at": "float | null",<br>
+&nbsp;&nbsp;"completed_by": "string | null (user_id)",<br>
+&nbsp;&nbsp;"completion_comment": "string | null",<br>
+&nbsp;&nbsp;"completion_evidence": "Attachment[]",<br>
+&nbsp;&nbsp;"assigned_to": "string[] (user_ids)",<br>
+&nbsp;&nbsp;"children": "Task[]", // Recursivo<br>
+&nbsp;&nbsp;"attachments": "Attachment[]",<br>
+&nbsp;&nbsp;"reopen_evidence": "Attachment[]"<br>
+}
+                </code>
+            </div>
+
+            <h5>Project (Proyecto)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"name": "string",<br>
+&nbsp;&nbsp;"description": "string",<br>
+&nbsp;&nbsp;"area_id": "string",<br>
+&nbsp;&nbsp;"group_id": "string",<br>
+&nbsp;&nbsp;"deadline": "float | null (timestamp)",<br>
+&nbsp;&nbsp;"created_at": "float (timestamp)",<br>
+&nbsp;&nbsp;"created_by": "string (user_id)",<br>
+&nbsp;&nbsp;"assigned_users": "string[] (user_ids)",<br>
+&nbsp;&nbsp;"tasks": "Task[]",<br>
+&nbsp;&nbsp;"logs": "LogEntry[]",<br>
+&nbsp;&nbsp;"attachments": "Attachment[]",<br>
+&nbsp;&nbsp;"dirty": "boolean"<br>
+}
+                </code>
+            </div>
+
+            <h5>Area (Área)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"name": "string",<br>
+&nbsp;&nbsp;"description": "string",<br>
+&nbsp;&nbsp;"created_at": "float (timestamp)",<br>
+&nbsp;&nbsp;"created_by": "string"<br>
+}
+                </code>
+            </div>
+
+            <h5>Group (Grupo)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"name": "string",<br>
+&nbsp;&nbsp;"area_id": "string",<br>
+&nbsp;&nbsp;"description": "string",<br>
+&nbsp;&nbsp;"created_at": "float (timestamp)",<br>
+&nbsp;&nbsp;"created_by": "string"<br>
+}
+                </code>
+            </div>
+
+            <h5>Team (Equipo)</h5>
+            <div class="code-block">
+                <code>
+{<br>
+&nbsp;&nbsp;"id": "string",<br>
+&nbsp;&nbsp;"name": "string",<br>
+&nbsp;&nbsp;"description": "string",<br>
+&nbsp;&nbsp;"member_ids": "string[] (user_ids)",<br>
+&nbsp;&nbsp;"created_at": "float (timestamp)",<br>
+&nbsp;&nbsp;"created_by": "string (user_id)"<br>
+}
+                </code>
+            </div>
+
+            <h3>Modelo Futuro (PostgreSQL)</h3>
+            <div class="info-box">
+                <p><strong>Nota:</strong> Este esquema está diseñado para una futura migración a PostgreSQL. El sistema actual funciona con JSON plano, pero este esquema SQL está listo para cuando se requiera escalabilidad y rendimiento mejorado.</p>
+            </div>
+
+            <h4>Esquema de Base de Datos</h4>
+            <div class="code-block">
+                <code>
+-- ============================================
+-- Sistema de Gestión de Proyectos
+-- Esquema PostgreSQL (Futuro)
+-- ============================================
+
+-- Extensión para UUIDs
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ============================================
+-- TABLA: users
+-- ============================================
+CREATE TABLE users (
+    id VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    display_name VARCHAR(200) NOT NULL,
+    email VARCHAR(255),
+    role VARCHAR(50) NOT NULL DEFAULT 'USER',
+    role_locked BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
+    salt VARCHAR(64) NOT NULL,
+    password_hash VARCHAR(128) NOT NULL,
+    password_sig VARCHAR(64),
+    dni VARCHAR(20),
+    gender VARCHAR(20),
+    position VARCHAR(100),
+    site_name VARCHAR(100),
+    external_id INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by VARCHAR(50)
+);
+
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_is_active ON users(is_active);
+CREATE INDEX idx_users_dni ON users(dni);
+
+-- ============================================
+-- TABLA: sessions
+-- ============================================
+CREATE TABLE sessions (
+    id VARCHAR(100) PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_sessions_user_id ON sessions(user_id);
+CREATE INDEX idx_sessions_last_seen ON sessions(last_seen);
+
+-- ============================================
+-- TABLA: areas
+-- ============================================
+CREATE TABLE areas (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by VARCHAR(50)
+);
+
+CREATE INDEX idx_areas_name ON areas(name);
+
+-- ============================================
+-- TABLA: groups
+-- ============================================
+CREATE TABLE groups (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    area_id VARCHAR(50) NOT NULL REFERENCES areas(id) ON DELETE CASCADE,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by VARCHAR(50)
+);
+
+CREATE INDEX idx_groups_area_id ON groups(area_id);
+CREATE INDEX idx_groups_name ON groups(name);
+
+-- ============================================
+-- TABLA: projects
+-- ============================================
+CREATE TABLE projects (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    area_id VARCHAR(50) NOT NULL REFERENCES areas(id),
+    group_id VARCHAR(50) NOT NULL REFERENCES groups(id),
+    deadline TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by VARCHAR(50) NOT NULL REFERENCES users(id),
+    dirty BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX idx_projects_area_id ON projects(area_id);
+CREATE INDEX idx_projects_group_id ON projects(group_id);
+CREATE INDEX idx_projects_created_by ON projects(created_by);
+CREATE INDEX idx_projects_deadline ON projects(deadline);
+
+-- ============================================
+-- TABLA: project_users (Relación Many-to-Many)
+-- ============================================
+CREATE TABLE project_users (
+    project_id VARCHAR(50) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    user_id VARCHAR(50) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (project_id, user_id)
+);
+
+CREATE INDEX idx_project_users_project_id ON project_users(project_id);
+CREATE INDEX idx_project_users_user_id ON project_users(user_id);
+
+-- ============================================
+-- TABLA: tasks
+-- ============================================
+CREATE TABLE tasks (
+    id VARCHAR(50) PRIMARY KEY,
+    project_id VARCHAR(50) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    parent_id VARCHAR(50) REFERENCES tasks(id) ON DELETE CASCADE,
+    title VARCHAR(500) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    accumulated_sec INTEGER DEFAULT 0,
+    started_at TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    completed_by VARCHAR(50) REFERENCES users(id),
+    completion_comment TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    level INTEGER DEFAULT 0, -- Nivel de anidación (0 = raíz)
+    path TEXT, -- Ruta jerárquica (ej: "1/2/3")
+    CONSTRAINT chk_task_status CHECK (status IN ('pending', 'running', 'paused', 'completed'))
+);
+
+CREATE INDEX idx_tasks_project_id ON tasks(project_id);
+CREATE INDEX idx_tasks_parent_id ON tasks(parent_id);
+CREATE INDEX idx_tasks_status ON tasks(status);
+CREATE INDEX idx_tasks_path ON tasks(path);
+CREATE INDEX idx_tasks_completed_by ON tasks(completed_by);
+
+-- ============================================
+-- TABLA: task_users (Relación Many-to-Many)
+-- ============================================
+CREATE TABLE task_users (
+    task_id VARCHAR(50) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    user_id VARCHAR(50) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (task_id, user_id)
+);
+
+CREATE INDEX idx_task_users_task_id ON task_users(task_id);
+CREATE INDEX idx_task_users_user_id ON task_users(user_id);
+
+-- ============================================
+-- TABLA: attachments
+-- ============================================
+CREATE TABLE attachments (
+    id VARCHAR(50) PRIMARY KEY,
+    filename VARCHAR(500) NOT NULL,
+    original_name VARCHAR(500) NOT NULL,
+    url VARCHAR(1000) NOT NULL,
+    size BIGINT NOT NULL,
+    content_type VARCHAR(100),
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    uploaded_by VARCHAR(50) NOT NULL REFERENCES users(id),
+    project_id VARCHAR(50) REFERENCES projects(id) ON DELETE CASCADE,
+    task_id VARCHAR(50) REFERENCES tasks(id) ON DELETE CASCADE,
+    attachment_type VARCHAR(50) DEFAULT 'attachment', -- 'attachment', 'completion_evidence', 'reopen_evidence'
+    CONSTRAINT chk_attachment_context CHECK (
+        (project_id IS NOT NULL AND task_id IS NULL) OR
+        (project_id IS NULL AND task_id IS NOT NULL)
+    )
+);
+
+CREATE INDEX idx_attachments_project_id ON attachments(project_id);
+CREATE INDEX idx_attachments_task_id ON attachments(task_id);
+CREATE INDEX idx_attachments_uploaded_by ON attachments(uploaded_by);
+CREATE INDEX idx_attachments_type ON attachments(attachment_type);
+
+-- ============================================
+-- TABLA: log_entries
+-- ============================================
+CREATE TABLE log_entries (
+    id VARCHAR(50) PRIMARY KEY,
+    project_id VARCHAR(50) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    task_id VARCHAR(50) REFERENCES tasks(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by VARCHAR(50) NOT NULL REFERENCES users(id),
+    attachment_id VARCHAR(50) REFERENCES attachments(id) ON DELETE SET NULL,
+    action_type VARCHAR(50) -- 'task_start', 'task_pause', 'task_complete', 'task_create', 'log_entry', etc.
+);
+
+CREATE INDEX idx_log_entries_project_id ON log_entries(project_id);
+CREATE INDEX idx_log_entries_task_id ON log_entries(task_id);
+CREATE INDEX idx_log_entries_created_at ON log_entries(created_at DESC);
+CREATE INDEX idx_log_entries_action_type ON log_entries(action_type);
+
+-- ============================================
+-- TABLA: teams
+-- ============================================
+CREATE TABLE teams (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_by VARCHAR(50) NOT NULL REFERENCES users(id)
+);
+
+CREATE INDEX idx_teams_created_by ON teams(created_by);
+CREATE INDEX idx_teams_name ON teams(name);
+
+-- ============================================
+-- TABLA: team_members (Relación Many-to-Many)
+-- ============================================
+CREATE TABLE team_members (
+    team_id VARCHAR(50) NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    user_id VARCHAR(50) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (team_id, user_id)
+);
+
+CREATE INDEX idx_team_members_team_id ON team_members(team_id);
+CREATE INDEX idx_team_members_user_id ON team_members(user_id);
+
+-- ============================================
+-- VISTAS ÚTILES
+-- ============================================
+
+-- Vista: Proyectos con información de área y grupo
+CREATE VIEW v_projects_detail AS
+SELECT 
+    p.*,
+    a.name AS area_name,
+    g.name AS group_name,
+    u.display_name AS creator_name,
+    COUNT(DISTINCT pu.user_id) AS assigned_users_count,
+    COUNT(DISTINCT t.id) AS tasks_count
+FROM projects p
+LEFT JOIN areas a ON p.area_id = a.id
+LEFT JOIN groups g ON p.group_id = g.id
+LEFT JOIN users u ON p.created_by = u.id
+LEFT JOIN project_users pu ON p.id = pu.project_id
+LEFT JOIN tasks t ON p.id = t.project_id
+GROUP BY p.id, a.name, g.name, u.display_name;
+
+-- Vista: Tareas con información del proyecto
+CREATE VIEW v_tasks_detail AS
+SELECT 
+    t.*,
+    p.name AS project_name,
+    COUNT(DISTINCT tu.user_id) AS assigned_users_count,
+    COUNT(DISTINCT c.id) AS children_count
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+LEFT JOIN task_users tu ON t.id = tu.task_id
+LEFT JOIN tasks c ON c.parent_id = t.id
+GROUP BY t.id, p.name;
+
+-- ============================================
+-- FUNCIONES Y TRIGGERS
+-- ============================================
+
+-- Función: Actualizar timestamp de last_seen en sesiones
+CREATE OR REPLACE FUNCTION update_session_last_seen()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE sessions SET last_seen = NOW() WHERE id = NEW.id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger: Actualizar last_seen automáticamente
+CREATE TRIGGER trigger_update_session_last_seen
+AFTER INSERT ON sessions
+FOR EACH ROW
+EXECUTE FUNCTION update_session_last_seen();
+
+-- Función: Calcular tiempo total de tarea (incluyendo subtareas)
+CREATE OR REPLACE FUNCTION calculate_task_total_time(task_id_param VARCHAR)
+RETURNS INTEGER AS $$
+DECLARE
+    total_seconds INTEGER;
+BEGIN
+    WITH RECURSIVE task_tree AS (
+        SELECT id, accumulated_sec, started_at
+        FROM tasks
+        WHERE id = task_id_param
+        
+        UNION ALL
+        
+        SELECT t.id, t.accumulated_sec, t.started_at
+        FROM tasks t
+        INNER JOIN task_tree tt ON t.parent_id = tt.id
+    )
+    SELECT COALESCE(SUM(
+        accumulated_sec + 
+        CASE 
+            WHEN started_at IS NOT NULL AND status = 'running' 
+            THEN EXTRACT(EPOCH FROM (NOW() - started_at))::INTEGER
+            ELSE 0
+        END
+    ), 0) INTO total_seconds
+    FROM task_tree;
+    
+    RETURN total_seconds;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ============================================
+-- ÍNDICES ADICIONALES PARA RENDIMIENTO
+-- ============================================
+
+-- Índice compuesto para búsquedas frecuentes
+CREATE INDEX idx_projects_area_group ON projects(area_id, group_id);
+CREATE INDEX idx_tasks_project_status ON tasks(project_id, status);
+CREATE INDEX idx_log_entries_project_created ON log_entries(project_id, created_at DESC);
+
+-- ============================================
+-- COMENTARIOS EN TABLAS
+-- ============================================
+
+COMMENT ON TABLE projects IS 'Proyectos principales del sistema';
+COMMENT ON TABLE tasks IS 'Tareas con soporte para jerarquía recursiva mediante parent_id';
+COMMENT ON TABLE attachments IS 'Archivos adjuntos a proyectos o tareas';
+COMMENT ON TABLE log_entries IS 'Bitácora de eventos del sistema';
+COMMENT ON TABLE teams IS 'Equipos de trabajo que pueden asignarse a proyectos';
+                </code>
+            </div>
+
+            <h4>Consideraciones de Migración</h4>
+            <div class="warning-box">
+                <p><strong>Notas importantes para la migración:</strong></p>
+                <ul>
+                    <li>La jerarquía de tareas se maneja mediante <code>parent_id</code> y campos <code>level</code> y <code>path</code> para optimizar consultas</li>
+                    <li>Las relaciones many-to-many (usuarios-proyectos, usuarios-tareas, usuarios-equipos) se normalizan en tablas separadas</li>
+                    <li>Los archivos adjuntos se unifican en una sola tabla con <code>attachment_type</code> para diferenciar el contexto</li>
+                    <li>Se incluyen vistas materializadas para consultas frecuentes</li>
+                    <li>Los índices están optimizados para las consultas más comunes del sistema</li>
+                    <li>Se mantiene compatibilidad con el modelo JSON actual mediante campos equivalentes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="tecnicas">
+            <h2>12. Consideraciones Técnicas</h2>
+            <p class="date-badge">Arquitectura inicial: 13 de marzo de 2025 | Optimizaciones: 15 de septiembre de 2025 | Mejoras finales: 8 de enero de 2026</p>
+            
+            <h3>Almacenamiento</h3>
+            <ul>
+                <li><strong>Formato:</strong> JSON plano</li>
+                <li><strong>Ubicación:</strong> <code>data/</code></li>
+                <li><strong>Archivos principales:</strong> <code>users.json</code>, <code>index.json</code>, <code>teams.json</code>, <code>projects/{project_id}.json</code></li>
+            </ul>
+
+            <h3>Autenticación</h3>
+            <ul>
+                <li><strong>Hash de contraseñas:</strong> PBKDF2-HMAC-SHA256</li>
+                <li><strong>Iteraciones:</strong> 200,000</li>
+                <li><strong>Salt:</strong> 16 bytes aleatorios</li>
+                <li><strong>Verificación:</strong> <code>secrets.compare_digest()</code> para prevenir timing attacks</li>
+            </ul>
+
+            <h3>Sesiones</h3>
+            <ul>
+                <li><strong>Cookie:</strong> <code>pm_session</code></li>
+                <li><strong>Duración:</strong> 30 días</li>
+                <li><strong>Seguridad:</strong> <code>httponly=True</code>, <code>samesite="lax"</code></li>
+            </ul>
+        </div>
+
+        <div class="section" id="matriz">
+            <h2>13. Matriz de Permisos</h2>
+            <table class="permission-table">
+                <thead>
+                    <tr>
+                        <th>Acción</th>
+                        <th>Creador Proyecto</th>
+                        <th>Admin</th>
+                        <th>Usuario Asignado</th>
+                        <th>Usuario No Asignado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Crear proyecto</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                    </tr>
+                    <tr>
+                        <td>Ver proyecto</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span> (si asignado)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Editar proyecto</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Eliminar proyecto</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Asignar usuarios a proyecto</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Subir archivos a proyecto</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Crear tareas</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Asignar usuarios a tareas</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Iniciar temporizador</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span> (si asignado)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Pausar temporizador</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span> (si asignado)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Completar tarea</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span> (si asignado)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Reabrir tarea</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span> (si asignado)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Subir evidencias</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span> (si asignado)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Agregar archivos a tareas</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Eliminar archivos</td>
+                        <td><span class="check">✅</span> (si subió)</td>
+                        <td><span class="check">✅</span> (si subió)</td>
+                        <td><span class="check">✅</span> (si subió)</td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Eliminar tareas</td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Crear equipos</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sincronizar usuarios</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                    <tr>
+                        <td>Promover usuarios</td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="check">✅</span></td>
+                        <td><span class="cross">❌</span></td>
+                        <td><span class="cross">❌</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Notas Finales</h2>
+            <ul>
+                <li><strong>Seguridad:</strong> Todas las validaciones se realizan tanto en frontend como en backend</li>
+                <li><strong>Auditoría:</strong> Todas las acciones importantes se registran en la bitácora (logs) del proyecto</li>
+                <li><strong>Escalabilidad:</strong> El sistema está diseñado para manejar múltiples proyectos y usuarios simultáneamente</li>
+                <li><strong>Mantenimiento:</strong> Los archivos JSON pueden ser editados manualmente si es necesario, pero se recomienda usar la API</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Inicio del desarrollo:</strong> 13 de marzo de 2025</p>
+        <p><strong>Última actualización:</strong> 15 de enero de 2026 | <strong>Versión del sistema:</strong> 2.0</p>
+        <p><strong>Período de desarrollo:</strong> 10 meses de desarrollo continuo</p>
+    </div>
+
+    <div class="scroll-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Volver arriba">
+        ↑
+    </div>
+
+    <script>
+        // Smooth scroll para los enlaces del TOC
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Mostrar/ocultar botón de scroll to top
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.style.display = 'flex';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

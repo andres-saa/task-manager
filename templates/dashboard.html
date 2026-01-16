@@ -1,0 +1,772 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SalchiManager Pro Time{% endblock %}
+
+{% block content %}
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="UI.toggleSidebar()"></div>
+
+<div class="app-shell">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+          <img class="logo" src="https://gestion.salchimonster.com/images/logo.png" alt="">
+        <div>SalchiManager</div>
+      </div>
+      <button class="close-sidebar-btn" onclick="UI.toggleSidebar()" aria-label="Cerrar menú">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Áreas
+        <button class="btn-icon-add" onclick="UI.modals.openCreateArea()" title="Crear Área" aria-label="Crear área">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div id="area-list">
+        {% for area in index.areas %}
+        <div class="nav-item {% if area_id == area.id %}active{% endif %}" 
+             onclick="window.location.href='/?area_id={{ area.id }}'">
+          {{ area.name }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Grupos
+        <button class="btn-icon-add" onclick="UI.modals.openCreateGroup()" title="Crear Grupo" aria-label="Crear grupo">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div id="group-list">
+        {% for group in index.groups %}
+        <div class="nav-item {% if group_id == group.id %}active{% endif %}" 
+             onclick="window.location.href='/?group_id={{ group.id }}'">
+          {{ group.name }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div class="topbar">
+      <div style="display: flex; align-items: center; min-width: 0;">
+        <button class="menu-toggle" onclick="UI.toggleSidebar()" aria-label="Abrir menú">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="current-context">
+          <strong>Proyectos</strong>
+          {% if area_id or group_id %}
+          <span class="divider-slash">/</span>
+          {% if area_id %}
+            {% for area in index.areas %}
+              {% if area.id == area_id %}<strong>{{ area.name }}</strong>{% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if group_id %}
+            {% for group in index.groups %}
+              {% if group.id == group_id %}<span class="divider-slash">/</span><strong>{{ group.name }}</strong>{% endif %}
+            {% endfor %}
+          {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="user-menu">
+        <button onclick="toggleTheme()" class="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+          <i class="bi bi-moon-stars"></i>
+        </button>
+        <span class="user-name">
+          <i class="bi bi-person-circle" style="margin-right:.35rem;"></i>
+          {{ user.display_name if user else 'Usuario' }}
+        </span>
+        {% if user and user.role == 'ADMIN' %}
+        <a href="/admin/users" class="btn btn-primary-ghost btn-sm">
+          <i class="bi bi-people"></i> Usuarios
+        </a>
+        <a href="/admin/teams" class="btn btn-primary-ghost btn-sm">
+          <i class="bi bi-diagram-3"></i> Equipos
+        </a>
+      {% endif %}
+        <button onclick="UI.modals.openCreateProject()" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-circle"></i>
+          Nuevo Proyecto
+        </button>
+        <a href="/logout" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i>
+          Salir
+      </a>
+    </div>
+    </div>
+
+    <div class="view-area">
+      <!-- Filtros -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="bi bi-funnel" style="margin-right:.5rem; color:var(--text-muted);"></i> Filtros</h3>
+        </div>
+        <form method="get" id="filter-form" class="grid-3">
+          <div class="form-group">
+            <label>Buscar</label>
+            <input type="text" name="q" value="{{ q }}" placeholder="Nombre o descripción...">
+          </div>
+          
+          <div class="form-group">
+            <label>Área</label>
+            <select name="area_id">
+              <option value="">Todas</option>
+              {% for area in index.areas %}
+              <option value="{{ area.id }}" {% if area_id == area.id %}selected{% endif %}>{{ area.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Grupo</label>
+            <select name="group_id">
+              <option value="">Todos</option>
+              {% for group in index.groups %}
+              <option value="{{ group.id }}" {% if group_id == group.id %}selected{% endif %}>{{ group.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </form>
+        <div class="flex-end">
+          <select name="sort" form="filter-form" onchange="document.getElementById('filter-form').submit()" style="max-width:200px;">
+            <option value="deadline" {% if sort == "deadline" %}selected{% endif %}>Ordenar: Por fecha</option>
+            <option value="progress" {% if sort == "progress" %}selected{% endif %}>Ordenar: Por progreso</option>
+            <option value="name" {% if sort == "name" %}selected{% endif %}>Ordenar: Por nombre</option>
+          </select>
+          <button type="submit" form="filter-form" class="btn btn-secondary">
+            <i class="bi bi-search"></i> Filtrar
+          </button>
+        </div>
+              </div>
+
+      <!-- Grid de Proyectos -->
+      {% if projects %}
+      <div class="grid-3">
+        {% for item in projects %}
+        {% set p = item.project %}
+        <div class="card {% if item.has_running_tasks %}card-running{% endif %}" style="cursor: pointer;" onclick="window.location.href='/projects/{{ p.id }}'">
+          <div class="card-header" style="margin-bottom: 1rem;">
+            <h3 style="font-size: 1rem; margin: 0;">{{ p.name }}</h3>
+            <span class="badge" style="{% if item.days_to_deadline is not none and item.days_to_deadline < 0 %}background: var(--danger-soft); color: var(--danger);{% elif item.days_to_deadline is not none and item.days_to_deadline <= 3 %}background: rgba(239, 68, 68, 0.2); color: var(--danger);{% elif item.days_to_deadline is not none and item.days_to_deadline <= 7 %}background: rgba(234, 179, 8, 0.2); color: #fbbf24;{% else %}background: rgba(255,255,255,0.1);{% endif %}">
+              {% if item.days_to_deadline is not none %}
+                {% if item.days_to_deadline < 0 %}
+                  Vencido ({{ -item.days_to_deadline }}d)
+                {% else %}
+                  {{ item.days_to_deadline }}d restantes
+                {% endif %}
+              {% else %}
+                Sin fecha
+              {% endif %}
+            </span>
+            </div>
+
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5;">
+            {{ p.description or "Sin descripción" }}
+          </p>
+          
+          <!-- Barra de progreso -->
+          <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+              <span>Progreso</span>
+              <span style="font-weight: 600;">{{ item.progress }}%</span>
+              </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{ item.progress }}%"></div>
+            </div>
+          </div>
+          
+          <!-- Tiempo total y metadata -->
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted);">
+            <span>
+              <i class="bi bi-clock{% if item.has_running_tasks %}-fill{% endif %}" style="margin-right:.35rem; {% if item.has_running_tasks %}color: var(--success); animation: pulse-icon 2s ease-in-out infinite;{% endif %}"></i>
+              <span class="project-timer" 
+                    data-project-id="{{ p.id }}" 
+                    data-total-sec="{{ item.total_time_sec }}"
+                    data-has-running="{{ 'true' if item.has_running_tasks else 'false' }}"
+                    data-tasks-json="{{ item.tasks_json|tojson }}">
+                {{ item.total_time }}
+              </span>
+            </span>
+            <span style="font-size: 0.75rem;">
+              {% for area in index.areas %}
+                {% if area.id == p.area_id %}{{ area.name }}{% endif %}
+              {% endfor %}
+              {% for group in index.groups %}
+                {% if group.id == p.group_id %} / {{ group.name }}{% endif %}
+              {% endfor %}
+            </span>
+            </div>
+
+          {% if item.has_running_tasks %}
+          <div class="working-indicator" style="margin-top: 0.75rem;">
+            <div class="working-dot"></div>
+            <span class="working-text">Alguien está trabajando ahora</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card" style="text-align: center; padding: 3rem;">
+        <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted); display: block; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem;">
+          {% if q %}
+            No se encontraron proyectos que coincidan con "{{ q }}"
+          {% else %}
+            No hay proyectos que mostrar
+          {% endif %}
+        </p>
+        {% if q %}
+        <a href="/" class="btn btn-secondary">
+          <i class="bi bi-x-circle"></i> Limpiar búsqueda
+        </a>
+        {% else %}
+        <button onclick="UI.modals.openCreateProject()" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Crear primer proyecto
+        </button>
+        {% endif %}
+      </div>
+    {% endif %}
+    </div>
+  </main>
+</div>
+
+<!-- Modal Crear Proyecto -->
+<div id="modal-create-project" class="modal-backdrop">
+  <div class="modal-content" style="max-width: 700px; width: 95vw;">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo Proyecto</div>
+      <button class="btn btn-secondary btn-sm" onclick="UI.modals.closeCreateProject()" aria-label="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="createProjectForm" onsubmit="createProject(event)">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea name="description" rows="3"></textarea>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Área</label>
+            <select name="area_id">
+              {% for area in index.areas %}
+              <option value="{{ area.id }}" {% if area.id == index.areas[0].id %}selected{% endif %}>{{ area.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Grupo</label>
+            <select name="group_id">
+              {% for group in index.groups %}
+              <option value="{{ group.id }}" {% if group.id == index.groups[0].id %}selected{% endif %}>{{ group.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Fecha de entrega</label>
+          <input type="date" name="deadline">
+        </div>
+        
+        {% if user and user.role == 'ADMIN' %}
+        <div class="form-group">
+          <label>Usuarios Asignados</label>
+          
+          <!-- Filtros rápidos -->
+          <div style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+            <div style="flex: 1; min-width: 150px;">
+              <input type="text" id="userSearchFilter" placeholder="🔍 Buscar usuario..." 
+                     style="width: 100%;" onkeyup="filterProjectUsers()">
+            </div>
+            <select id="filterBySite" onchange="filterProjectUsers()" style="min-width: 120px;">
+              <option value="">Todas las sedes</option>
+            </select>
+            <select id="filterByRole" onchange="filterProjectUsers()" style="min-width: 120px;">
+              <option value="">Todos los roles</option>
+            </select>
+          </div>
+          
+          <!-- Botones de selección rápida -->
+          <div style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <button type="button" onclick="selectUsersBySite()" class="btn btn-secondary btn-sm">
+              <i class="bi bi-building"></i> Por Sede
+            </button>
+            <button type="button" onclick="selectUsersByRole()" class="btn btn-secondary btn-sm">
+              <i class="bi bi-person-badge"></i> Por Rol
+            </button>
+            <button type="button" onclick="selectAllVisibleUsers()" class="btn btn-secondary btn-sm">
+              <i class="bi bi-check-all"></i> Todos (Visibles)
+            </button>
+            <button type="button" onclick="deselectAllUsers()" class="btn btn-secondary btn-sm">
+              <i class="bi bi-x-circle"></i> Deseleccionar
+            </button>
+          </div>
+          
+          <!-- Lista de usuarios -->
+          <div id="createProjectUsers" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; background: var(--bg-input);">
+            <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+              <i class="bi bi-arrow-repeat" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+              Cargando usuarios...
+            </div>
+          </div>
+          
+          <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            <span id="selectedUsersCount">0</span> usuario(s) seleccionado(s)
+          </div>
+        </div>
+        {% endif %}
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="UI.modals.closeCreateProject()" class="btn btn-secondary">
+        Cancelar
+      </button>
+      <button type="submit" form="createProjectForm" class="btn btn-primary">
+        <i class="bi bi-check-circle"></i> Crear
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Área -->
+<div id="modal-create-area" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Nueva Área</div>
+      <button class="btn btn-secondary btn-sm" onclick="UI.modals.closeCreateArea()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="createAreaForm" onsubmit="createArea(event)">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="area-name" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="UI.modals.closeCreateArea()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="createAreaForm" class="btn btn-primary"><i class="bi bi-check-circle"></i> Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Grupo -->
+<div id="modal-create-group" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo Grupo</div>
+      <button class="btn btn-secondary btn-sm" onclick="UI.modals.closeCreateGroup()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="createGroupForm" onsubmit="createGroup(event)">
+        <div class="form-group">
+          <label>Área</label>
+          <select id="group-area-id">
+            {% for area in index.areas %}
+            <option value="{{ area.id }}">{{ area.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="group-name" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="UI.modals.closeCreateGroup()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="createGroupForm" class="btn btn-primary"><i class="bi bi-check-circle"></i> Crear</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const UI = {
+  toggleSidebar: () => {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+  },
+  
+  modals: {
+    openCreateProject: () => {
+      document.getElementById('modal-create-project').classList.add('open');
+      {% if user and user.role == 'ADMIN' %}
+      loadUsersForProjectCreation();
+      {% endif %}
+    },
+    closeCreateProject: () => {
+      document.getElementById('modal-create-project').classList.remove('open');
+      // Limpiar filtros
+      const searchInput = document.getElementById('userSearchFilter');
+      const siteSelect = document.getElementById('filterBySite');
+      const roleSelect = document.getElementById('filterByRole');
+      if (searchInput) searchInput.value = '';
+      if (siteSelect) siteSelect.value = '';
+      if (roleSelect) roleSelect.value = '';
+      // Resetear lista
+      if (allProjectUsers.length > 0) {
+        filteredProjectUsers = [...allProjectUsers];
+        renderProjectUsers();
+      }
+    },
+    openCreateArea: () => {
+      document.getElementById('modal-create-area').classList.add('open');
+    },
+    closeCreateArea: () => {
+      document.getElementById('modal-create-area').classList.remove('open');
+    },
+    openCreateGroup: () => {
+      document.getElementById('modal-create-group').classList.add('open');
+    },
+    closeCreateGroup: () => {
+      document.getElementById('modal-create-group').classList.remove('open');
+    }
+  }
+};
+
+async function createProject(event) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+  
+  const data = {
+    name: formData.get('name'),
+    description: formData.get('description') || '',
+    area_id: formData.get('area_id'),
+    group_id: formData.get('group_id'),
+  };
+  
+  const deadline = formData.get('deadline');
+  if (deadline) {
+    data.deadline = new Date(deadline).getTime() / 1000;
+  }
+  
+  {% if user and user.role == 'ADMIN' %}
+  const selectedUsers = Array.from(document.querySelectorAll('#createProjectUsers .user-checkbox:checked'))
+    .map(cb => cb.value);
+  if (selectedUsers.length > 0) {
+    data.assigned_users = selectedUsers;
+  }
+  {% endif %}
+  
+  try {
+    const response = await fetch('/api/projects/create', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    
+    if (response.ok) {
+      window.location.href = '/';
+    } else {
+      const errorData = await response.json().catch(() => ({}));
+      showError(errorData.detail || 'Error al crear proyecto', 'Error');
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+let allProjectUsers = [];
+let filteredProjectUsers = [];
+
+async function loadUsersForProjectCreation() {
+  try {
+    const response = await fetch('/api/users');
+    const data = await response.json();
+    allProjectUsers = data.users.filter(u => u.is_active !== false);
+    filteredProjectUsers = [...allProjectUsers];
+    
+    // Llenar dropdowns de filtros
+    const sites = new Set();
+    const roles = new Set();
+    allProjectUsers.forEach(u => {
+      if (u.site_name) sites.add(u.site_name.trim());
+      if (u.role) roles.add(u.role.trim());
+    });
+    
+    const siteSelect = document.getElementById('filterBySite');
+    const roleSelect = document.getElementById('filterByRole');
+    
+    siteSelect.innerHTML = '<option value="">Todas las sedes</option>';
+    Array.from(sites).sort().forEach(site => {
+      const opt = document.createElement('option');
+      opt.value = site;
+      opt.textContent = site;
+      siteSelect.appendChild(opt);
+    });
+    
+    roleSelect.innerHTML = '<option value="">Todos los roles</option>';
+    Array.from(roles).sort().forEach(role => {
+      const opt = document.createElement('option');
+      opt.value = role;
+      opt.textContent = role;
+      roleSelect.appendChild(opt);
+    });
+    
+    renderProjectUsers();
+  } catch (error) {
+    console.error('Error cargando usuarios:', error);
+    const container = document.getElementById('createProjectUsers');
+    container.innerHTML = '<div style="text-align: center; color: var(--danger); padding: 1rem;">Error cargando usuarios</div>';
+  }
+}
+
+function renderProjectUsers() {
+  const container = document.getElementById('createProjectUsers');
+  if (filteredProjectUsers.length === 0) {
+    container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No hay usuarios que coincidan con los filtros</div>';
+    updateSelectedCount();
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  filteredProjectUsers.forEach(user => {
+    const userDiv = document.createElement('div');
+    userDiv.className = 'user-checkbox-item';
+    userDiv.style.cssText = 'display: flex; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: var(--radius-sm); transition: background 0.2s;';
+    userDiv.onmouseenter = () => userDiv.style.background = 'rgba(255,255,255,0.05)';
+    userDiv.onmouseleave = () => userDiv.style.background = 'transparent';
+    
+    userDiv.innerHTML = `
+      <input type="checkbox" id="create_user_${user.id}" value="${user.id}" 
+             class="user-checkbox" onchange="updateSelectedCount()"
+             style="margin-right: 0.75rem; cursor: pointer;">
+      <label for="create_user_${user.id}" style="flex: 1; color: var(--text-main); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-weight: 500;">${user.display_name || user.username}</span>
+        <span style="color: var(--text-muted); font-size: 0.75rem;">@${user.username}</span>
+        ${user.site_name ? `<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: var(--info); font-size: 0.7rem; margin-left: auto;">${user.site_name}</span>` : ''}
+        ${user.role ? `<span class="badge" style="background: rgba(139, 92, 246, 0.15); color: var(--primary); font-size: 0.7rem;">${user.role}</span>` : ''}
+      </label>
+    `;
+    container.appendChild(userDiv);
+  });
+  
+  updateSelectedCount();
+}
+
+function filterProjectUsers() {
+  const searchTerm = (document.getElementById('userSearchFilter')?.value || '').toLowerCase();
+  const siteFilter = document.getElementById('filterBySite')?.value || '';
+  const roleFilter = document.getElementById('filterByRole')?.value || '';
+  
+  filteredProjectUsers = allProjectUsers.filter(user => {
+    const matchesSearch = !searchTerm || 
+      (user.display_name || '').toLowerCase().includes(searchTerm) ||
+      (user.username || '').toLowerCase().includes(searchTerm);
+    
+    const matchesSite = !siteFilter || (user.site_name || '').trim() === siteFilter;
+    const matchesRole = !roleFilter || (user.role || '').trim() === roleFilter;
+    
+    return matchesSearch && matchesSite && matchesRole;
+  });
+  
+  renderProjectUsers();
+}
+
+function selectUsersBySite() {
+  const siteFilter = document.getElementById('filterBySite')?.value;
+  if (!siteFilter) {
+    alert('Primero selecciona una sede en el filtro');
+    return;
+  }
+  
+  filteredProjectUsers.forEach(user => {
+    if ((user.site_name || '').trim() === siteFilter) {
+      const checkbox = document.getElementById(`create_user_${user.id}`);
+      if (checkbox) checkbox.checked = true;
+    }
+  });
+  updateSelectedCount();
+}
+
+function selectUsersByRole() {
+  const roleFilter = document.getElementById('filterByRole')?.value;
+  if (!roleFilter) {
+    showWarning('Primero selecciona un rol en el filtro', 'Advertencia');
+    return;
+  }
+  
+  filteredProjectUsers.forEach(user => {
+    if ((user.role || '').trim() === roleFilter) {
+      const checkbox = document.getElementById(`create_user_${user.id}`);
+      if (checkbox) checkbox.checked = true;
+    }
+  });
+  updateSelectedCount();
+}
+
+function selectAllVisibleUsers() {
+  document.querySelectorAll('#createProjectUsers .user-checkbox').forEach(cb => {
+    cb.checked = true;
+  });
+  updateSelectedCount();
+}
+
+function deselectAllUsers() {
+  document.querySelectorAll('#createProjectUsers .user-checkbox').forEach(cb => {
+    cb.checked = false;
+  });
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  const count = document.querySelectorAll('#createProjectUsers .user-checkbox:checked').length;
+  const countEl = document.getElementById('selectedUsersCount');
+  if (countEl) {
+    countEl.textContent = count;
+  }
+}
+
+async function createArea(event) {
+  event.preventDefault();
+  const name = document.getElementById('area-name').value;
+  if (!name) {
+    showWarning('Nombre requerido', 'Advertencia');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/areas/create', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name})
+    });
+    
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      const error = await response.json();
+      showError(error.detail || 'Error desconocido', 'Error');
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+async function createGroup(event) {
+  event.preventDefault();
+  const name = document.getElementById('group-name').value;
+  const area_id = document.getElementById('group-area-id').value;
+  if (!name) {
+    showWarning('Nombre requerido', 'Advertencia');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/groups/create', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, area_id})
+    });
+    
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      const error = await response.json();
+      showError(error.detail || 'Error desconocido', 'Error');
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Helper para formatear duración
+function formatDuration(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  const parts = [];
+  if (hours > 0) parts.push(hours + 'h');
+  if (minutes > 0) parts.push(minutes + 'm');
+  if (secs > 0 || parts.length === 0) parts.push(secs + 's');
+  return parts.join(' ');
+}
+
+// Calcular tiempo total de un proyecto incluyendo timers activos
+function calculateProjectTotalTime(tasks, now) {
+  let total = 0;
+  for (const task of tasks) {
+    if (task.children && task.children.length > 0) {
+      // Si tiene subtareas, sumar el tiempo de todas las subtareas
+      for (const child of task.children) {
+        let childTotal = child.accumulated_sec || 0;
+        if (child.status === 'running' && child.started_at) {
+          childTotal += Math.floor(now - child.started_at);
+        }
+        total += childTotal;
+        // Recursivamente sumar subtareas de las subtareas
+        if (child.children && child.children.length > 0) {
+          total += calculateProjectTotalTime(child.children, now);
+        }
+      }
+    } else {
+      // Si no tiene subtareas, usar su tiempo propio + tiempo activo si está corriendo
+      let taskTotal = task.accumulated_sec || 0;
+      if (task.status === 'running' && task.started_at) {
+        taskTotal += Math.floor(now - task.started_at);
+      }
+      total += taskTotal;
+    }
+  }
+  return total;
+}
+
+// Actualizar timers de proyectos en el dashboard
+function updateDashboardTimers() {
+  const now = Date.now() / 1000;
+  const projectTimers = document.querySelectorAll('.project-timer');
+  
+  projectTimers.forEach(timer => {
+    const hasRunning = timer.dataset.hasRunning === 'true';
+    if (!hasRunning) return; // Solo actualizar si hay timers corriendo
+    
+    try {
+      const tasksJson = timer.dataset.tasksJson;
+      if (!tasksJson) return;
+      
+      const tasks = JSON.parse(tasksJson);
+      const totalSec = calculateProjectTotalTime(tasks, now);
+      timer.textContent = formatDuration(totalSec);
+      
+      // Agregar clase para animación si está corriendo
+      if (!timer.classList.contains('timer-running')) {
+        timer.classList.add('timer-running');
+      }
+    } catch (e) {
+      console.error('Error actualizando timer:', e);
+    }
+  });
+}
+
+// Iniciar actualización de timers
+if (document.querySelectorAll('.project-timer[data-has-running="true"]').length > 0) {
+  updateDashboardTimers();
+  setInterval(updateDashboardTimers, 1000);
+}
+</script>
+{% endblock %}

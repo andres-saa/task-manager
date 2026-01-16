@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SalchiManager Pro Time{% endblock %}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    {% include "shared_styles.html" %}
+    
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-card); padding: 2rem 3rem; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); position: relative;">
+        <div style="position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+          <div class="loading-spinner loading-spinner-large" style="position: absolute; width: 80px; height: 80px; border-width: 4px;"></div>
+          <img src="https://gestion.salchimonster.com/images/logo.png" alt="Logo" style="width: 48px; height: 48px; object-fit: contain; position: relative; z-index: 1;">
+        </div>
+        <div class="loading-text">Cargando...</div>
+      </div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div id="notificationsContainer" class="notifications-container"></div>
+
+    <script>
+        // Notification System
+        (function() {
+            function createNotification(type, title, message, duration = 5000) {
+                const container = document.getElementById('notificationsContainer');
+                if (!container) return;
+
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                
+                const icons = {
+                    success: 'bi-check-circle-fill',
+                    error: 'bi-x-circle-fill',
+                    warning: 'bi-exclamation-triangle-fill',
+                    info: 'bi-info-circle-fill'
+                };
+
+                const titles_default = {
+                    success: 'Éxito',
+                    error: 'Error',
+                    warning: 'Advertencia',
+                    info: 'Información'
+                };
+
+                notification.innerHTML = `
+                    <div class="notification-icon">
+                        <i class="bi ${icons[type] || icons.info}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title || titles_default[type] || 'Notificación'}</div>
+                        <div class="notification-message">${message || ''}</div>
+                    </div>
+                    <button class="notification-close" onclick="this.closest('.notification').remove()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+
+                container.appendChild(notification);
+
+                // Auto-remove after duration
+                if (duration > 0) {
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.classList.add('fade-out');
+                            setTimeout(() => {
+                                if (notification.parentNode) {
+                                    notification.remove();
+                                }
+                            }, 300);
+                        }
+                    }, duration);
+                }
+            }
+
+            // Global notification functions
+            window.showNotification = function(type, title, message, duration) {
+                createNotification(type, title, message, duration);
+            };
+
+            window.showSuccess = function(message, title, duration) {
+                createNotification('success', title, message, duration);
+            };
+
+            window.showError = function(message, title, duration) {
+                // Reproducir sonido de error
+                try {
+                    const audio = new Audio('/static/audio/error.mp3');
+                    audio.volume = 0.5; // Volumen al 50%
+                    audio.play().catch(err => {
+                        // Silenciar errores de reproducción (puede fallar si el usuario no ha interactuado con la página)
+                        console.warn('No se pudo reproducir el sonido de error:', err);
+                    });
+                } catch (err) {
+                    console.warn('Error al crear el audio:', err);
+                }
+                
+                createNotification('error', title, message, duration);
+            };
+
+            window.showWarning = function(message, title, duration) {
+                createNotification('warning', title, message, duration);
+            };
+
+            window.showInfo = function(message, title, duration) {
+                createNotification('info', title, message, duration);
+            };
+        })();
+
+        // Theme Management
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            window.toggleTheme = function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            };
+            
+            function updateThemeIcon(theme) {
+                const icons = document.querySelectorAll('.theme-toggle i');
+                icons.forEach(icon => {
+                    if (theme === 'dark') {
+                        icon.className = 'bi bi-sun';
+                    } else {
+                        icon.className = 'bi bi-moon-stars';
+                    }
+                });
+            }
+            
+            // Initialize theme icon on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                updateThemeIcon(theme);
+            });
+        })();
+
+        // Loading Spinner Functions
+        window.showLoading = function() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('show');
+            }
+        };
+
+        window.hideLoading = function() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+        };
+
+        // Contador de solicitudes activas para evitar ocultar loading prematuramente
+        let activeRequests = 0;
+        let loadingTimeout = null;
+
+        // Interceptor global para fetch
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            const url = args[0];
+            const options = args[1] || {};
+            
+            // Excluir descargas de archivos y recursos estáticos
+            const isFileDownload = typeof url === 'string' && (
+                url.includes('/attachments/') ||
+                url.includes('/api/avatars/') ||
+                url.includes('/static/') ||
+                url.includes('.pdf') ||
+                url.includes('.png') ||
+                url.includes('.jpg') ||
+                url.includes('.jpeg') ||
+                url.includes('.gif') ||
+                url.includes('.webp') ||
+                url.includes('.doc') ||
+                url.includes('.docx') ||
+                url.includes('.xls') ||
+                url.includes('.xlsx') ||
+                url.includes('.zip') ||
+                url.includes('.rar')
+            );
+            
+            // Solo mostrar loading si no es descarga de archivo
+            if (!isFileDownload) {
+                const isNavigation = typeof url === 'string' && (url.includes('/projects/') || url.includes('/?') || url === '/' || url.startsWith('/'));
+                
+                if (activeRequests === 0 || isNavigation) {
+                    showLoading();
+                }
+                activeRequests++;
+            }
+            
+            return originalFetch.apply(this, args)
+                .then(response => {
+                    if (!isFileDownload) {
+                        activeRequests--;
+                        if (activeRequests === 0) {
+                            // Pequeño delay para evitar parpadeo
+                            clearTimeout(loadingTimeout);
+                            loadingTimeout = setTimeout(hideLoading, 100);
+                        }
+                    }
+                    return response;
+                })
+                .catch(error => {
+                    if (!isFileDownload) {
+                        activeRequests--;
+                        if (activeRequests === 0) {
+                            clearTimeout(loadingTimeout);
+                            loadingTimeout = setTimeout(hideLoading, 100);
+                        }
+                    }
+                    throw error;
+                });
+        };
+
+        // Interceptor global para XMLHttpRequest
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        const originalXHRSend = XMLHttpRequest.prototype.send;
+        
+        XMLHttpRequest.prototype.open = function(...args) {
+            this._loadingShown = false;
+            const url = args[1];
+            // Marcar si es una descarga de archivo
+            this._isFileDownload = typeof url === 'string' && (
+                url.includes('/attachments/') ||
+                url.includes('/api/avatars/') ||
+                url.includes('/static/') ||
+                url.includes('.pdf') ||
+                url.includes('.png') ||
+                url.includes('.jpg') ||
+                url.includes('.jpeg') ||
+                url.includes('.gif') ||
+                url.includes('.webp') ||
+                url.includes('.doc') ||
+                url.includes('.docx') ||
+                url.includes('.xls') ||
+                url.includes('.xlsx') ||
+                url.includes('.zip') ||
+                url.includes('.rar')
+            );
+            return originalXHROpen.apply(this, args);
+        };
+        
+        XMLHttpRequest.prototype.send = function(...args) {
+            // Solo mostrar loading si no es descarga de archivo
+            if (!this._isFileDownload && !this._loadingShown && this.readyState === 1) {
+                showLoading();
+                this._loadingShown = true;
+                
+                this.addEventListener('loadend', function() {
+                    hideLoading();
+                }, { once: true });
+                
+                this.addEventListener('error', function() {
+                    hideLoading();
+                }, { once: true });
+            }
+            return originalXHRSend.apply(this, args);
+        };
+
+        // Interceptor para navegaciones (links y elementos clickeables)
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('a[href], [onclick*="location"], [onclick*="window.location"], .card[onclick]');
+            
+            if (target) {
+                const href = target.getAttribute('href');
+                const onclick = target.getAttribute('onclick');
+                const targetAttr = target.getAttribute('target');
+                
+                // Excluir descargas de archivos y links que abren en nueva pestaña
+                const isFileLink = href && (
+                    href.includes('/attachments/') ||
+                    href.includes('/api/avatars/') ||
+                    href.includes('/static/') ||
+                    targetAttr === '_blank'
+                );
+                
+                // Verificar si es una navegación interna (no externa, no javascript:, no #, no archivo)
+                if (href && !isFileLink && !href.startsWith('http') && !href.startsWith('//') && !href.startsWith('javascript:') && href !== '#' && href !== '') {
+                    // Es un link interno, mostrar loading inmediatamente
+                    showLoading();
+                } else if (onclick && !isFileLink && (onclick.includes('location.href') || onclick.includes('window.location') || onclick.includes('location.reload'))) {
+                    // Es un onclick que navega, mostrar loading inmediatamente
+                    showLoading();
+                }
+            }
+        }, true);
+
+        // Interceptor para location.reload y location.href
+        const originalLocationReload = window.location.reload;
+        window.location.reload = function() {
+            showLoading();
+            return originalLocationReload.apply(this, arguments);
+        };
+
+        // Mostrar loading cuando la página está cargando
+        if (document.readyState === 'loading') {
+            showLoading();
+        }
+
+        // Ocultar loading cuando la página termina de cargar
+        window.addEventListener('load', function() {
+            setTimeout(hideLoading, 100);
+        });
+
+        // Ocultar loading cuando el DOM está listo
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            setTimeout(hideLoading, 100);
+        }
+
+        // Helper para formatear duración
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            const parts = [];
+            if (hours > 0) parts.push(hours + 'h');
+            if (minutes > 0) parts.push(minutes + 'm');
+            if (secs > 0 || parts.length === 0) parts.push(secs + 's');
+            return parts.join(' ');
+        }
+        
+        // Helper para calcular tiempo total de una tarea (suma de subtareas si las tiene)
+        function calculateTaskTotalTime(taskElement) {
+            const hasChildren = taskElement.dataset.hasChildren === 'true';
+            
+            if (hasChildren) {
+                // Si tiene subtareas, sumar el tiempo de todas las subtareas
+                const taskId = taskElement.dataset.taskId;
+                let total = 0;
+                
+                // Buscar el contenedor de la tarea padre
+                const taskContainer = taskElement.closest('[style*="border: 1px solid"]');
+                if (taskContainer) {
+                    // Buscar el contenedor de subtareas (el div con border-left)
+                    const childrenContainer = taskContainer.querySelector('[style*="border-left"]');
+                    if (childrenContainer) {
+                        // Buscar todos los timers de las subtareas dentro de este contenedor
+                        const childrenTimers = childrenContainer.querySelectorAll('.timer-display[data-task-id]');
+                        childrenTimers.forEach(childTimer => {
+                            const childStartedAt = parseFloat(childTimer.dataset.startedAt);
+                            const childAccumulated = parseInt(childTimer.dataset.accumulated || 0);
+                            const childStatus = childTimer.dataset.status;
+                            
+                            if (childStatus === 'running' && childStartedAt) {
+                                const now = Date.now() / 1000;
+                                const delta = Math.floor(now - childStartedAt);
+                                total += childAccumulated + delta;
+                            } else {
+                                total += childAccumulated;
+                            }
+                        });
+                    }
+                }
+                
+                return total;
+            } else {
+                // Si no tiene subtareas, usar su tiempo propio
+                const startedAt = parseFloat(taskElement.dataset.startedAt);
+                const accumulated = parseInt(taskElement.dataset.accumulated || 0);
+                if (startedAt) {
+                    const now = Date.now() / 1000;
+                    const delta = Math.floor(now - startedAt);
+                    return accumulated + delta;
+                }
+                return accumulated;
+            }
+        }
+
+        // Helper para timers en tiempo real
+        function updateRunningTimers() {
+            document.querySelectorAll('.timer-display').forEach(timerEl => {
+                const hasChildren = timerEl.dataset.hasChildren === 'true';
+                const status = timerEl.dataset.status;
+                
+                if (hasChildren) {
+                    // Para tareas con subtareas, calcular la suma
+                    const total = calculateTaskTotalTime(timerEl);
+                    timerEl.textContent = formatDuration(total);
+                } else if (status === 'running') {
+                    // Para tareas sin subtareas que están corriendo
+                    const startedAt = parseFloat(timerEl.dataset.startedAt);
+                    const accumulated = parseInt(timerEl.dataset.accumulated || 0);
+                    if (startedAt) {
+                        const now = Date.now() / 1000;
+                        const delta = Math.floor(now - startedAt);
+                        const total = accumulated + delta;
+                        timerEl.textContent = formatDuration(total);
+                    }
+                }
+            });
+        }
+        
+        // Actualizar inmediatamente y luego cada segundo
+        updateRunningTimers();
+        setInterval(updateRunningTimers, 1000);
+    </script>
+</body>
+</html>

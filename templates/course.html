@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>{{ course.name }} - Detalle del Curso</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ✅ Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* --- DESIGN SYSTEM (Igual al Manager) --- */
+    :root {
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --border: #334155;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --primary-soft: rgba(139, 92, 246, 0.15);
+
+      --success: #10b981;
+      --danger: #ef4444;
+      --info: #3b82f6;
+
+      --radius: 0.75rem;
+      --radius-sm: 0.5rem;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+
+      --header-height: 64px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* --- TOPBAR --- */
+    .topbar {
+      height: var(--header-height);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      background-color: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color 0.2s;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+    .brand-back:hover { color: var(--text-main); }
+    .brand-back i { font-size: 1.1rem; }
+
+    .user-actions { display: flex; align-items: center; gap: 1rem; }
+
+    .user-info { text-align: right; line-height: 1.2; }
+    .user-name { display: block; font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
+    .user-role { display: block; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Botones */
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn i { font-size: 1rem; line-height: 1; }
+
+    .btn-secondary {
+      background-color: rgba(255,255,255,0.08); color: var(--text-main);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .btn-secondary:hover { background-color: rgba(255,255,255,0.12); }
+
+    .btn-danger-ghost {
+      color: var(--danger); background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+    .btn-danger-ghost:hover { background: rgba(239, 68, 68, 0.2); }
+
+    /* --- LAYOUT --- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* --- HERO COURSE HEADER --- */
+    .course-hero {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumbs {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.85rem; color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .badge-school {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--primary-soft); color: var(--primary);
+      padding: 0.25rem 0.6rem; border-radius: 99px;
+      font-weight: 700; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .badge-school i { font-size: 0.9rem; }
+
+    .course-title {
+      font-size: 2rem; font-weight: 800;
+      color: var(--text-main); margin: 0 0 0.75rem 0;
+      line-height: 1.1; letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .course-title i { color: var(--text-muted); font-size: 1.35rem; }
+
+    .course-desc {
+      font-size: 1rem; color: var(--text-muted);
+      max-width: 800px; line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    /* --- COURSE RESOURCES --- */
+    .course-resources {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+    .resources-title {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 0.8rem; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .resources-title i { font-size: 0.95rem; }
+
+    .resources-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+
+    .resource-pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.8rem 0.6rem 0.6rem;
+      border-radius: var(--radius);
+      color: var(--text-main);
+      font-size: 0.9rem; font-weight: 500;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      max-width: 100%;
+    }
+    .resource-pill:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--info);
+      transform: translateY(-2px);
+    }
+
+    /* BADGE DE ARCHIVO (Importado de Manager) */
+    .file-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 0.65rem;
+      text-transform: uppercase; margin-right: 6px; min-width: 38px;
+      flex-shrink: 0;
+    }
+    .resource-name {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      max-width: 320px;
+    }
+    .resource-pill i {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    /* --- VIDEO GRID --- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* --- VIDEO CARD --- */
+    .v-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      height: 100%;
+      text-decoration: none;
+    }
+    .v-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+
+    /* Thumbnail Area */
+    .v-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #000;
+      overflow: hidden;
+    }
+    .v-thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease;
+      opacity: 0.9;
+    }
+    .v-card:hover .v-thumb img {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+
+    /* Status Badge inside thumb */
+    .status-badge {
+      position: absolute; top: 10px; right: 10px;
+      padding: 4px 8px; border-radius: 6px;
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+      backdrop-filter: blur(4px); z-index: 2;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      display: inline-flex; align-items: center; gap: 0.35rem;
+    }
+    .status-seen { background: rgba(16, 185, 129, 0.9); color: white; }
+    .status-new { background: var(--primary); color: white; }
+
+    /* Play Icon Overlay */
+    .play-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.3);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .v-card:hover .play-overlay { opacity: 1; }
+    .play-circle {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: scale(0.82);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .play-circle i { font-size: 1.35rem; margin-left: 2px; }
+    .v-card:hover .play-circle { transform: scale(1); }
+
+    /* Content Area */
+    .v-content {
+      padding: 1.25rem;
+      flex: 1; display: flex; flex-direction: column;
+    }
+    .v-meta {
+      font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;
+      font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .v-meta i { font-size: 0.95rem; }
+
+    .v-title {
+      font-size: 1.1rem; font-weight: 700; color: var(--text-main);
+      margin: 0 0 0.5rem 0; line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .v-desc {
+      font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;
+      line-height: 1.4; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .v-footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 1rem; margin-top: auto;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.75rem;
+    }
+    .cta-link {
+      font-size: 0.85rem; font-weight: 600; color: var(--primary);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: gap 0.2s;
+      white-space: nowrap;
+    }
+    .cta-link i { font-size: 0.95rem; }
+    .v-card:hover .cta-link { gap: 10px; text-decoration: underline; }
+
+    .att-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .att-count i { font-size: 0.95rem; }
+
+    /* Empty State */
+    .empty-state {
+      background: var(--bg-card);
+      border: 1px dashed var(--border); border-radius: var(--radius);
+      padding: 4rem 1rem; text-align: center; color: var(--text-muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.55; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .topbar { padding: 0 1rem; }
+      .container { padding: 1.5rem 1rem; }
+      .course-title { font-size: 1.5rem; }
+      .user-info { display: none; }
+      .grid { grid-template-columns: 1fr; }
+
+      .resource-pill { width: 100%; justify-content: flex-start; }
+      .resource-name { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="/videos/dashboard" class="brand-back" title="Volver al Dashboard">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <div class="user-actions">
+      <div class="user-info">
+        <span class="user-name">{{ user.display_name or user.username }}</span>
+        <span class="user-role">{{ (user.role or 'EMPLEADO') | upper }}</span>
+      </div>
+
+      {% if user.role in ['ADMIN', 'MANAGER'] %}
+        <a href="/videos/manager?project_id={{ course.id }}" class="btn btn-secondary" title="Editar curso en el Manager">
+          <i class="bi bi-gear-fill" aria-hidden="true"></i>
+          <span style="display:none;">Editar</span>
+        </a>
+      {% endif %}
+
+      <a href="/videos/logout" class="btn btn-danger-ghost" title="Cerrar Sesión">
+        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+        <span>Salir</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="course-hero">
+      <div class="breadcrumbs">
+        <span class="badge-school" title="{{ school.name if school else 'General' }}">
+          <i class="bi bi-building" aria-hidden="true"></i>
+          <span>{{ school.name if school else "General" }}</span>
+        </span>
+        <span>•</span>
+        <span style="display:inline-flex; align-items:center; gap:.35rem;">
+          <i class="bi bi-collection-play" aria-hidden="true"></i>
+          <span>{{ videos|length }} clases</span>
+        </span>
+      </div>
+
+      <h1 class="course-title">
+        <i class="bi bi-journal-bookmark-fill" aria-hidden="true"></i>
+        <span>{{ course.name }}</span>
+      </h1>
+
+      <p class="course-desc">
+        {{ course.description or "No hay descripción disponible para este curso." }}
+      </p>
+
+      {% if course.attachments and course.attachments|length > 0 %}
+      <div class="course-resources">
+        <div class="resources-title">
+          <i class="bi bi-paperclip" aria-hidden="true"></i>
+          <span>Materiales del Curso</span>
+        </div>
+
+        <div class="resources-grid">
+          {% for att in course.attachments %}
+            {# --- LOGICA DE COLORES DE EXTENSION --- #}
+            {% set ext = (att.original_name.split('.')[-1] | lower) if '.' in att.original_name else '' %}
+            {% set c = colors.get(ext, {'bg':'#334155', 'text':'#fff'}) if colors is defined else {'bg':'#334155', 'text':'#fff'} %}
+
+            <a href="{{ att.url }}" target="_blank" class="resource-pill" title="{{ att.original_name }}">
+              <span class="file-badge" style="background:{{c.bg}}; color:{{c.text}}">{{ ext }}</span>
+              <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+              <span class="resource-name">{{ att.original_name }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if videos and videos|length > 0 %}
+      <div class="grid">
+        {% for v in videos %}
+          <a href="/videos/watch/{{ v.id }}" class="v-card">
+
+            <div class="v-thumb">
+              {% if v._seen %}
+                <div class="status-badge status-seen" title="Visto">
+                  <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                  <span>Visto</span>
+                </div>
+              {% else %}
+                <div class="status-badge status-new" title="Nuevo">
+                  <i class="bi bi-stars" aria-hidden="true"></i>
+                  <span>Nuevo</span>
+                </div>
+              {% endif %}
+
+              {% if v.thumb %}
+                <img src="/thumbnails/{{ v.thumb }}" alt="Miniatura" loading="lazy" />
+              {% else %}
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#111; color:#555; font-weight:600;">
+                  <i class="bi bi-image" aria-hidden="true" style="font-size:1.4rem; margin-right:.5rem;"></i>
+                  <span>Sin Imagen</span>
+                </div>
+              {% endif %}
+
+              <div class="play-overlay">
+                <div class="play-circle" aria-label="Reproducir">
+                  <i class="bi bi-play-fill" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="v-content">
+              <div class="v-meta">
+                <i class="bi bi-camera-video" aria-hidden="true"></i>
+                <span>Clase {{ loop.index }}</span>
+              </div>
+
+              <h3 class="v-title">{{ v.title or ("Clase " ~ loop.index) }}</h3>
+
+              <div class="v-desc">
+                {{ (v.description or v.original_name or "Sin descripción adicional.") }}
+              </div>
+
+              <div class="v-footer">
+                {% if v.attachments and v.attachments|length > 0 %}
+                  <div class="att-count" title="Adjuntos">
+                    <i class="bi bi-paperclip" aria-hidden="true"></i>
+                    <span>{{ v.attachments|length }} adjunto(s)</span>
+                  </div>
+                {% else %}
+                  <div></div>
+                {% endif %}
+
+                <span class="cta-link">
+                  <span>Ver clase</span>
+                  <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="bi bi-inbox" aria-hidden="true"></i>
+        </div>
+        <h3>Este curso está vacío</h3>
+        <p>Aún no se han subido clases. Vuelve más tarde.</p>
+      </div>
+    {% endif %}
+
+  </main>
+
+</body>
+</html>

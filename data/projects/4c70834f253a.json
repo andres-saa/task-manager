@@ -1,0 +1,123 @@
+{
+  "id": "4c70834f253a",
+  "name": "fa",
+  "description": "fafa",
+  "area_id": "general",
+  "group_id": "general",
+  "deadline": 1769040000.0,
+  "created_at": 1768433802.3403444,
+  "created_by": "bx9zP6IWP1TIzk3g",
+  "assigned_users": [
+    "55a7766da6b5",
+    "f44a05f545c5",
+    "77f928de2fd7",
+    "5c2f94acd387",
+    "985d4078c281",
+    "8fb75dbe6b1e",
+    "e488d3b6bcc3",
+    "08123ade1b22",
+    "1f25874ad49c",
+    "68ab25873c86",
+    "9c5ccec48150",
+    "6f4c82c379f1",
+    "c316a244b256"
+  ],
+  "tasks": [
+    {
+      "id": "23cde1010c",
+      "title": "fads",
+      "description": "ga",
+      "status": "pending",
+      "accumulated_sec": 103,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": null,
+      "assigned_to": [
+        "5c2f94acd387",
+        "e94d238dd3cd",
+        "333508ffb498"
+      ],
+      "children": [],
+      "attachment": null,
+      "reopen_evidence": []
+    },
+    {
+      "id": "cb06c9cd83",
+      "title": "fa",
+      "description": "fa",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [],
+      "children": [],
+      "attachment": null,
+      "reopen_evidence": []
+    }
+  ],
+  "logs": [
+    {
+      "id": "58586701d1",
+      "text": "Administrador reabrió la tarea 'fads'. Justificación: fafa",
+      "created_at": 1768450807.3297572,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "23cde1010c",
+      "action_type": "task_reopen"
+    },
+    {
+      "id": "9d43b26e7a",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768450707.8867588,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "cb06c9cd83",
+      "action_type": "task_create"
+    },
+    {
+      "id": "3fc66f19d2",
+      "text": "Fecha de entrega pospuesta 7 días",
+      "created_at": 1768447054.6100526,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    },
+    {
+      "id": "ad86b03f0c",
+      "text": "nueovo",
+      "created_at": 1768434567.7159505,
+      "created_by": "user",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    },
+    {
+      "id": "1d0db87750",
+      "text": "Proyecto creado",
+      "created_at": 1768433803.3882117,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    }
+  ],
+  "attachments": [
+    {
+      "id": "c6a44ce552",
+      "filename": "c6a44ce552.jpg",
+      "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+      "url": "/attachments/c6a44ce552.jpg",
+      "size": 60385,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768434372.2153223,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    }
+  ],
+  "dirty": false
+}

@@ -1,0 +1,373 @@
+{
+  "id": "03abf248d982",
+  "name": "fa",
+  "description": "fafa",
+  "area_id": "general",
+  "group_id": "general",
+  "deadline": 1769126400.0,
+  "created_at": 1768431416.5375702,
+  "created_by": "user",
+  "assigned_users": [
+    "lKcOg_oVer0lRAYS"
+  ],
+  "tasks": [
+    {
+      "id": "b7760b8a96",
+      "title": "faf",
+      "description": "gaasf",
+      "status": "pending",
+      "accumulated_sec": 15,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [],
+      "children": [
+        {
+          "id": "17c89a3017",
+          "title": "faga",
+          "description": "fas",
+          "status": "pending",
+          "accumulated_sec": 12,
+          "started_at": null,
+          "completed_at": null,
+          "completed_by": null,
+          "completion_comment": null,
+          "completion_evidence": [],
+          "assigned_to": [
+            "lKcOg_oVer0lRAYS"
+          ],
+          "children": [
+            {
+              "id": "8c96fbc4f4",
+              "title": "faga",
+              "description": "",
+              "status": "paused",
+              "accumulated_sec": 1032,
+              "started_at": null,
+              "completed_at": null,
+              "completed_by": null,
+              "completion_comment": null,
+              "completion_evidence": [],
+              "assigned_to": [],
+              "children": [],
+              "attachments": [],
+              "reopen_evidence": []
+            },
+            {
+              "id": "ae6dda9891",
+              "title": "da",
+              "description": "dada",
+              "status": "paused",
+              "accumulated_sec": 130,
+              "started_at": null,
+              "completed_at": null,
+              "completed_by": null,
+              "completion_comment": null,
+              "completion_evidence": [],
+              "assigned_to": [],
+              "children": [],
+              "attachments": [],
+              "reopen_evidence": []
+            },
+            {
+              "id": "ef6ab5084c",
+              "title": "fafa",
+              "description": "",
+              "status": "paused",
+              "accumulated_sec": 116,
+              "started_at": null,
+              "completed_at": null,
+              "completed_by": null,
+              "completion_comment": null,
+              "completion_evidence": [],
+              "assigned_to": [],
+              "children": [],
+              "attachments": [],
+              "reopen_evidence": []
+            }
+          ],
+          "attachments": [],
+          "reopen_evidence": []
+        }
+      ],
+      "attachments": [],
+      "reopen_evidence": []
+    },
+    {
+      "id": "f3df6d58c2",
+      "title": "EW",
+      "description": "EWEW",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [],
+      "children": [],
+      "attachments": [
+        {
+          "id": "8c554ebe77",
+          "filename": "8c554ebe77.jpg",
+          "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+          "url": "/attachments/8c554ebe77.jpg",
+          "size": 60385,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768452923.0018013,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "3e872b15a5",
+          "filename": "3e872b15a5.jpg",
+          "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+          "url": "/attachments/3e872b15a5.jpg",
+          "size": 171698,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768452923.0025344,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "67fd3a98a8",
+          "filename": "67fd3a98a8.jpg",
+          "original_name": "dea5259d-a4b6-4a23-9173-c34125a864fd.jpg",
+          "url": "/attachments/67fd3a98a8.jpg",
+          "size": 201695,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768452923.0039084,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        }
+      ],
+      "reopen_evidence": []
+    },
+    {
+      "id": "f235a3db75",
+      "title": "DAFFA",
+      "description": "DAFGFA",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [
+        "lKcOg_oVer0lRAYS"
+      ],
+      "children": [],
+      "attachments": [
+        {
+          "id": "0379a65132",
+          "filename": "0379a65132.jpg",
+          "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+          "url": "/attachments/0379a65132.jpg",
+          "size": 53239,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768452526.6473186,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "c37d043256",
+          "filename": "c37d043256.jpg",
+          "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+          "url": "/attachments/c37d043256.jpg",
+          "size": 60385,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768452526.6482952,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "0b4b35761e",
+          "filename": "0b4b35761e.jpg",
+          "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+          "url": "/attachments/0b4b35761e.jpg",
+          "size": 171698,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768452526.6491952,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        }
+      ],
+      "reopen_evidence": []
+    }
+  ],
+  "logs": [
+    {
+      "id": "2613ee52da",
+      "text": "Administrador: fagaa",
+      "created_at": 1768493042.9409351,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": null,
+      "action_type": "log_entry"
+    },
+    {
+      "id": "9f5a656b79",
+      "text": "Administrador pausó la tarea 'fafa'",
+      "created_at": 1768493028.0272088,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ef6ab5084c",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "f400bce88e",
+      "text": "Administrador pausó la tarea 'da'",
+      "created_at": 1768493026.0127673,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ae6dda9891",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "c50a1e9b2e",
+      "text": "Administrador pausó la tarea 'faga'",
+      "created_at": 1768493021.0395286,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "8c96fbc4f4",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "9b2ef34de4",
+      "text": "Administrador reabrió la tarea 'faf'. Justificación: da",
+      "created_at": 1768492107.144852,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "b7760b8a96",
+      "action_type": "task_reopen"
+    },
+    {
+      "id": "44a6b5110f",
+      "text": "Administrador pausó la tarea 'fafa'",
+      "created_at": 1768492093.6069696,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ef6ab5084c",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "638ba3176e",
+      "text": "Administrador pausó la tarea 'da'",
+      "created_at": 1768492091.2936811,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ae6dda9891",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "278c21c558",
+      "text": "Administrador creó la tarea 'fafa'",
+      "created_at": 1768491892.7690723,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ef6ab5084c",
+      "action_type": "task_create"
+    },
+    {
+      "id": "0f3b8e7071",
+      "text": "Administrador creó la tarea 'da'",
+      "created_at": 1768491867.0183885,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ae6dda9891",
+      "action_type": "task_create"
+    },
+    {
+      "id": "2e447fc5ff",
+      "text": "Administrador creó la tarea 'faga'",
+      "created_at": 1768491850.265295,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "8c96fbc4f4",
+      "action_type": "task_create"
+    },
+    {
+      "id": "055745302d",
+      "text": "Administrador agregó 3 archivo(s) a la tarea 'EW'",
+      "created_at": 1768452923.0133135,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "f3df6d58c2",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "8615fb4f78",
+      "text": "Administrador agregó 3 archivo(s) a la tarea 'DAFFA'",
+      "created_at": 1768452526.7102048,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "f235a3db75",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "a9ec422150",
+      "text": "Administrador creó la tarea 'DAFFA'",
+      "created_at": 1768452182.726849,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "f235a3db75",
+      "action_type": "task_create"
+    },
+    {
+      "id": "0d5e26d561",
+      "text": "Administrador creó la tarea 'EW'",
+      "created_at": 1768452151.6989381,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "f3df6d58c2",
+      "action_type": "task_create"
+    },
+    {
+      "id": "79995dff6f",
+      "text": "Administrador reabrió la tarea 'faga'. Justificación: FS",
+      "created_at": 1768451918.187847,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "17c89a3017",
+      "action_type": "task_reopen"
+    },
+    {
+      "id": "4bf7f8e462",
+      "text": "Administrador completó la tarea 'faga'. Comentario: SA",
+      "created_at": 1768451863.0841439,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "17c89a3017",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "1ddf6856a1",
+      "text": "Proyecto creado",
+      "created_at": 1768431418.5513353,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    }
+  ],
+  "attachments": [
+    {
+      "id": "fedfa340cc",
+      "filename": "fedfa340cc.png",
+      "original_name": "male.png",
+      "url": "/attachments/fedfa340cc.png",
+      "size": 144145,
+      "content_type": "image/png",
+      "uploaded_at": 1768452333.3669858,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "76420d6c9b",
+      "filename": "76420d6c9b.pdf",
+      "original_name": "imagenes_2026-01-05.pdf",
+      "url": "/attachments/76420d6c9b.pdf",
+      "size": 396212,
+      "content_type": "application/pdf",
+      "uploaded_at": 1768452323.0224137,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    }
+  ],
+  "dirty": false
+}

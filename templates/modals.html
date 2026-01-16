@@ -1,0 +1,308 @@
+<!-- Modal Añadir Tarea -->
+<div id="addTaskModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Nueva Tarea</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeAddTaskModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="addTaskForm" onsubmit="addTask(event)" enctype="multipart/form-data">
+        <input type="hidden" id="taskParentId" value="">
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" id="taskTitle" required>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="taskDescription" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeAddTaskModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="addTaskForm" class="btn btn-primary"><i class="bi bi-check-circle"></i> Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Añadir Log -->
+<div id="addLogModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Añadir a Bitácora</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeAddLogModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <textarea id="logText" rows="4" placeholder="Escribe tu comentario..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeAddLogModal()" class="btn btn-secondary">Cancelar</button>
+      <button onclick="addLog(); closeAddLogModal();" class="btn btn-primary"><i class="bi bi-check-circle"></i> Añadir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Posponer -->
+<div id="postponeModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Posponer Fecha de Entrega</div>
+      <button class="btn btn-secondary btn-sm" onclick="closePostponeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="postponeForm" onsubmit="postponeProject(event)">
+        <div class="form-group">
+          <label>Días a posponer</label>
+          <input type="number" id="postponeDays" value="7" min="1" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closePostponeModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="postponeForm" class="btn btn-primary"><i class="bi bi-calendar-plus"></i> Posponer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Proyecto -->
+<div id="editModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Editar Proyecto</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeEditModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="editProjectForm" onsubmit="updateProject(event)">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="editProjectName" value="{{ project.name }}" required>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="editProjectDesc" rows="3">{{ project.description or '' }}</textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="editProjectForm" class="btn btn-primary"><i class="bi bi-save2"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Asignar Usuarios a Proyecto -->
+<div id="assignUsersModal" class="modal-backdrop">
+  <div class="modal-content" style="max-width: 700px;">
+    <div class="modal-header">
+      <div class="modal-title">Asignar Usuarios al Proyecto</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeAssignUsersModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Filtros -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Filtrar por Rol</label>
+          <select id="filterByRoleModal" onchange="filterUsersInModal()" style="width: 100%;">
+            <option value="">Todos los roles</option>
+            <!-- Se llena dinámicamente con roles reales de la DB -->
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Filtrar por Sede</label>
+          <select id="filterBySiteModal" onchange="filterUsersInModal()" style="width: 100%;">
+            <option value="">Todas las sedes</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Filtrar por Equipo</label>
+          <select id="filterByTeamModal" onchange="filterUsersInModal()" style="width: 100%;">
+            <option value="">Todos los equipos</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label>Buscar</label>
+        <input type="text" id="searchUsersModal" placeholder="Buscar por nombre o usuario..." onkeyup="filterUsersInModal()">
+      </div>
+      
+      <div id="usersList" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; background: var(--bg-input);">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeAssignUsersModal()" class="btn btn-secondary">Cancelar</button>
+      <button onclick="saveProjectUsers(); closeAssignUsersModal();" class="btn btn-primary"><i class="bi bi-check-circle"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Asignar Usuarios a Tarea -->
+<div id="assignTaskUsersModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Asignar Usuarios a la Tarea</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeAssignTaskUsersModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="taskIdForAssignment" value="">
+      <div id="taskUsersList" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; background: var(--bg-input);">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeAssignTaskUsersModal()" class="btn btn-secondary">Cancelar</button>
+      <button onclick="saveTaskUsers(); closeAssignTaskUsersModal();" class="btn btn-primary"><i class="bi bi-check-circle"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Completar Tarea -->
+<div id="completeTaskModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Completar Tarea</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeCompleteTaskModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="taskIdForCompletion" value="">
+      <div class="form-group">
+        <label>Comentario (opcional)</label>
+        <textarea id="completionComment" rows="4" placeholder="Agrega un comentario sobre la finalización de esta tarea..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Evidencia (opcional)</label>
+        <button type="button" onclick="openCompletionFileUpload()" class="btn btn-secondary" style="width: 100%;">
+          <i class="bi bi-cloud-upload"></i> Seleccionar archivos
+        </button>
+        <div id="completionEvidencePreview" style="margin-top: 0.75rem; display: none;">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeCompleteTaskModal()" class="btn btn-secondary">Cancelar</button>
+      <button onclick="saveCompleteTask();" class="btn btn-primary"><i class="bi bi-check-circle"></i> Completar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Reabrir Tarea -->
+<div id="reopenTaskModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Reabrir Tarea</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeReopenTaskModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="taskIdForReopen" value="">
+      <div class="form-group">
+        <label>Justificación (opcional)</label>
+        <textarea id="reopenJustification" rows="4" placeholder="Explica por qué necesitas reabrir esta tarea..."></textarea>
+        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Puedes dejar este campo vacío si lo deseas</small>
+      </div>
+      <div class="form-group">
+        <label>Archivos de soporte (opcional)</label>
+        <button type="button" onclick="openReopenFileUpload()" class="btn btn-secondary" style="width: 100%;">
+          <i class="bi bi-cloud-upload"></i> Seleccionar archivos
+        </button>
+        <div id="reopenEvidencePreview" style="margin-top: 0.75rem; display: none;">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeReopenTaskModal()" class="btn btn-secondary">Cancelar</button>
+      <button onclick="saveReopenTask();" class="btn btn-primary"><i class="bi bi-arrow-counterclockwise"></i> Reabrir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Upload de Archivos (Reutilizable) -->
+<div id="fileUploadModal" class="modal-backdrop">
+  <div class="modal-content file-upload-modal-content" style="max-width: 700px; padding: 0;">
+    <input type="hidden" id="fileUploadContext" value=""> <!-- 'task_create', 'task_attachments', 'completion', 'reopen' -->
+    <input type="hidden" id="fileUploadTaskId" value="">
+    
+    <!-- Header con título y botón cerrar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--border);">
+      <div class="modal-title" id="fileUploadModalTitle" style="margin: 0;">Subir Archivos</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeFileUploadModal()" style="margin: 0;">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    
+    <!-- Contenido scrollable -->
+    <div style="padding: 1.5rem; max-height: 70vh; overflow-y: auto;">
+      <!-- Barra de progreso (oculta por defecto) -->
+      <div id="fileUploadProgress" style="display: none; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          <span><i class="bi bi-arrow-repeat" style="margin-right:.35rem;"></i>Subiendo archivos...</span>
+          <span id="fileUploadPercent" style="font-weight: 600; color: var(--primary);">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="fileUploadBar" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div id="fileUploadStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+          <span id="fileUploadCurrent">0</span> de <span id="fileUploadTotal">0</span> archivos
+        </div>
+      </div>
+      
+      <!-- Zona de drag & drop -->
+      <div id="fileUploadDropZone" class="file-upload-dropzone">
+        <div class="file-upload-content">
+          <i class="bi bi-cloud-upload" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+          <p style="font-size: 1rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;">Arrastra archivos aquí</p>
+          <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">o</p>
+          <button type="button" onclick="document.getElementById('fileUploadInput').click()" class="btn btn-primary">
+            <i class="bi bi-folder2-open"></i> Seleccionar archivos
+          </button>
+          <input type="file" id="fileUploadInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar" style="display: none;" onchange="handleFileSelect(event)">
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem;">Formatos permitidos: PDF, imágenes, documentos, archivos comprimidos</p>
+        </div>
+      </div>
+      
+      <!-- Lista de archivos seleccionados -->
+      <div id="fileUploadList" class="file-upload-list" style="display: none; margin-top: 1.5rem;">
+        <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.75rem;">Archivos seleccionados:</div>
+        <div id="fileUploadItems" class="file-upload-items">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </div>
+      
+      <!-- Lista de archivos ya subidos (para eliminar) -->
+      <div id="fileUploadExistingList" class="file-upload-list" style="display: none; margin-top: 1.5rem;">
+        <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.75rem;">Archivos subidos:</div>
+        <div id="fileUploadExistingItems" class="file-upload-items">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer con botones -->
+    <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1.5rem; border-top: 1px solid var(--border);">
+      <button onclick="closeFileUploadModal()" class="btn btn-secondary">Cancelar</button>
+      <button onclick="saveFileUpload()" class="btn btn-primary" id="fileUploadSaveBtn">
+        <i class="bi bi-upload"></i> Subir Archivos
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Las funciones JavaScript están definidas en project_detail.html -->

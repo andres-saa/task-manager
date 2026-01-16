@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Manager - SalchiManager</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* --- DESIGN SYSTEM TOKENS --- */
+    :root {
+      /* Colors */
+      --bg-body: #0f172a;       /* Slate 900 */
+      --bg-card: #1e293b;       /* Slate 800 */
+      --bg-sidebar: #020617;    /* Slate 950 */
+      --bg-input: #0f172a;
+      
+      --border: #334155;        /* Slate 700 */
+      
+      --text-main: #f8fafc;     /* Slate 50 */
+      --text-muted: #94a3b8;    /* Slate 400 */
+      
+      --primary: #8b5cf6;       /* Violet 500 */
+      --primary-hover: #7c3aed; /* Violet 600 */
+      --primary-soft: rgba(139, 92, 246, 0.15);
+      
+      --danger: #ef4444;        /* Red 500 */
+      --danger-hover: #dc2626;
+      --danger-soft: rgba(239, 68, 68, 0.15);
+      
+      --success: #10b981;       /* Emerald 500 */
+      --info: #3b82f6;          /* Blue 500 */
+
+      /* Shapes & Shadows */
+      --radius: 0.75rem;        /* 12px */
+      --radius-sm: 0.5rem;      /* 8px */
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      
+      /* Layout */
+      --sidebar-width: 280px;
+      --header-height: 64px;
+    }
+
+    /* --- RESET & BASE --- */
+    * { box-sizing: border-box; outline: none; }
+    
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+      font-size: 15px; /* Base size legible en móvil */
+    }
+
+    /* --- LAYOUT STRUCTURE --- */
+    .app-shell { display: flex; width: 100%; height: 100%; position: relative; }
+    
+    /* Overlay para móvil */
+    .sidebar-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
+      backdrop-filter: blur(2px); z-index: 40;
+      display: none; opacity: 0; transition: opacity 0.3s;
+    }
+    .sidebar-overlay.active { display: block; opacity: 1; }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .brand {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      letter-spacing: -0.5px;
+    }
+    .brand .brand-left { display:flex; align-items:center; gap:.6rem; }
+    
+    .logo { height: 3rem; }
+
+    .close-sidebar-btn { 
+      display: none; 
+      background: none; border: none; 
+      color: var(--text-muted); 
+      font-size: 1.2rem; 
+      cursor: pointer;
+      padding: .25rem .35rem;
+      border-radius: 8px;
+    }
+    .close-sidebar-btn:hover { background: rgba(255,255,255,.06); color: var(--text-main); }
+
+    .nav-section { margin-bottom: 2rem; }
+    .nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: .75rem;
+    }
+
+    .nav-item {
+      display: block;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 0.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background-color: rgba(255,255,255,0.05); color: var(--text-main); }
+    .nav-item.active { 
+      background-color: var(--primary-soft); 
+      color: var(--primary); 
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-icon-add {
+      background: rgba(255,255,255,0.1); border: none; color: var(--text-main); 
+      cursor: pointer; width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-icon-add:hover { background: var(--primary); }
+    .btn-icon-add i { font-size: 1.05rem; }
+
+    /* --- MAIN AREA --- */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg-body);
+      position: relative;
+      width: 100%;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: var(--header-height);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      background-color: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+      gap: 1rem;
+    }
+
+    .menu-toggle {
+      display: none; 
+      background: none; border: none; color: var(--text-main);
+      font-size: 1.4rem; cursor: pointer; margin-right: 1rem; padding: 0;
+      width: 42px; height: 42px; 
+      border-radius: 10px;
+    }
+    .menu-toggle:hover { background: rgba(255,255,255,.06); }
+
+    .current-context { 
+      font-size: 0.95rem; color: var(--text-muted); 
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .current-context strong { color: var(--text-main); }
+    .divider-slash { margin: 0 8px; opacity: 0.3; }
+
+    .user-menu { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .user-name { font-weight: 500; font-size: 0.9rem; }
+
+    /* Tabs */
+    .tabs-container {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-body);
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: none; /* Firefox */
+    }
+    .tabs-container::-webkit-scrollbar { display: none; }
+
+    .tabs { 
+      display: flex; gap: 2rem; padding: 0 1.5rem; 
+      min-width: max-content;
+    }
+    .tab {
+      padding: 1rem 0;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s;
+      font-size: 0.95rem;
+      display:flex; align-items:center; gap:.5rem;
+    }
+    .tab:hover { color: var(--text-main); }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* Scroll Area */
+    .view-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* --- COMPONENTS --- */
+    
+    /* Cards */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; gap:1rem; }
+    .card h3 { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+    .card h4 { margin: 1.5rem 0 0.75rem; font-size: 1rem; font-weight: 600; color: var(--text-main); }
+
+    /* Forms */
+    .form-group { margin-bottom: 1.25rem; flex: 1; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+    
+    input[type="text"], input[type="search"], select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    /* TEXTAREA NO RESIZE */
+    textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+      resize: none; 
+      min-height: 80px;
+    }
+
+    input:focus, select:focus, textarea:focus { 
+      border-color: var(--primary); 
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    /* CUSTOM FILE UPLOAD (Dropzone Style) */
+    .file-dropzone {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background-color: rgba(255,255,255,0.02);
+      padding: 2rem 1rem;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 120px;
+    }
+    .file-dropzone:hover {
+      border-color: var(--primary);
+      background-color: rgba(139, 92, 246, 0.05);
+    }
+    .file-dropzone input[type="file"] {
+      position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;
+    }
+    .dz-icon { font-size: 2rem; color: var(--text-muted); margin-bottom: 5px; }
+    .dz-text { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+    .dz-hint { color: var(--text-muted); font-size: 0.8rem; }
+    .dz-selected { color: var(--success); font-weight: 700; margin-top: 8px; font-size: 0.85rem; word-break: break-all;}
+
+    /* PROGRESS BAR STYLES */
+    .progress-container {
+      margin-top: 1rem;
+      display: none; /* Oculto por defecto */
+    }
+    .progress-track {
+      width: 100%;
+      background: var(--bg-input);
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--info));
+      width: 0%;
+      transition: width 0.2s ease-out;
+      border-radius: 999px;
+    }
+    .progress-info {
+      display: flex; justify-content: space-between;
+      font-size: 0.75rem; color: var(--text-muted);
+      margin-top: 0.4rem; font-weight: 600;
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+
+    /* FLEX GROUP for responsive input+button */
+    .input-group-responsive { display: flex; gap: 0.5rem; }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      text-decoration: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .btn i { font-size: 1.05em; line-height: 0; }
+    .btn-primary { background-color: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3); }
+    .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    
+    .btn-secondary { background-color: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid rgba(255,255,255,0.05); }
+    .btn-secondary:hover { background-color: rgba(255,255,255,0.12); }
+
+    .btn-danger { background-color: var(--danger-soft); color: var(--danger); border: 1px solid transparent; }
+    .btn-danger:hover { background-color: rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.3); }
+
+    .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+
+    .btn-primary-ghost {
+      background-color: var(--primary-soft); color: var(--primary); 
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    .btn-primary-ghost:hover { background-color: rgba(139, 92, 246, 0.25); }
+
+    /* Tables */
+    .table-wrapper {
+      width: 100%; overflow-x: auto;
+      border: 1px solid var(--border); border-radius: var(--radius);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th { text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    
+    .video-thumb { width: 90px; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: #000; display: block; }
+    .badge { padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.1); white-space: nowrap; }
+
+    /* Attachments List */
+    .attach-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .attach-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255,255,255,0.03);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+      gap: .75rem;
+    }
+    .attach-item:hover { border-color: var(--border); }
+    
+    /* BADGE DE ARCHIVO (Usando colors.json) */
+    .file-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 0.7rem;
+      text-transform: uppercase; margin-right: 8px; min-width: 40px;
+    }
+
+    .attach-link { color: var(--text-main); text-decoration: none; font-weight: 500; overflow: hidden; text-overflow: ellipsis; display:flex; align-items:center; }
+    .attach-link:hover { text-decoration: underline; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 100;
+      padding: 1rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    
+    .modal-content {
+      background: var(--bg-card); width: 100%; max-width: 500px;
+      border-radius: var(--radius); padding: 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+      border: 1px solid var(--border);
+      max-height: 85vh; overflow-y: auto;
+      transform: translateY(20px); transition: transform 0.2s;
+    }
+    .modal-backdrop.open .modal-content { transform: translateY(0); }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap:1rem; }
+    .modal-title { font-weight: 700; font-size: 1.25rem; color: var(--text-main); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--bg-card); border-left: 4px solid var(--primary);
+      padding: 1rem 1.5rem; border-radius: var(--radius-sm);
+      box-shadow: var(--shadow); z-index: 200;
+      transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-color: var(--danger); }
+
+    /* --- UTILS --- */
+    .hidden { display: none !important; }
+    .flex-end { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+    .divider { height: 1px; background: var(--border); opacity: .6; margin: 1.25rem 0; }
+
+    /* Icon button (tiny) */
+    .icon-btn {
+      display:inline-flex; align-items:center; justify-content:center;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.06);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all .18s ease;
+      text-decoration:none;
+    }
+    .icon-btn:hover { background: rgba(255,255,255,.10); transform: translateY(-1px); }
+    .icon-btn:active { transform: translateY(0); }
+    .icon-btn.danger { background: rgba(239,68,68,.12); color: var(--danger); border-color: rgba(239,68,68,.18); }
+    .icon-btn.danger:hover { background: rgba(239,68,68,.20); }
+
+    /* --- RESPONSIVE MEDIA QUERIES --- */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed; top: 0; left: 0; bottom: 0;
+        transform: translateX(-100%);
+        width: 85%; max-width: 320px;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .close-sidebar-btn { display: block; }
+      .menu-toggle { display: block; }
+      
+      .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 1rem; }
+      
+      .view-area { padding: 1rem; }
+      .card { padding: 1.25rem; }
+      
+      .user-name { display: none; } /* Hide user name on mobile to save space */
+      
+      /* Flex end buttons full width on mobile */
+      .flex-end { flex-direction: column-reverse; }
+      .flex-end .btn { width: 100%; }
+      
+      .attach-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .attach-item .btn { width: 100%; }
+      
+      .toast { left: 20px; right: 20px; text-align: center; }
+
+      /* Responsive inputs for enrollment */
+      .input-group-responsive { flex-direction: column; }
+      .input-group-responsive select,
+      .input-group-responsive button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<script id="server-data" type="application/json">
+  {{ {
+      "user": user,
+      "schools": schools,
+      "selected_school": selected_school,
+      "courses": courses,
+      "selected_course": selected_course,
+      "videos": videos,
+      "enrolled": enrolled,
+      "colors": colors
+  } | tojson }}
+</script>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="UI.toggleSidebar()"></div>
+
+<div class="app-shell">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+          <img class="logo" src="https://gestion.salchimonster.com/images/logo.png" alt="">
+        <div>Moster Cursos</div>
+      </div>
+
+      <button class="close-sidebar-btn" onclick="UI.toggleSidebar()" aria-label="Cerrar menú">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Escuelas
+        <button class="btn-icon-add" onclick="UI.modals.openCreateSchool()" title="Crear Escuela" aria-label="Crear escuela">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div id="school-list">
+        {% for s in schools %}
+        <div class="nav-item {% if selected_school and s.id == selected_school.id %}active{% endif %}" 
+             onclick="Actions.goToSchool('{{s.id}}')">
+          {{ s.name }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Cursos ({{ selected_school.name if selected_school else 'General' }})
+        <button class="btn-icon-add" onclick="UI.modals.openCreateCourse()" title="Crear Curso" aria-label="Crear curso">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div id="course-list">
+        {% if courses %}
+          {% for c in courses %}
+          <div class="nav-item {% if selected_course and c.id == selected_course.id %}active{% endif %}"
+               onclick="Actions.goToCourse('{{c.id}}', '{{selected_school.id}}')">
+            {{ c.name }}
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="color:var(--text-muted); font-size:0.85rem; padding:0.5rem;">Sin cursos disponibles.</div>
+        {% endif %}
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div class="topbar">
+      <div style="display: flex; align-items: center; min-width: 0;">
+        <button class="menu-toggle" onclick="UI.toggleSidebar()" aria-label="Abrir menú">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="current-context">
+          <strong>{{ selected_school.name if selected_school else 'N/A' }}</strong>
+          <span class="divider-slash">/</span>
+          <strong>{{ selected_course.name if selected_course else 'N/A' }}</strong>
+        </div>
+      </div>
+      
+      <div class="user-menu">
+        <span class="user-name">
+          <i class="bi bi-person-circle" style="margin-right:.35rem;"></i>
+          {{ user.display_name if user else 'Admin' }}
+        </span>
+        <a href="/videos/dashboard" class="btn btn-primary-ghost btn-sm">
+          <i class="bi bi-speedometer2"></i>
+          Dashboard
+        </a>
+        <a href="/videos/logout" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i>
+          Salir
+        </a>
+      </div>
+    </div>
+
+    <div class="tabs-container">
+      <div class="tabs">
+        <div class="tab active" data-target="view-videos"><i class="bi bi-collection-play"></i> Clases</div>
+        <div class="tab" data-target="view-course"><i class="bi bi-sliders"></i> Configurar Curso</div>
+        <div class="tab" data-target="view-school"><i class="bi bi-buildings"></i> Configurar Escuela</div>
+        <div class="tab" data-target="view-enrollments"><i class="bi bi-people"></i> Matrículas</div>
+        <div class="tab" data-target="view-admins"><i class="bi bi-shield-lock"></i> Admins</div>
+      </div>
+    </div>
+
+    <div class="view-area">
+
+      <div id="view-videos" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="bi bi-cloud-arrow-up" style="margin-right:.5rem; color:var(--text-muted);"></i> Subir Nueva Clase</h3>
+          </div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Título del Video</label>
+              <input type="text" id="vid-up-title" placeholder="Ej: Introducción al módulo 1">
+            </div>
+            <div class="form-group">
+              <label>Archivo de Video (MP4)</label>
+              <div class="file-dropzone" onclick="document.getElementById('vid-up-file').click()">
+                <input type="file" id="vid-up-file" accept="video/*" onchange="UI.updateFileLabel(this, 'vid-up-label')">
+                <div class="dz-icon"><i class="bi bi-cloud-upload"></i></div>
+                <div class="dz-text">Haz clic o arrastra el video aquí</div>
+                <div class="dz-selected" id="vid-up-label"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="vid-up-desc" placeholder="Resumen de lo que se verá en la clase..."></textarea>
+          </div>
+          
+          <div class="flex-end">
+             <button class="btn btn-primary btn-full" onclick="Actions.uploadVideo()">
+               <i class="bi bi-upload"></i> Subir Video
+             </button>
+          </div>
+          
+          <div class="progress-container" id="video-progress-container">
+            <div class="progress-track">
+              <div class="progress-fill" id="video-progress-fill"></div>
+            </div>
+            <div class="progress-info">
+              <span><i class="bi bi-arrow-repeat" style="margin-right:.35rem;"></i>Subiendo...</span>
+              <span id="video-progress-text">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>
+              <i class="bi bi-list-ul" style="margin-right:.5rem; color:var(--text-muted);"></i>
+              Listado de Clases 
+              <span style="font-weight:400; color:var(--text-muted); font-size:0.9rem;">({{ videos|length }})</span>
+            </h3>
+            <button class="btn btn-secondary btn-sm" onclick="location.reload()">
+              <i class="bi bi-arrow-clockwise"></i> Refrescar
+            </button>
+          </div>
+          
+          <div class="table-wrapper">
+            {% if videos %}
+            <table>
+              <thead>
+                <tr>
+                  <th width="110">Video</th>
+                  <th>Detalles</th>
+                  <th width="80">Vistas</th>
+                  <th width="160">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for v in videos %}
+                <tr>
+                  <td>
+                    <img src="/thumbnails/{{v.thumb}}" class="video-thumb" onerror="this.style.background='#333'">
+                  </td>
+                  <td>
+                    <div style="font-weight:600; font-size:1rem; margin-bottom:4px;">{{ v.title }}</div>
+                    <div style="color:var(--text-muted); font-size:0.85rem; line-height:1.4;">{{ v.description }}</div>
+                    
+                    {% if v.attachments %}
+                    <div style="margin-top: 10px; display:flex; flex-wrap:wrap; gap:8px;">
+                      {% for att in v.attachments %}
+                        {% set ext = (att.original_name.split('.')[-1] | lower) if '.' in att.original_name else '' %}
+                        {% set c = colors.get(ext, {'bg':'#334155', 'text':'#fff'}) %}
+                        
+                        <span class="badge" style="display:flex; align-items:center; gap:6px;">
+                          <span class="file-badge" style="background:{{c.bg}}; color:{{c.text}}">{{ext}}</span>
+                          <a href="{{att.url}}" target="_blank" style="color:inherit; text-decoration:none;">
+                            <i class="bi bi-paperclip" style="opacity:.8; margin-right:.25rem;"></i>{{att.original_name}}
+                          </a>
+                          <i class="bi bi-x-circle-fill" 
+                             title="Eliminar adjunto"
+                             style="cursor:pointer; color:var(--danger); font-size:1rem;" 
+                             onclick="event.preventDefault(); event.stopPropagation(); Actions.deleteAttachment('video', '{{v.id}}', '{{att.id}}')"></i>
+                        </span>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td style="text-align:center;">
+                    <span class="badge"><i class="bi bi-eye" style="margin-right:.35rem; opacity:.8;"></i>{{ v.views }}</span>
+                  </td>
+                  <td>
+                    <div style="display:flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                      <a href="/videos/watch/{{v.id}}" target="_blank" class="icon-btn" title="Ver">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <button class="icon-btn" onclick="UI.modals.openEditVideo('{{v.id}}')" title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button class="icon-btn danger" onclick="Actions.deleteVideo('{{v.id}}')" title="Borrar">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </div>
+                    
+                    <label class="btn btn-secondary btn-sm" style="width:100%; cursor:pointer; font-size:0.75rem; padding:0.3rem;">
+                      <i class="bi bi-paperclip"></i> + Adjunto
+                      <input type="file" style="display:none;" onchange="Actions.uploadAttachment('video', '{{v.id}}', this.files[0], null)">
+                    </label>
+                    
+                    <select class="btn-sm" style="width: 100%; margin-top:0.5rem; background: rgba(0,0,0,0.3);" onchange="Actions.moveVideo('{{v.id}}', this.value)">
+                      <option value="">Mover a...</option>
+                      {% for c in courses %}
+                      <option value="{{c.id}}">{{ c.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <div style="padding:3rem; text-align:center; color:var(--text-muted);">
+              <i class="bi bi-inbox" style="font-size:2rem; display:block; margin-bottom:.75rem; opacity:.7;"></i>
+              No hay videos cargados en este curso.
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div id="view-course" class="tab-content hidden">
+        <div class="card">
+          <div class="card-header"><h3><i class="bi bi-sliders2" style="margin-right:.5rem; color:var(--text-muted);"></i> Configuración del Curso</h3></div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Nombre del Curso</label>
+              <input type="text" id="course-edit-name" value="{{ selected_course.name }}">
+            </div>
+            <div class="form-group">
+              <label>ID (Sistema)</label>
+              <input type="text" value="{{ selected_course.id }}" disabled style="opacity: 0.5; cursor:not-allowed;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="course-edit-desc">{{ selected_course.description }}</textarea>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <h4><i class="bi bi-paperclip" style="margin-right:.5rem; color:var(--text-muted);"></i> Material Adjunto del Curso</h4>
+          <div class="grid-2" style="align-items:end;">
+            <div class="form-group">
+              <div class="file-dropzone" style="padding:1rem;" onclick="document.getElementById('course-attach-input').click()">
+                <input type="file" id="course-attach-input" onchange="UI.updateFileLabel(this, 'c-att-label')">
+                <span class="dz-icon" style="font-size:1.6rem;"><i class="bi bi-paperclip"></i></span>
+                <span class="dz-text" style="font-size:0.9rem;">Seleccionar archivo</span>
+                <div class="dz-selected" id="c-att-label"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-secondary btn-full" 
+                      onclick="Actions.uploadAttachment('course', '{{selected_course.id}}', document.getElementById('course-attach-input').files[0], 'course-att-prog')">
+                <i class="bi bi-upload"></i> Subir Adjunto
+              </button>
+            </div>
+          </div>
+
+          <div class="progress-container" id="course-att-prog-container">
+            <div class="progress-track"><div class="progress-fill" id="course-att-prog-fill"></div></div>
+            <div class="progress-info"><span><i class="bi bi-arrow-repeat" style="margin-right:.35rem;"></i>Subiendo...</span><span id="course-att-prog-text">0%</span></div>
+          </div>
+
+          <div class="attach-list" style="margin-top:1.5rem;">
+            {% for att in selected_course.attachments %}
+            {% set ext = (att.original_name.split('.')[-1] | lower) if '.' in att.original_name else '' %}
+            {% set c = colors.get(ext, {'bg':'#334155', 'text':'#fff'}) %}
+            <div class="attach-item">
+              <a href="{{att.url}}" target="_blank" class="attach-link">
+                <span class="file-badge" style="background:{{c.bg}}; color:{{c.text}}">{{ext}}</span>
+                <i class="bi bi-file-earmark" style="opacity:.8; margin-right:.4rem;"></i>
+                {{ att.original_name }}
+              </a>
+              <button class="btn btn-danger btn-sm" onclick="Actions.deleteAttachment('course', '{{selected_course.id}}', '{{att.id}}')">
+                <i class="bi bi-trash3"></i> Eliminar
+              </button>
+            </div>
+            {% else %}
+            <p style="color:var(--text-muted); font-size:0.9rem;">
+              <i class="bi bi-info-circle" style="margin-right:.35rem;"></i>No hay archivos adjuntos.
+            </p>
+            {% endfor %}
+          </div>
+
+          <div class="divider"></div>
+          <div class="flex-end">
+            <button class="btn btn-danger" onclick="Actions.deleteCourse('{{selected_course.id}}')">
+              <i class="bi bi-trash3"></i> Borrar Curso
+            </button>
+            <button class="btn btn-primary" onclick="Actions.updateCourse()">
+              <i class="bi bi-save2"></i> Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-school" class="tab-content hidden">
+        <div class="card">
+          <div class="card-header"><h3><i class="bi bi-buildings" style="margin-right:.5rem; color:var(--text-muted);"></i> Configuración de la Escuela</h3></div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Nombre de la Escuela</label>
+              <input type="text" id="school-edit-name" value="{{ selected_school.name }}">
+            </div>
+            <div class="form-group">
+              <label>ID</label>
+              <input type="text" value="{{ selected_school.id }}" disabled style="opacity: 0.5; cursor:not-allowed;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="school-edit-desc">{{ selected_school.description }}</textarea>
+          </div>
+
+          <div class="divider"></div>
+          <h4><i class="bi bi-paperclip" style="margin-right:.5rem; color:var(--text-muted);"></i> Adjuntos de Escuela (Globales)</h4>
+          
+          <div class="grid-2" style="align-items:end;">
+            <div class="form-group">
+              <div class="file-dropzone" style="padding:1rem;" onclick="document.getElementById('school-attach-input').click()">
+                <input type="file" id="school-attach-input" onchange="UI.updateFileLabel(this, 's-att-label')">
+                <span class="dz-icon" style="font-size:1.6rem;"><i class="bi bi-paperclip"></i></span>
+                <span class="dz-text" style="font-size:0.9rem;">Seleccionar archivo</span>
+                <div class="dz-selected" id="s-att-label"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-secondary btn-full" 
+                      onclick="Actions.uploadAttachment('school', '{{selected_school.id}}', document.getElementById('school-attach-input').files[0], 'school-att-prog')">
+                <i class="bi bi-upload"></i> Subir Adjunto
+              </button>
+            </div>
+          </div>
+
+          <div class="progress-container" id="school-att-prog-container">
+            <div class="progress-track"><div class="progress-fill" id="school-att-prog-fill"></div></div>
+            <div class="progress-info"><span><i class="bi bi-arrow-repeat" style="margin-right:.35rem;"></i>Subiendo...</span><span id="school-att-prog-text">0%</span></div>
+          </div>
+
+          <div class="attach-list" style="margin-top:1.5rem;">
+            {% for att in selected_school.attachments %}
+            {% set ext = (att.original_name.split('.')[-1] | lower) if '.' in att.original_name else '' %}
+            {% set c = colors.get(ext, {'bg':'#334155', 'text':'#fff'}) %}
+            <div class="attach-item">
+              <a href="{{att.url}}" target="_blank" class="attach-link">
+                 <span class="file-badge" style="background:{{c.bg}}; color:{{c.text}}">{{ext}}</span>
+                 <i class="bi bi-file-earmark" style="opacity:.8; margin-right:.4rem;"></i>
+                 {{ att.original_name }}
+              </a>
+              <button class="btn btn-danger btn-sm" onclick="Actions.deleteAttachment('school', '{{selected_school.id}}', '{{att.id}}')">
+                <i class="bi bi-trash3"></i> Eliminar
+              </button>
+            </div>
+            {% else %}
+            <p style="color:var(--text-muted); font-size:0.9rem;">
+              <i class="bi bi-info-circle" style="margin-right:.35rem;"></i>No hay archivos adjuntos.
+            </p>
+            {% endfor %}
+          </div>
+
+          <div class="divider"></div>
+          <div class="flex-end">
+            <button class="btn btn-primary" onclick="Actions.updateSchool()">
+              <i class="bi bi-save2"></i> Guardar Escuela
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-enrollments" class="tab-content hidden">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="bi bi-people" style="margin-right:.5rem; color:var(--text-muted);"></i> Gestión de Matrículas</h3>
+            <span class="badge" style="font-size:0.9rem; background:var(--primary-soft); color:var(--primary);">
+              <i class="bi bi-collection" style="margin-right:.35rem;"></i>Total: {{ enrolled.count }}
+            </span>
+          </div>
+          
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Rol</label>
+              <select id="filter-role">
+                <option value="">(Todos)</option>
+                {% for r in enrolled.groups.roles %}
+                <option value="{{r.key}}" {% if enrolled.filters.role == r.key %}selected{% endif %}>{{r.key}} ({{r.count}})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sede</label>
+              <select id="filter-site">
+                <option value="">(Todas)</option>
+                {% for s in enrolled.groups.sites %}
+                <option value="{{s.key}}" {% if enrolled.filters.site_name == s.key %}selected{% endif %}>{{s.key}} ({{s.count}})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group" style="display:flex; align-items:flex-end;">
+              <button class="btn btn-primary btn-full" onclick="Actions.applyEnrollFilters()">
+                <i class="bi bi-funnel"></i> Aplicar Filtros
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="grid-template-columns: 2fr 1fr;"> 
+            <div class="card">
+            <div class="card-header">
+              <h4><i class="bi bi-person-check" style="margin-right:.5rem; color:var(--text-muted);"></i> Usuarios Matriculados</h4>
+              <button class="btn btn-danger btn-sm" onclick="Actions.bulkUnenroll()">
+                <i class="bi bi-person-dash"></i> Remover (Filtrados/Todos)
+              </button>
+            </div>
+            <div class="table-wrapper" style="max-height: 500px; overflow-y: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Sede</th>
+                    <th width="50"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for u in enrolled.users %}
+                  <tr>
+                    <td>
+                      <div style="font-weight:600;">{{u.display_name}}</div>
+                      <div style="color:var(--text-muted); font-size:0.8rem;">{{u.username}}</div>
+                    </td>
+                    <td><span class="badge"><i class="bi bi-badge-wc" style="margin-right:.35rem; opacity:.8;"></i>{{u.role}}</span></td>
+                    <td><span class="badge"><i class="bi bi-geo-alt" style="margin-right:.35rem; opacity:.8;"></i>{{u.site_name}}</span></td>
+                    <td>
+                      <button class="btn btn-danger btn-sm" style="padding:0.2rem 0.5rem;" onclick="Actions.unenrollOne('{{u.id}}')" title="Remover">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                    <i class="bi bi-inbox" style="margin-right:.35rem;"></i>Sin resultados.
+                  </td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4><i class="bi bi-person-plus" style="margin-right:.5rem; color:var(--text-muted);"></i> Matricular Usuarios</h4>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Agrega usuarios masivamente.</p>
+            
+            <div class="form-group">
+              <label>1. Por Sede</label>
+              <div class="input-group-responsive">
+                <select id="enroll-site-select"><option value="">Cargando...</option></select>
+                <button class="btn btn-secondary btn-sm" onclick="Actions.enrollBySite()">
+                  <i class="bi bi-play-fill"></i> Go
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>2. Por Rol</label>
+              <div class="input-group-responsive">
+                <select id="enroll-role-select"><option value="">Cargando...</option></select>
+                <button class="btn btn-secondary btn-sm" onclick="Actions.enrollByRole()">
+                  <i class="bi bi-play-fill"></i> Go
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>3. Sede + Rol</label>
+              <button class="btn btn-primary btn-sm btn-full" onclick="Actions.enrollBySiteRole()">
+                <i class="bi bi-check2-square"></i> Usar selección superior
+              </button>
+            </div>
+
+            <div class="divider"></div>
+            
+            <div class="form-group">
+              <label>4. Individual</label>
+              <button class="btn btn-secondary btn-sm btn-full" onclick="UI.modals.openEnrollIndividual()">
+                <i class="bi bi-search"></i> Buscar Usuario...
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div id="view-admins" class="tab-content hidden">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="bi bi-shield-lock" style="margin-right:.5rem; color:var(--text-muted);"></i> Gestión de Administradores</h3>
+          </div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Otorgar Permisos (Buscar usuario)</label>
+              <div class="input-group-responsive">
+                <input type="search" id="admin-search-input" placeholder="Buscar por nombre o cédula..." onkeyup="UI.searchPromote(this.value)">
+              </div>
+              <div id="promote-results" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); display: none;"></div>
+            </div>
+
+            <div>
+              <label style="display:block; margin-bottom:0.5rem; font-size:0.85rem; color:var(--text-muted);">Lista de Administradores</label>
+              <div id="current-admins-list" style="max-height: 400px; overflow-y: auto;">
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="modal-backdrop" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Título</div>
+      <button class="btn btn-secondary btn-sm" onclick="UI.modals.close()" aria-label="Cerrar modal">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast">Mensaje</div>
+
+<script>
+// --- GLOBAL STATE ---
+const DATA = JSON.parse(document.getElementById('server-data').textContent);
+const API_BASE = '/videos';
+
+// --- UTILS ---
+const $ = (sel) => document.querySelector(sel);
+
+const UI = {
+  toast: (msg, type='info') => {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    setTimeout(() => t.classList.remove('show'), 3500);
+  },
+  
+  toggleSidebar: () => {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+  },
+
+  updateFileLabel: (input, labelId) => {
+    const label = document.getElementById(labelId);
+    if(input.files && input.files.length > 0) {
+      label.textContent = "Seleccionado: " + input.files[0].name;
+    } else {
+      label.textContent = "";
+    }
+  },
+
+  tabs: () => {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        
+        t.classList.add('active');
+        const target = t.dataset.target;
+        $('#' + target).classList.remove('hidden');
+        
+        // Cargar datos de admin si se abre esa pestaña
+        if(target === 'view-admins') UI.renderAdmins();
+
+        const url = new URL(location);
+        url.searchParams.set('tab', target);
+        history.replaceState(null, '', url);
+      });
+    });
+
+    const params = new URLSearchParams(location.search);
+    const activeTab = params.get('tab');
+    if (activeTab) {
+      const el = document.querySelector(`.tab[data-target="${activeTab}"]`);
+      if (el) el.click();
+    }
+  },
+
+  fillEnrollDropdowns: (users) => {
+    const sites = new Set();
+    const roles = new Set();
+    users.forEach(u => {
+      if(u.site_name) sites.add(u.site_name.trim());
+      if(u.role) roles.add(u.role.trim());
+    });
+
+    const createOpts = (set, selectorId, placeholder) => {
+        const sorted = Array.from(set).sort();
+        const sel = $(selectorId);
+        sel.innerHTML = `<option value="">${placeholder}</option>`;
+        sorted.forEach(val => {
+            const opt = document.createElement('option');
+            opt.value = val; opt.textContent = val;
+            sel.appendChild(opt);
+        });
+    };
+
+    createOpts(sites, '#enroll-site-select', 'Selecciona Sede...');
+    createOpts(roles, '#enroll-role-select', 'Selecciona Rol...');
+  },
+
+  renderAdmins: () => {
+    const container = $('#current-admins-list');
+    container.innerHTML = '<p style="padding:1rem; color:var(--text-muted);">Cargando...</p>';
+    
+    // Filtrar admins de window.systemUsers
+    const users = window.systemUsers || [];
+    const admins = users.filter(u => ['ADMIN', 'MANAGER'].includes(u.role));
+
+    if(admins.length === 0) {
+       container.innerHTML = '<p style="padding:1rem; color:var(--text-muted);">No hay administradores.</p>';
+       return;
+    }
+
+    let html = `<table style="width:100%;">`;
+    admins.forEach(u => {
+      html += `
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:0.75rem;">
+            <div style="font-weight:600;">${u.display_name}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">@${u.username}</div>
+          </td>
+          <td style="text-align:right;">
+             <span class="badge" style="margin-right:0.5rem;">${u.role}</span>
+             <button class="btn btn-danger btn-sm" onclick="Actions.revokeAdmin('${u.id}')" title="Degradar a Empleado">
+               <i class="bi bi-person-down"></i>
+             </button>
+          </td>
+        </tr>
+      `;
+    });
+    html += `</table>`;
+    container.innerHTML = html;
+  },
+
+  searchPromote: (txt) => {
+     const results = $('#promote-results');
+     if(!txt || txt.length < 2) {
+        results.style.display = 'none';
+        return;
+     }
+     const term = txt.toLowerCase();
+     const candidates = (window.systemUsers || []).filter(u => 
+        !['ADMIN', 'MANAGER'].includes(u.role) && 
+        (u.display_name.toLowerCase().includes(term) || u.username.toLowerCase().includes(term))
+     ).slice(0, 10);
+
+     if(candidates.length === 0) {
+        results.innerHTML = '<div style="padding:0.75rem; color:var(--text-muted);">Sin resultados</div>';
+        results.style.display = 'block';
+        return;
+     }
+
+     let html = '';
+     candidates.forEach(u => {
+        html += `
+          <div style="padding:0.75rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+             <div>
+               <div style="font-weight:600;">${u.display_name}</div>
+               <div style="font-size:0.8rem; color:var(--text-muted);">@${u.username}</div>
+             </div>
+             <button class="btn btn-primary btn-sm" onclick="Actions.makeAdmin('${u.id}')">
+               <i class="bi bi-shield-plus"></i> Admin
+             </button>
+          </div>
+        `;
+     });
+     results.innerHTML = html;
+     results.style.display = 'block';
+  },
+
+  modals: {
+    open: (title, html) => {
+      $('#modal-title').textContent = title;
+      $('#modal-body').innerHTML = html;
+      $('#modal-backdrop').classList.add('open');
+    },
+    close: () => {
+      $('#modal-backdrop').classList.remove('open');
+    },
+    
+    openCreateSchool: () => {
+      UI.modals.open('Crear Escuela', `
+        <div class="form-group"><label>Nombre</label><input type="text" id="m-name"></div>
+        <div class="form-group"><label>Descripción</label><input type="text" id="m-desc"></div>
+        <button class="btn btn-primary btn-full" onclick="Actions.createSchool()">
+          <i class="bi bi-plus-circle"></i> Crear
+        </button>
+      `);
+    },
+    openCreateCourse: () => {
+      UI.modals.open('Crear Curso', `
+        <div class="form-group"><label>Nombre</label><input type="text" id="m-c-name"></div>
+        <div class="form-group"><label>Escuela ID</label><input type="text" id="m-c-sid" value="${DATA.selected_school.id}" disabled style="opacity:0.6"></div>
+        <div class="form-group"><label>Descripción</label><input type="text" id="m-c-desc"></div>
+        <button class="btn btn-primary btn-full" onclick="Actions.createCourse()">
+          <i class="bi bi-plus-circle"></i> Crear
+        </button>
+      `);
+    },
+    openEditVideo: (vidId) => {
+      const v = DATA.videos.find(x => x.id === vidId);
+      if(!v) return;
+      UI.modals.open('Editar Video', `
+        <div class="form-group"><label>Título</label><input type="text" id="m-v-title" value="${v.title}"></div>
+        <div class="form-group"><label>Descripción</label><textarea id="m-v-desc">${v.description||''}</textarea></div>
+        <button class="btn btn-primary btn-full" onclick="Actions.updateVideo('${vidId}')">
+          <i class="bi bi-save2"></i> Guardar
+        </button>
+      `);
+    },
+    openEnrollIndividual: async () => {
+      UI.modals.open('Cargando usuarios...', '<p>Espere...</p>');
+      try {
+        let users = window.systemUsers || [];
+        if(users.length === 0) {
+           const res = await fetch(`${API_BASE}/admin/users`);
+           const data = await res.json();
+           users = data.users;
+           window.systemUsers = users;
+        }
+        const filtered = users.filter(u => !['ADMIN','MANAGER'].includes(u.role));
+        
+        let html = `
+          <input type="search" placeholder="Buscar usuario..." onkeyup="UI.filterUsers(this.value)" style="margin-bottom:1rem;">
+          <div style="max-height:300px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
+            <table style="margin:0; width:100%;">
+              <tbody id="m-user-tbody">
+                ${filtered.map(u => `
+                  <tr class="u-row">
+                    <td style="padding:0.75rem;">
+                      <div style="font-weight:600; color:var(--text-main);">${u.display_name}</div>
+                      <small style="color:var(--text-muted);">${u.site_name} - ${u.role}</small>
+                    </td>
+                    <td width="60" style="padding:0.5rem;">
+                      <button class="btn btn-primary btn-sm" onclick="Actions.enrollOne('${u.id}')">
+                        <i class="bi bi-person-plus"></i> Add
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+        UI.modals.open('Matricular Individualmente', html);
+      } catch(e) {
+        UI.modals.open('Error', 'No se pudieron cargar los usuarios');
+      }
+    }
+  },
+
+  filterUsers: (txt) => {
+    const rows = document.querySelectorAll('.u-row');
+    const term = txt.toLowerCase();
+    rows.forEach(r => {
+      r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none';
+    });
+  },
+
+  updateProgress: (baseId, percent) => {
+    const container = $('#' + baseId + '-container');
+    const fill = $('#' + baseId + '-fill');
+    const text = $('#' + baseId + '-text');
+    
+    if(container) container.style.display = 'block';
+    if(fill) fill.style.width = percent + '%';
+    if(text) text.textContent = Math.round(percent) + '%';
+  },
+
+  hideProgress: (baseId) => {
+    const container = $('#' + baseId + '-container');
+    if(container) container.style.display = 'none';
+  }
+};
+
+const Actions = {
+  reload: () => window.location.reload(),
+  reloadWithTab: (tab) => {
+    const url = new URL(location);
+    url.searchParams.set('tab', tab);
+    window.location.href = url.toString();
+  },
+
+  goToSchool: (sid) => window.location.href = `/videos/manager?school_id=${sid}`,
+  goToCourse: (cid, sid) => window.location.href = `/videos/manager?school_id=${sid}&course_id=${cid}`,
+
+  loadSystemData: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/users`);
+      const data = await res.json();
+      window.systemUsers = data.users || [];
+      UI.fillEnrollDropdowns(window.systemUsers);
+      UI.renderAdmins(); // Init admin list if tab is active (or pre-load)
+    } catch(e) { console.error("Error loading users", e); }
+  },
+
+  uploadFileXHR: (url, formData, progressCallback) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable && progressCallback) {
+          const percentComplete = (e.loaded / e.total) * 100;
+          progressCallback(percentComplete);
+        }
+      };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve(xhr.responseText);
+        else reject(xhr.statusText);
+      };
+      xhr.onerror = () => reject(xhr.statusText);
+      xhr.send(formData);
+    });
+  },
+
+  createSchool: async () => {
+    const name = $('#m-name').value;
+    const desc = $('#m-desc').value;
+    if(!name) return UI.toast('Nombre requerido', 'error');
+    await fetch(`${API_BASE}/schools/create`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, description: desc})
+    });
+    Actions.reload();
+  },
+  updateSchool: async () => {
+    const sid = DATA.selected_school.id;
+    const name = $('#school-edit-name').value;
+    const desc = $('#school-edit-desc').value;
+    await fetch(`${API_BASE}/schools/update`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({school_id: sid, name, description: desc})
+    });
+    UI.toast('Escuela actualizada');
+  },
+  createCourse: async () => {
+    const name = $('#m-c-name').value;
+    const desc = $('#m-c-desc').value;
+    const sid = DATA.selected_school.id;
+    if(!name) return UI.toast('Nombre requerido', 'error');
+    const res = await fetch(`${API_BASE}/courses/create`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, school_id: sid, description: desc})
+    });
+    const json = await res.json();
+    if(json.status === 'ok') Actions.goToCourse(json.course.id, sid);
+  },
+  updateCourse: async () => {
+    const cid = DATA.selected_course.id;
+    const name = $('#course-edit-name').value;
+    const desc = $('#course-edit-desc').value;
+    await fetch(`${API_BASE}/courses/update`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: cid, name, description: desc})
+    });
+    UI.toast('Curso actualizado');
+  },
+  deleteCourse: async (id) => {
+    if(!confirm('¿BORRAR este curso y sus videos?')) return;
+    const res = await fetch(`${API_BASE}/courses/delete`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: id})
+    });
+    if(res.ok) Actions.reload();
+  },
+
+  uploadVideo: async () => {
+    const file = $('#vid-up-file').files[0];
+    const title = $('#vid-up-title').value;
+    const desc = $('#vid-up-desc').value;
+    const cid = DATA.selected_course.id;
+    if(!file) return UI.toast('Selecciona un video', 'error');
+    const btn = event.target;
+    btn.innerHTML = `<i class="bi bi-arrow-repeat"></i> Subiendo...`;
+    btn.disabled = true;
+    UI.updateProgress('video-progress', 0);
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('title', title || 'Sin título');
+    fd.append('description', desc);
+    fd.append('project_id', cid);
+    try {
+      await Actions.uploadFileXHR(`${API_BASE}/upload`, fd, (pct) => {
+        UI.updateProgress('video-progress', pct);
+      });
+      Actions.reloadWithTab('view-videos');
+    } catch (err) {
+      UI.toast('Error al subir', 'error');
+      btn.innerHTML = `<i class="bi bi-upload"></i> Subir Video`;
+      btn.disabled = false;
+      UI.hideProgress('video-progress');
+    }
+  },
+  updateVideo: async (vidId) => {
+    const title = $('#m-v-title').value;
+    const desc = $('#m-v-desc').value;
+    await fetch(`${API_BASE}/videos/${vidId}/update`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({title, description: desc})
+    });
+    Actions.reloadWithTab('view-videos');
+  },
+  deleteVideo: async (vidId) => {
+    if(!confirm('¿Borrar video?')) return;
+    await fetch(`${API_BASE}/delete/${vidId}`);
+    Actions.reloadWithTab('view-videos');
+  },
+  moveVideo: async (vidId, newCid) => {
+    if(!newCid) return;
+    await fetch(`${API_BASE}/move`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: vidId, project_id: newCid})
+    });
+    Actions.reloadWithTab('view-videos');
+  },
+
+  uploadAttachment: async (type, id, file, progressId) => {
+    if(!file) return UI.toast('Selecciona archivo', 'error');
+    if(progressId) UI.updateProgress(progressId, 0);
+    const fd = new FormData();
+    fd.append('file', file);
+    let url = '';
+    if(type === 'school') url = `${API_BASE}/schools/${id}/attachments`;
+    if(type === 'course') url = `${API_BASE}/courses/${id}/attachments`;
+    if(type === 'video') url = `${API_BASE}/videos/${id}/attachments`;
+    try {
+      await Actions.uploadFileXHR(url, fd, (pct) => {
+        if(progressId) UI.updateProgress(progressId, pct);
+      });
+      Actions.reload();
+    } catch (err) {
+      UI.toast('Error subiendo adjunto', 'error');
+      if(progressId) UI.hideProgress(progressId);
+    }
+  },
+  deleteAttachment: async (type, entId, attId) => {
+    if(!confirm('¿Borrar adjunto?')) return;
+    await fetch(`${API_BASE}/attachments/delete`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({entity_type: type, entity_id: entId, attachment_id: attId})
+    });
+    Actions.reload();
+  },
+
+  applyEnrollFilters: () => {
+    const role = $('#filter-role').value;
+    const site = $('#filter-site').value;
+    const url = new URL(location);
+    if(role) url.searchParams.set('role', role); else url.searchParams.delete('role');
+    if(site) url.searchParams.set('site_name', site); else url.searchParams.delete('site_name');
+    url.searchParams.set('tab', 'view-enrollments');
+    window.location.href = url.toString();
+  },
+  bulkUnenroll: async () => {
+    const role = $('#filter-role').value;
+    const site = $('#filter-site').value;
+    let msg = '¿Remover a los usuarios filtrados?';
+    if(!role && !site) msg = '⚠️ ADVERTENCIA: ¿Estás seguro de Remover a TODOS los usuarios de este curso?';
+    if(!confirm(msg)) return;
+    const res = await fetch(`${API_BASE}/courses/unenroll_bulk`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ course_id: DATA.selected_course.id, role, site_name: site })
+    });
+    const json = await res.json();
+    UI.toast(`Removidos: ${json.removed}`);
+    setTimeout(() => Actions.reloadWithTab('view-enrollments'), 1000);
+  },
+  unenrollOne: async (uid) => {
+    if(!confirm('¿Remover usuario?')) return;
+    await fetch(`${API_BASE}/courses/unenroll`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: DATA.selected_course.id, user_id: uid})
+    });
+    Actions.reloadWithTab('view-enrollments');
+  },
+  enrollOne: async (uid) => {
+    await fetch(`${API_BASE}/courses/enroll`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: DATA.selected_course.id, user_id: uid})
+    });
+    UI.toast('Matriculado', 'success');
+  },
+  enrollBySite: async () => {
+    const site = $('#enroll-site-select').value;
+    if(!site) return UI.toast('Selecciona sede', 'error');
+    await fetch(`${API_BASE}/courses/enroll_by_site`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: DATA.selected_course.id, site_name: site})
+    });
+    Actions.reloadWithTab('view-enrollments');
+  },
+  enrollByRole: async () => {
+    const role = $('#enroll-role-select').value;
+    if(!role) return UI.toast('Selecciona rol', 'error');
+    await fetch(`${API_BASE}/courses/enroll_by_role`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: DATA.selected_course.id, role: role})
+    });
+    Actions.reloadWithTab('view-enrollments');
+  },
+  enrollBySiteRole: async () => {
+    const site = $('#enroll-site-select').value;
+    const role = $('#enroll-role-select').value;
+    if(!site || !role) return UI.toast('Selecciona ambos', 'error');
+    await fetch(`${API_BASE}/courses/enroll_by_site_role`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({course_id: DATA.selected_course.id, role, site_name: site})
+    });
+    Actions.reloadWithTab('view-enrollments');
+  },
+  
+  // --- ADMIN ACTIONS ---
+  makeAdmin: async (uid) => {
+    if(!confirm('¿Promover a ADMIN?')) return;
+    await fetch(`${API_BASE}/admin/users/make_admin`, {
+       method: 'POST', headers: {'Content-Type': 'application/json'},
+       body: JSON.stringify({ user_id: uid })
+    });
+    UI.toast('Usuario promovido');
+    // Recargar data para actualizar listas
+    Actions.loadSystemData();
+    $('#admin-search-input').value = '';
+    $('#promote-results').style.display = 'none';
+  },
+  
+  revokeAdmin: async (uid) => {
+    if(!confirm('¿Degradar a EMPLEADO?')) return;
+    await fetch(`${API_BASE}/admin/users/set_role`, {
+       method: 'POST', headers: {'Content-Type': 'application/json'},
+       body: JSON.stringify({ user_id: uid, role: 'EMPLEADO', lock_role: false })
+    });
+    UI.toast('Usuario degradado');
+    Actions.loadSystemData();
+  }
+};
+
+(() => {
+  UI.tabs();
+  Actions.loadSystemData();
+})();
+</script>
+
+</body>
+</html>

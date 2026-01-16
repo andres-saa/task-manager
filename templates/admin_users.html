@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios - SalchiManager Pro Time{% endblock %}
+
+{% block content %}
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="UI.toggleSidebar()"></div>
+
+<div class="app-shell">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+        <img class="logo" src="https://gestion.salchimonster.com/images/logo.png" alt="">
+        <div>SalchiManager</div>
+      </div>
+      <button class="close-sidebar-btn" onclick="UI.toggleSidebar()" aria-label="Cerrar menú">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Navegación
+      </div>
+      <a href="/" class="nav-item">
+        <i class="bi bi-speedometer2" style="margin-right:.5rem;"></i>Dashboard
+      </a>
+      <a href="/admin/users" class="nav-item active">
+        <i class="bi bi-people" style="margin-right:.5rem;"></i>Usuarios
+      </a>
+      <a href="/admin/teams" class="nav-item">
+        <i class="bi bi-diagram-3" style="margin-right:.5rem;"></i>Equipos
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div class="topbar">
+      <div style="display: flex; align-items: center; min-width: 0;">
+        <button class="menu-toggle" onclick="UI.toggleSidebar()" aria-label="Abrir menú">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="current-context">
+          <strong>Gestión de Usuarios</strong>
+        </div>
+      </div>
+      
+      <div class="user-menu">
+        <button onclick="toggleTheme()" class="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+          <i class="bi bi-moon-stars"></i>
+        </button>
+        <span class="user-name">
+          <i class="bi bi-person-circle" style="margin-right:.35rem;"></i>
+          {{ user.display_name if user else 'Admin' }}
+        </span>
+        <button onclick="syncUsers()" class="btn btn-success btn-sm">
+          <i class="bi bi-arrow-repeat"></i> Sincronizar
+        </button>
+        <a href="/logout" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </a>
+      </div>
+    </div>
+
+    <div class="view-area">
+      <!-- Filtro de búsqueda -->
+      <div class="card">
+        <div class="form-group">
+          <label>Buscar</label>
+          <input type="text" id="userFilter" placeholder="Buscar por usuario, nombre, email o rol..." 
+                 onkeyup="filterUsers()">
+        </div>
+      </div>
+      
+      <!-- Tabla de usuarios -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="bi bi-people" style="margin-right:.5rem; color:var(--text-muted);"></i> Usuarios ({{ users|length }})</h3>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              {% for u in users %}
+              <tr class="user-row" data-username="{{ u.username|lower }}" data-name="{{ u.display_name|lower }}" data-email="{{ (u.email or '')|lower }}" data-role="{{ u.role|lower }}">
+                <td style="font-weight: 600;">{{ u.username }}</td>
+                <td>{{ u.display_name }}</td>
+                <td style="color: var(--text-muted);">{{ u.email or "-" }}</td>
+                <td>
+                  <span class="badge" style="{% if u.role == 'ADMIN' %}background: var(--primary-soft); color: var(--primary);{% elif u.role == 'MANAGER' %}background: rgba(59, 130, 246, 0.15); color: var(--info);{% else %}background: rgba(255,255,255,0.1);{% endif %}">
+                    {{ u.role }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" style="{% if u.is_active %}background: rgba(16, 185, 129, 0.15); color: var(--success);{% else %}background: var(--danger-soft); color: var(--danger);{% endif %}">
+                    {% if u.is_active %}Activo{% else %}Inactivo{% endif %}
+                  </span>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    {% if u.role == 'ADMIN' %}
+                    <button onclick="promoteUser('{{ u.id }}', 'MANAGER')" class="btn btn-secondary btn-sm">
+                      <i class="bi bi-arrow-down"></i> Manager
+                    </button>
+                    <button onclick="promoteUser('{{ u.id }}', 'USER')" class="btn btn-secondary btn-sm">
+                      <i class="bi bi-arrow-down"></i> Usuario
+                    </button>
+                    {% elif u.role == 'MANAGER' %}
+                    <button onclick="promoteUser('{{ u.id }}', 'ADMIN')" class="btn btn-primary-ghost btn-sm">
+                      <i class="bi bi-arrow-up"></i> Admin
+                    </button>
+                    <button onclick="promoteUser('{{ u.id }}', 'USER')" class="btn btn-secondary btn-sm">
+                      <i class="bi bi-arrow-down"></i> Usuario
+                    </button>
+                    {% else %}
+                    <button onclick="promoteUser('{{ u.id }}', 'ADMIN')" class="btn btn-primary-ghost btn-sm">
+                      <i class="bi bi-arrow-up"></i> Admin
+                    </button>
+                    <button onclick="promoteUser('{{ u.id }}', 'MANAGER')" class="btn btn-secondary btn-sm">
+                      <i class="bi bi-arrow-up"></i> Manager
+                    </button>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const UI = {
+  toggleSidebar: () => {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+  }
+};
+
+function filterUsers() {
+  const filter = document.getElementById('userFilter').value.toLowerCase();
+  const rows = document.querySelectorAll('.user-row');
+  
+  rows.forEach(row => {
+    const username = row.getAttribute('data-username') || '';
+    const name = row.getAttribute('data-name') || '';
+    const email = row.getAttribute('data-email') || '';
+    const role = row.getAttribute('data-role') || '';
+    
+    const matches = username.includes(filter) || 
+                   name.includes(filter) || 
+                   email.includes(filter) || 
+                   role.includes(filter);
+    
+    row.style.display = matches ? '' : 'none';
+  });
+}
+
+async function promoteUser(userId, role) {
+  const roleNames = {
+    'ADMIN': 'Administrador',
+    'MANAGER': 'Manager',
+    'USER': 'Usuario'
+  };
+  
+  const currentRole = roleNames[role] || role;
+  const action = role === 'USER' ? 'degradar' : 'promover';
+  
+  if (!confirm(`¿${action.charAt(0).toUpperCase() + action.slice(1)} usuario a ${currentRole}?`)) return;
+  
+  try {
+    const response = await fetch(`/api/users/${userId}/promote`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({role})
+    });
+    
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      const error = await response.json();
+      showError(error.detail || 'Error desconocido', 'Error');
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+async function syncUsers() {
+  if (!confirm('¿Sincronizar usuarios desde el backend ahora?')) return;
+  
+  try {
+    const response = await fetch('/api/users/sync', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      const sync = result.sync || {};
+      let msg = `Sincronización completada.\n`;
+      msg += `Estado: ${sync.status || 'unknown'}\n`;
+      if (sync.added !== undefined) msg += `Agregados: ${sync.added}\n`;
+      if (sync.updated !== undefined) msg += `Actualizados: ${sync.updated}\n`;
+      if (sync.removed !== undefined) msg += `Desactivados: ${sync.removed}\n`;
+      if (sync.password_updates !== undefined) msg += `Contraseñas actualizadas: ${sync.password_updates}\n`;
+      showSuccess(msg, 'Éxito');
+      window.location.reload();
+    } else {
+      const error = await response.json();
+      showError(error.detail || 'Error desconocido', 'Error');
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+</script>
+{% endblock %}

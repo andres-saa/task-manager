@@ -1,0 +1,2069 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - SalchiManager Pro Time{% endblock %}
+
+{% block content %}
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="UI.toggleSidebar()"></div>
+
+<div class="app-shell">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+        <img class="logo" src="https://gestion.salchimonster.com/images/logo.png" alt="">
+        <div>SalchiManager</div>
+      </div>
+      <button class="close-sidebar-btn" onclick="UI.toggleSidebar()" aria-label="Cerrar menú">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Navegación
+      </div>
+      <a href="/" class="nav-item">
+        <i class="bi bi-speedometer2" style="margin-right:.5rem;"></i>Dashboard
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div class="topbar">
+      <div style="display: flex; align-items: center; min-width: 0;">
+        <button class="menu-toggle" onclick="UI.toggleSidebar()" aria-label="Abrir menú">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="current-context">
+          <strong>{{ project.name }}</strong>
+        </div>
+      </div>
+      
+      <div class="user-menu">
+        <button onclick="toggleTheme()" class="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+          <i class="bi bi-moon-stars"></i>
+        </button>
+        <span class="user-name">
+          <i class="bi bi-person-circle" style="margin-right:.35rem;"></i>
+          {{ user.display_name if user else 'Usuario' }}
+        </span>
+        <button onclick="openPostponeModal()" class="btn btn-secondary btn-sm">
+          <i class="bi bi-calendar-plus"></i> Posponer
+        </button>
+        <button onclick="openEditModal()" class="btn btn-secondary btn-sm">
+          <i class="bi bi-pencil-square"></i> Editar
+        </button>
+        <a href="/logout" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </a>
+      </div>
+    </div>
+
+    <div class="view-area">
+      <!-- Stats -->
+      <div class="grid-4">
+        <div class="card">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Progreso</div>
+          <div style="font-size: 2rem; font-weight: 700; color: var(--info); margin-bottom: 0.75rem;">{{ progress }}%</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ progress }}%"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Tiempo total</div>
+          <div style="font-size: 2rem; font-weight: 700; color: var(--success);" 
+               class="project-detail-timer"
+               data-total-sec="{{ total_time_sec }}"
+               data-has-running="{{ 'true' if has_running_tasks else 'false' }}"
+               data-tasks-json="{{ project_tasks_json|tojson|e }}">
+            {{ total_time }}
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Fecha de entrega</div>
+          <div style="font-size: 1.25rem; font-weight: 600; {{ urgency_class }}">
+            {% if days_to_deadline is not none %}
+              {% if days_to_deadline < 0 %}
+                Vencido ({{ -days_to_deadline }}d)
+              {% else %}
+                {{ days_to_deadline }} días
+              {% endif %}
+            {% else %}
+              Sin fecha
+            {% endif %}
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Tareas</div>
+          <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">{{ project.tasks|length }}</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="grid-template-columns: 2fr 1fr;">
+        <!-- Columna principal: Tareas -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="bi bi-list-check" style="margin-right:.5rem; color:var(--text-muted);"></i> Tareas</h3>
+              {% if project.created_by == user.id %}
+              <button onclick="openAddTaskModal()" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-circle"></i> Nueva Tarea
+              </button>
+              {% endif %}
+            </div>
+            
+            <div id="tasksContainer">
+              {% for task in project.tasks %}
+                {% set all_users = all_users %}
+                {% set user = user %}
+                {% set task_level = 0 %}
+                {% set is_project_creator = is_project_creator %}
+                {% include "task_item.html" %}
+              {% endfor %}
+            </div>
+          </div>
+          
+          <!-- Resumen de Tiempo por Tarea -->
+          <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+              <h3><i class="bi bi-clock-history" style="margin-right:.5rem; color:var(--text-muted);"></i> Resumen de Tiempo</h3>
+            </div>
+            <div id="timeSummaryContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Se llena dinámicamente con JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Usuarios, Logs y Adjuntos -->
+        <div class="project-sidebar-column">
+          <!-- Usuarios Asignados -->
+          {% if is_project_creator %}
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="bi bi-people" style="margin-right:.5rem; color:var(--text-muted);"></i> Usuarios Asignados</h3>
+              <button onclick="openAssignUsersModal()" class="btn btn-primary-ghost btn-sm">
+                <i class="bi bi-person-plus"></i>
+              </button>
+            </div>
+            <div id="assignedUsersContainer" style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <!-- Se llena dinámicamente con JavaScript para agrupar por equipos -->
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Logs -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="bi bi-journal-text" style="margin-right:.5rem; color:var(--text-muted);"></i> Bitácora</h3>
+              <button onclick="openAddLogModal()" class="btn btn-primary-ghost btn-sm">
+                <i class="bi bi-plus-circle"></i>
+              </button>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;">
+              {% for log in project.logs %}
+              {% set log_user = all_users|selectattr('id', 'equalto', log.created_by)|first %}
+              <div style="border-left: 3px solid var(--primary); padding-left: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                  {% if log_user %}
+                  <img src="{{ log_user.avatar_url }}" alt="{{ log_user.display_name or log_user.username }}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border);">
+                  <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">{{ log_user.display_name or log_user.username }}</span>
+                  {% else %}
+                  <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">Sistema</span>
+                  {% endif %}
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 0.25rem;">{{ log.text }}</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">
+                  {{ log.created_at|timestamp_to_date }}
+                </p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Adjuntos -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="bi bi-paperclip" style="margin-right:.5rem; color:var(--text-muted);"></i> Adjuntos</h3>
+              {% if project.created_by == user.id %}
+              <button onclick="openProjectAttachmentsFileUpload()" class="btn btn-primary-ghost btn-sm">
+                <i class="bi bi-upload"></i>
+              </button>
+              {% endif %}
+            </div>
+            
+            <div id="attachmentsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+              {% for attach in project.attachments %}
+              <a href="{{ attach.url }}" target="_blank" class="file-item">
+                {% set ext = (attach.original_name|lower).split('.')[-1] if '.' in attach.original_name else '' %}
+                {% if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'] %}
+                <img src="{{ attach.url }}" alt="{{ attach.original_name }}" class="file-preview" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="file-icon {{ ext }}" style="display: none;">
+                  <i class="bi bi-image"></i>
+                </div>
+                {% else %}
+                <div class="file-icon {{ ext if ext else 'default' }}">
+                  {% if ext == 'pdf' %}
+                  <i class="bi bi-file-earmark-pdf"></i>
+                  {% elif ext in ['doc', 'docx'] %}
+                  <i class="bi bi-file-earmark-word"></i>
+                  {% elif ext in ['xls', 'xlsx'] %}
+                  <i class="bi bi-file-earmark-excel"></i>
+                  {% elif ext in ['ppt', 'pptx'] %}
+                  <i class="bi bi-file-earmark-ppt"></i>
+                  {% elif ext in ['zip', 'rar', '7z'] %}
+                  <i class="bi bi-file-earmark-zip"></i>
+                  {% elif ext == 'txt' %}
+                  <i class="bi bi-file-earmark-text"></i>
+                  {% else %}
+                  <i class="bi bi-file-earmark"></i>
+                  {% endif %}
+                </div>
+                {% endif %}
+                <div class="file-info">
+                  <div class="file-name">{{ attach.original_name }}</div>
+                  <div class="file-size">{{ (attach.size / 1024)|round(1) }} KB</div>
+                </div>
+                <i class="bi bi-download" style="color: var(--text-muted); flex-shrink: 0;"></i>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modales - Antes del script para que estén disponibles -->
+{% include "modals.html" %}
+
+<script>
+const PROJECT_ID = "{{ project.id }}";
+const ASSIGNED_USERS = {{ assigned_users|tojson }};
+const ALL_TEAMS = {{ all_teams|tojson }};
+const ALL_USERS = {{ all_users|tojson }};
+const PROJECT_TASKS_JSON = {{ project_tasks_json|tojson }};
+const CURRENT_USER_ID = "{{ user.id if user else '' }}";
+const PROJECT_ATTACHMENTS = {{ project_attachments_json|tojson }};
+
+// Debug: Verificar que los modales existan (ejecutar después de que el DOM esté listo)
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Modales disponibles:', {
+    addTaskModal: !!document.getElementById('addTaskModal'),
+    completeTaskModal: !!document.getElementById('completeTaskModal'),
+    fileUploadModal: !!document.getElementById('fileUploadModal'),
+    addLogModal: !!document.getElementById('addLogModal'),
+    reopenTaskModal: !!document.getElementById('reopenTaskModal')
+  });
+  
+  // Verificar que toggleTaskMenu esté definido
+  console.log('toggleTaskMenu definido:', typeof toggleTaskMenu);
+});
+
+// Función para obtener URL de avatar de usuario (ahora viene del backend)
+function getUserAvatarUrl(user) {
+  if (!user) return '/api/avatars/default.png';
+  // El backend ya calcula la URL correcta (foto real o avatar por género)
+  return user.avatar_url || '/api/avatars/default.png';
+}
+
+// Función helper para renderizar imagen de avatar
+function renderUserAvatar(user, size = 32) {
+  if (!user) {
+    return '<img src="/api/avatars/default.png" alt="Usuario" onerror="this.style.display=\'none\';" style="width: ' + size + 'px; height: ' + size + 'px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border);">';
+  }
+  const avatarUrl = getUserAvatarUrl(user);
+  return `<img src="${avatarUrl}" alt="${user.display_name || user.username || 'Usuario'}" onerror="this.src='/api/avatars/default.png'; this.onerror=null;" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border);">`;
+}
+
+const UI = {
+  toggleSidebar: () => {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+  }
+};
+
+// Helper para obtener extensión de archivo
+function getFileExtension(filename) {
+  const parts = filename.toLowerCase().split('.');
+  return parts.length > 1 ? parts[parts.length - 1] : '';
+}
+
+// Helper para verificar si es imagen
+function isImageFile(filename) {
+  const ext = getFileExtension(filename);
+  return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(ext);
+}
+
+// Helper para obtener icono según extensión
+function getFileIcon(ext) {
+  const iconMap = {
+    'pdf': 'bi-file-earmark-pdf',
+    'doc': 'bi-file-earmark-word',
+    'docx': 'bi-file-earmark-word',
+    'xls': 'bi-file-earmark-excel',
+    'xlsx': 'bi-file-earmark-excel',
+    'ppt': 'bi-file-earmark-ppt',
+    'pptx': 'bi-file-earmark-ppt',
+    'zip': 'bi-file-earmark-zip',
+    'rar': 'bi-file-earmark-zip',
+    '7z': 'bi-file-earmark-zip',
+    'txt': 'bi-file-earmark-text',
+    'csv': 'bi-file-earmark-spreadsheet',
+    'json': 'bi-file-earmark-code',
+    'js': 'bi-file-earmark-code',
+    'py': 'bi-file-earmark-code',
+    'html': 'bi-file-earmark-code',
+    'css': 'bi-file-earmark-code',
+    'xml': 'bi-file-earmark-code',
+    'mp4': 'bi-file-earmark-play',
+    'avi': 'bi-file-earmark-play',
+    'mov': 'bi-file-earmark-play',
+    'mp3': 'bi-file-earmark-music',
+    'wav': 'bi-file-earmark-music',
+    'image': 'bi-image'
+  };
+  return iconMap[ext] || 'bi-file-earmark';
+}
+
+// Helper para obtener clase de color según extensión
+function getFileIconClass(ext) {
+  if (!ext) return 'default';
+  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(ext)) return 'image';
+  return ext;
+}
+
+// Renderizar usuarios asignados agrupados por equipo
+function renderAssignedUsers() {
+  const container = document.getElementById('assignedUsersContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  if (!ASSIGNED_USERS || ASSIGNED_USERS.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem;">No hay usuarios asignados</p>';
+    return;
+  }
+  
+  const assignedUserIds = ASSIGNED_USERS.map(u => u.id);
+  
+  // Agrupar usuarios por equipo
+  const usersByTeam = {};
+  const usersWithoutTeam = [];
+  
+  ALL_TEAMS.forEach(team => {
+    const teamMembers = ASSIGNED_USERS.filter(u => team.member_ids && team.member_ids.includes(u.id));
+    if (teamMembers.length > 0) {
+      usersByTeam[team.id] = {
+        team: team,
+        members: teamMembers
+      };
+    }
+  });
+  
+  // Usuarios que no están en ningún equipo asignado
+  ASSIGNED_USERS.forEach(user => {
+    const inAnyTeam = ALL_TEAMS.some(team => 
+      team.member_ids && team.member_ids.includes(user.id) && usersByTeam[team.id]
+    );
+    if (!inAnyTeam) {
+      usersWithoutTeam.push(user);
+    }
+  });
+  
+  // Renderizar equipos
+  Object.values(usersByTeam).forEach(({team, members}) => {
+    const teamDiv = document.createElement('div');
+    teamDiv.className = 'team-assignment-group';
+    teamDiv.style.cssText = 'border: 1px solid var(--border); border-radius: var(--radius-sm); background: rgba(139, 92, 246, 0.05); overflow: hidden;';
+    
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; cursor: pointer; background: rgba(139, 92, 246, 0.1);';
+    header.onclick = () => toggleTeamExpand(team.id);
+    
+    header.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+        <i class="bi bi-chevron-${getTeamExpanded(team.id) ? 'down' : 'right'}" id="team-icon-${team.id}" style="font-size: 0.9rem;"></i>
+        <i class="bi bi-diagram-3" style="color: var(--primary); font-size: 1.1rem;"></i>
+        <span style="font-weight: 600; color: var(--text-main);">${team.name}</span>
+        <span class="badge" style="background: var(--primary-soft); color: var(--primary); font-size: 0.7rem;">
+          ${members.length} ${members.length === 1 ? 'miembro' : 'miembros'}
+        </span>
+      </div>
+    `;
+    
+    const membersDiv = document.createElement('div');
+    membersDiv.id = `team-members-${team.id}`;
+    membersDiv.style.cssText = `display: ${getTeamExpanded(team.id) ? 'flex' : 'none'}; flex-direction: column; gap: 0.25rem; padding: 0.5rem 0.75rem; background: var(--bg-card);`;
+    
+    members.forEach(member => {
+      const memberDiv = document.createElement('div');
+      memberDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);';
+      
+      // Usar avatar_url que viene del backend
+      const memberAvatarHtml = renderUserAvatar(member, 28);
+      
+      let badgeStyle = 'background: rgba(255,255,255,0.1);';
+      const roleUpper = (member.role || '').toUpperCase();
+      if (roleUpper === 'ADMIN') {
+        badgeStyle = 'background: var(--primary-soft); color: var(--primary);';
+      } else if (roleUpper === 'MANAGER') {
+        badgeStyle = 'background: rgba(59, 130, 246, 0.15); color: var(--info);';
+      }
+      
+      memberDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+          ${memberAvatarHtml}
+          <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-main);">${member.display_name || member.username}</span>
+        </div>
+        <span class="badge" style="${badgeStyle} font-size: 0.7rem;">
+          ${member.role || 'USER'}
+        </span>
+      `;
+      membersDiv.appendChild(memberDiv);
+    });
+    
+    teamDiv.appendChild(header);
+    teamDiv.appendChild(membersDiv);
+    container.appendChild(teamDiv);
+  });
+  
+  // Renderizar usuarios sin equipo
+  if (usersWithoutTeam.length > 0) {
+    usersWithoutTeam.forEach(user => {
+      const userDiv = document.createElement('div');
+      userDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid var(--border);';
+      
+      // Usar avatar_url que viene del backend
+      const userAvatarHtml = renderUserAvatar(user, 36);
+      
+      let badgeStyle = 'background: rgba(255,255,255,0.1);';
+      const roleUpper = (user.role || '').toUpperCase();
+      if (roleUpper === 'ADMIN') {
+        badgeStyle = 'background: var(--primary-soft); color: var(--primary);';
+      } else if (roleUpper === 'MANAGER') {
+        badgeStyle = 'background: rgba(59, 130, 246, 0.15); color: var(--info);';
+      }
+      
+      userDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1;">
+          <div>${userAvatarHtml}</div>
+          <div>
+            <div style="font-size: 0.9rem; font-weight: 500; color: var(--text-main);">${user.display_name || user.username}</div>
+            ${user.site_name ? `<div style="font-size: 0.75rem; color: var(--text-muted);">${user.site_name}</div>` : ''}
+          </div>
+        </div>
+        <span class="badge" style="${badgeStyle}">
+          ${user.role || 'USER'}
+        </span>
+      `;
+      container.appendChild(userDiv);
+    });
+  }
+}
+
+const teamExpandedState = {};
+
+function getTeamExpanded(teamId) {
+  return teamExpandedState[teamId] !== false; // Por defecto expandido
+}
+
+function toggleTeamExpand(teamId) {
+  teamExpandedState[teamId] = !getTeamExpanded(teamId);
+  const membersDiv = document.getElementById(`team-members-${teamId}`);
+  const icon = document.getElementById(`team-icon-${teamId}`);
+  if (membersDiv && icon) {
+    membersDiv.style.display = getTeamExpanded(teamId) ? 'flex' : 'none';
+    icon.className = `bi bi-chevron-${getTeamExpanded(teamId) ? 'down' : 'right'}`;
+  }
+}
+
+// Renderizar al cargar la página
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderAssignedUsers);
+} else {
+  renderAssignedUsers();
+}
+
+// Funciones de tareas
+// Estado de colapso de tareas (por defecto todas expandidas)
+const taskCollapseState = {};
+
+function toggleTaskCollapse(taskId) {
+  const childrenContainer = document.getElementById(`task-children-${taskId}`);
+  const collapseIcon = document.getElementById(`collapse-icon-${taskId}`);
+  
+  if (!childrenContainer) return;
+  
+  // Toggle del estado
+  taskCollapseState[taskId] = !taskCollapseState[taskId];
+  const isCollapsed = taskCollapseState[taskId];
+  
+  // Aplicar/remover clase collapsed
+  if (isCollapsed) {
+    childrenContainer.classList.add('collapsed');
+    if (collapseIcon) collapseIcon.classList.add('collapsed');
+  } else {
+    childrenContainer.classList.remove('collapsed');
+    if (collapseIcon) collapseIcon.classList.remove('collapsed');
+  }
+}
+
+// Funciones para manejar el menú de tareas
+function toggleTaskMenu(taskId, event) {
+  if (event) {
+    event.stopPropagation();
+  }
+  
+  const overlay = document.getElementById(`taskMenu${taskId}`);
+  if (!overlay) return;
+  
+  const container = overlay.closest('.task-menu-container');
+  if (!container) return;
+  
+  const isActive = overlay.classList.contains('active');
+  
+  // Cerrar todos los otros menús abiertos
+  document.querySelectorAll('.task-menu-overlay.active').forEach(m => {
+    m.classList.remove('active');
+    m.style.display = 'none';
+  });
+  document.querySelectorAll('.task-menu-container.active').forEach(c => {
+    c.classList.remove('active');
+  });
+  
+  // Toggle del menú actual
+  if (!isActive) {
+    // Posicionar el menú relativo al botón usando coordenadas fijas
+    const button = event?.target?.closest('.task-menu-toggle') || container.querySelector('.task-menu-toggle');
+    const menuElement = overlay.querySelector('.task-menu');
+    
+    if (button && menuElement) {
+      const buttonRect = button.getBoundingClientRect();
+      const menuWidth = 220; // width del menú
+      const spacing = 8; // espacio entre botón y menú
+      
+      // Calcular posición horizontal
+      let left = buttonRect.right - menuWidth;
+      if (left < 10) {
+        // Si se sale por la izquierda, alinear al botón
+        left = buttonRect.left;
+      }
+      if (left + menuWidth > window.innerWidth - 10) {
+        // Si se sale por la derecha, ajustar
+        left = window.innerWidth - menuWidth - 10;
+      }
+      
+      // Calcular posición vertical (primero abajo del botón)
+      let top = buttonRect.bottom + spacing;
+      
+      // Aplicar posición fija ANTES de mostrar el overlay
+      menuElement.style.position = 'fixed';
+      menuElement.style.left = left + 'px';
+      menuElement.style.top = top + 'px';
+      menuElement.style.right = 'auto';
+      menuElement.style.bottom = 'auto';
+      
+      // Ahora mostrar el overlay
+      overlay.classList.add('active');
+      
+      // Ajustar posición vertical si es necesario después de que el menú sea visible
+      setTimeout(() => {
+        const menuRect = menuElement.getBoundingClientRect();
+        const menuHeight = menuRect.height;
+        
+        // Si se sale por abajo, mostrar arriba del botón
+        if (top + menuHeight > window.innerHeight - 10) {
+          top = buttonRect.top - menuHeight - spacing;
+          if (top < 10) {
+            top = 10;
+          }
+          menuElement.style.top = top + 'px';
+        }
+      }, 50);
+    } else {
+      // Si no hay botón o menú, solo mostrar el overlay
+      overlay.classList.add('active');
+    }
+  }
+}
+
+function closeTaskMenu(taskId) {
+  const overlay = document.getElementById(`taskMenu${taskId}`);
+  if (overlay) {
+    overlay.classList.remove('active');
+    overlay.style.display = 'none';
+  }
+}
+
+// Cerrar menús al hacer click fuera
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.task-menu-toggle') && !e.target.closest('.task-menu') && !e.target.closest('.task-menu-container')) {
+    document.querySelectorAll('.task-menu-overlay.active').forEach(overlay => {
+      overlay.classList.remove('active');
+      overlay.style.display = 'none';
+    });
+  }
+});
+
+// ============================================================
+// FILE UPLOAD COMPONENT (Drag & Drop)
+// ============================================================
+
+let fileUploadFiles = []; // Array de File objects
+let fileUploadExisting = []; // Array de attachments existentes
+
+function openFileUploadModal(context, taskId = '', existingFiles = []) {
+  // context: 'task_create', 'task_attachments', 'completion', 'reopen'
+  fileUploadFiles = [];
+  fileUploadExisting = existingFiles || [];
+  
+  document.getElementById('fileUploadContext').value = context;
+  document.getElementById('fileUploadTaskId').value = taskId;
+  
+  // Configurar título según contexto
+  const titles = {
+    'task_attachments': 'Agregar Archivos a la Tarea',
+    'completion': 'Evidencias de Completado',
+    'reopen': 'Archivos de Soporte',
+    'project_attachments': 'Agregar Archivos al Proyecto'
+  };
+  document.getElementById('fileUploadModalTitle').textContent = titles[context] || 'Subir Archivos';
+  
+  // Limpiar listas y progreso
+  document.getElementById('fileUploadItems').innerHTML = '';
+  document.getElementById('fileUploadExistingItems').innerHTML = '';
+  document.getElementById('fileUploadList').style.display = 'none';
+  document.getElementById('fileUploadExistingList').style.display = 'none';
+  const progressDiv = document.getElementById('fileUploadProgress');
+  if (progressDiv) progressDiv.style.display = 'none';
+  const saveBtn = document.getElementById('fileUploadSaveBtn');
+  if (saveBtn) saveBtn.disabled = false;
+  
+  // Mostrar archivos existentes si los hay
+  if (fileUploadExisting.length > 0) {
+    renderExistingFiles();
+    document.getElementById('fileUploadExistingList').style.display = 'block';
+  }
+  
+  // Configurar drag & drop
+  setupDragAndDrop();
+  
+  // Mostrar el modal
+  const modal = document.getElementById('fileUploadModal');
+  if (modal) {
+    modal.classList.add('open');
+  } else {
+    console.error('Modal fileUploadModal no encontrado');
+  }
+}
+
+function closeFileUploadModal() {
+  document.getElementById('fileUploadModal').classList.remove('open');
+  fileUploadFiles = [];
+  fileUploadExisting = [];
+  document.getElementById('fileUploadInput').value = '';
+}
+
+// Variable para rastrear si ya se configuró drag & drop
+let dragAndDropSetup = false;
+
+function setupDragAndDrop() {
+  const dropZone = document.getElementById('fileUploadDropZone');
+  const input = document.getElementById('fileUploadInput');
+  
+  if (!dropZone || !input) return;
+  
+  // Solo configurar una vez
+  if (dragAndDropSetup) return;
+  dragAndDropSetup = true;
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  // Prevenir comportamiento por defecto
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  // Highlight cuando se arrastra sobre
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => {
+      dropZone.classList.add('drag-over');
+    }, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => {
+      dropZone.classList.remove('drag-over');
+    }, false);
+  });
+  
+  // Manejar drop
+  dropZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleFiles(files);
+  }, false);
+  
+  // Click en dropzone
+  dropZone.addEventListener('click', () => {
+    input.click();
+  });
+}
+
+function handleFileSelect(event) {
+  const files = event.target.files;
+  handleFiles(files);
+}
+
+function handleFiles(files) {
+  const fileArray = Array.from(files);
+  fileUploadFiles = [...fileUploadFiles, ...fileArray];
+  renderFileList();
+}
+
+function renderFileList() {
+  const container = document.getElementById('fileUploadItems');
+  container.innerHTML = '';
+  
+  if (fileUploadFiles.length === 0) {
+    document.getElementById('fileUploadList').style.display = 'none';
+    return;
+  }
+  
+  document.getElementById('fileUploadList').style.display = 'block';
+  
+  fileUploadFiles.forEach((file, index) => {
+    const item = createFileItem(file, index, false);
+    container.appendChild(item);
+  });
+}
+
+function renderExistingFiles() {
+  const container = document.getElementById('fileUploadExistingItems');
+  container.innerHTML = '';
+  
+  if (fileUploadExisting.length === 0) {
+    document.getElementById('fileUploadExistingList').style.display = 'none';
+    return;
+  }
+  
+  document.getElementById('fileUploadExistingList').style.display = 'block';
+  
+  fileUploadExisting.forEach((attachment, index) => {
+    const item = createFileItem(attachment, index, true);
+    container.appendChild(item);
+  });
+}
+
+function createFileItem(fileOrAttachment, index, isExisting) {
+  const div = document.createElement('div');
+  div.className = 'file-upload-item';
+  
+  const isImage = isExisting 
+    ? (fileOrAttachment.filename?.match(/\.(png|jpg|jpeg|gif|webp)$/i))
+    : fileOrAttachment.type?.startsWith('image/');
+  
+  const name = isExisting ? (fileOrAttachment.original_name || fileOrAttachment.filename) : fileOrAttachment.name;
+  const size = isExisting ? formatFileSize(fileOrAttachment.size || 0) : formatFileSize(fileOrAttachment.size);
+  const url = isExisting ? `/attachments/${fileOrAttachment.filename}` : null;
+  const attachmentId = isExisting ? fileOrAttachment.id : null;
+  const canDelete = isExisting ? (fileOrAttachment.uploaded_by === CURRENT_USER_ID) : true;
+  
+  if (isImage && isExisting) {
+    div.innerHTML = `
+      <img src="${url}" alt="${name}" class="file-upload-item-preview" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="file-upload-item-icon" style="display: none;">
+        <i class="bi bi-image"></i>
+      </div>
+      <div class="file-upload-item-info" ${attachmentId ? `data-attachment-id="${attachmentId}"` : ''}>
+        <div class="file-upload-item-name">${escapeHtml(name)}</div>
+        <div class="file-upload-item-size">${size}</div>
+      </div>
+      ${canDelete ? `<button type="button" class="file-upload-item-remove" onclick="removeFile(${index}, true)" title="Eliminar">
+        <i class="bi bi-trash3"></i>
+      </button>` : '<span style="color: var(--text-muted); font-size: 0.75rem;">Solo el autor puede eliminar</span>'}
+    `;
+  } else if (isImage && !isExisting) {
+    const objectUrl = URL.createObjectURL(fileOrAttachment);
+    div.innerHTML = `
+      <img src="${objectUrl}" alt="${name}" class="file-upload-item-preview">
+      <div class="file-upload-item-info">
+        <div class="file-upload-item-name">${escapeHtml(name)}</div>
+        <div class="file-upload-item-size">${size}</div>
+      </div>
+      <button type="button" class="file-upload-item-remove" onclick="removeFile(${index}, false)" title="Eliminar">
+        <i class="bi bi-trash3"></i>
+      </button>
+    `;
+  } else {
+    const ext = name.split('.').pop().toLowerCase();
+    div.innerHTML = `
+      <div class="file-upload-item-icon">
+        <i class="bi bi-file-earmark"></i>
+      </div>
+      <div class="file-upload-item-info" ${attachmentId ? `data-attachment-id="${attachmentId}"` : ''}>
+        <div class="file-upload-item-name">${escapeHtml(name)}</div>
+        <div class="file-upload-item-size">${size}</div>
+      </div>
+      ${canDelete ? `<button type="button" class="file-upload-item-remove" onclick="removeFile(${index}, ${isExisting})" title="Eliminar">
+        <i class="bi bi-trash3"></i>
+      </button>` : '<span style="color: var(--text-muted); font-size: 0.75rem;">Solo el autor puede eliminar</span>'}
+    `;
+  }
+  
+  return div;
+}
+
+function removeFile(index, isExisting) {
+  if (isExisting) {
+    // Encontrar el archivo por índice y eliminarlo
+    if (index >= 0 && index < fileUploadExisting.length) {
+      fileUploadExisting.splice(index, 1);
+      renderExistingFiles();
+    }
+  } else {
+    // Encontrar el archivo por índice y eliminarlo
+    if (index >= 0 && index < fileUploadFiles.length) {
+      fileUploadFiles.splice(index, 1);
+      renderFileList();
+    }
+  }
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function saveFileUpload() {
+  const context = document.getElementById('fileUploadContext').value;
+  const taskId = document.getElementById('fileUploadTaskId').value;
+  
+  // Ocultar botón de guardar y mostrar progreso
+  const saveBtn = document.getElementById('fileUploadSaveBtn');
+  const progressDiv = document.getElementById('fileUploadProgress');
+  const progressBar = document.getElementById('fileUploadBar');
+  const progressPercent = document.getElementById('fileUploadPercent');
+  const progressCurrent = document.getElementById('fileUploadCurrent');
+  const progressTotal = document.getElementById('fileUploadTotal');
+  
+  if (saveBtn) saveBtn.disabled = true;
+  if (progressDiv) progressDiv.style.display = 'block';
+  if (progressBar) progressBar.style.width = '0%';
+  if (progressPercent) progressPercent.textContent = '0%';
+  
+  try {
+    // Eliminar archivos existentes que fueron removidos
+    const existingItems = Array.from(document.querySelectorAll('#fileUploadExistingItems .file-upload-item'));
+    const remainingIds = new Set();
+    
+    existingItems.forEach((item) => {
+      const infoDiv = item.querySelector('.file-upload-item-info');
+      if (infoDiv && infoDiv.dataset.attachmentId) {
+        remainingIds.add(infoDiv.dataset.attachmentId);
+      }
+    });
+    
+    // Eliminar archivos que no están en remainingIds (fueron removidos)
+    for (const attachment of fileUploadExisting) {
+      if (!remainingIds.has(attachment.id)) {
+        try {
+          let deleteUrl = '';
+          let attachmentType = 'attachments';
+          
+          if (context === 'task_attachments') {
+            attachmentType = 'attachments';
+          } else if (context === 'completion') {
+            attachmentType = 'completion_evidence';
+          } else if (context === 'reopen') {
+            attachmentType = 'reopen_evidence';
+          } else if (context === 'project_attachments') {
+            // Para proyectos, usar endpoint diferente
+            deleteUrl = `/api/projects/${PROJECT_ID}/attachments/${attachment.id}`;
+            const deleteResponse = await fetch(deleteUrl, { method: 'DELETE' });
+            if (!deleteResponse.ok) {
+              console.warn('No se pudo eliminar el archivo:', attachment.original_name);
+            }
+            continue;
+          }
+          
+          if (attachmentType !== 'project_attachments') {
+            deleteUrl = `/api/tasks/${taskId}/attachments/${attachment.id}?project_id=${PROJECT_ID}&attachment_type=${attachmentType}`;
+            if (deleteUrl) {
+              const deleteResponse = await fetch(deleteUrl, { method: 'DELETE' });
+              if (!deleteResponse.ok) {
+                console.warn('No se pudo eliminar el archivo:', attachment.original_name);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Error eliminando archivo:', e);
+        }
+      }
+    }
+    
+    // Subir archivos nuevos si los hay
+    if (fileUploadFiles.length > 0) {
+      if (progressTotal) progressTotal.textContent = fileUploadFiles.length;
+      
+      let uploadUrl = '';
+      if (context === 'project_attachments') {
+        uploadUrl = `/api/projects/${PROJECT_ID}/attachments`;
+      } else if (context === 'task_attachments') {
+        uploadUrl = `/api/tasks/${taskId}/attachments`;
+      } else if (context === 'completion') {
+        uploadUrl = `/api/tasks/${taskId}/completion_evidence`;
+      } else if (context === 'reopen') {
+        uploadUrl = `/api/tasks/${taskId}/reopen_evidence`;
+      }
+      
+      if (uploadUrl) {
+        // Subir archivos uno por uno con progreso
+        if (progressTotal) progressTotal.textContent = fileUploadFiles.length;
+        
+        for (let i = 0; i < fileUploadFiles.length; i++) {
+          const file = fileUploadFiles[i];
+          const formData = new FormData();
+          formData.append('files', file);
+          // No necesitamos enviar project_id para proyectos, ya viene en la URL
+          if (context !== 'project_attachments') {
+            formData.append('project_id', PROJECT_ID);
+          }
+          
+          if (progressCurrent) progressCurrent.textContent = i + 1;
+          
+          const response = await fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ detail: 'Error al subir archivos' }));
+            if (progressDiv) progressDiv.style.display = 'none';
+            if (saveBtn) saveBtn.disabled = false;
+            showError(errorData.detail || 'Error al subir archivos', 'Error');
+            return;
+          }
+          
+          // Actualizar progreso
+          const percent = Math.round(((i + 1) / fileUploadFiles.length) * 100);
+          if (progressBar) progressBar.style.width = percent + '%';
+          if (progressPercent) progressPercent.textContent = percent + '%';
+        }
+      }
+    }
+    
+    if (progressDiv) progressDiv.style.display = 'none';
+    if (saveBtn) saveBtn.disabled = false;
+    closeFileUploadModal();
+    
+    // Actualizar previews en los modales
+    updateFilePreviews(context);
+    
+    // Si no hay archivos nuevos y no se eliminaron archivos, solo cerrar
+    if (fileUploadFiles.length === 0 && remainingIds.size === fileUploadExisting.length) {
+      return;
+    }
+    
+    location.reload();
+  } catch (error) {
+    if (progressDiv) progressDiv.style.display = 'none';
+    if (saveBtn) saveBtn.disabled = false;
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+function updateFilePreviews(context) {
+  // Actualizar los previews en los modales después de subir
+  if (context === 'completion') {
+    const preview = document.getElementById('completionEvidencePreview');
+    if (preview && (fileUploadFiles.length > 0 || fileUploadExisting.length > 0)) {
+      preview.style.display = 'block';
+      preview.innerHTML = `<span style="color: var(--text-muted); font-size: 0.875rem;">${fileUploadFiles.length + fileUploadExisting.length} archivo(s) seleccionado(s)</span>`;
+    }
+  } else if (context === 'reopen') {
+    const preview = document.getElementById('reopenEvidencePreview');
+    if (preview && (fileUploadFiles.length > 0 || fileUploadExisting.length > 0)) {
+      preview.style.display = 'block';
+      preview.innerHTML = `<span style="color: var(--text-muted); font-size: 0.875rem;">${fileUploadFiles.length + fileUploadExisting.length} archivo(s) seleccionado(s)</span>`;
+    }
+  }
+  // task_attachments no necesita preview ya que se maneja directamente en el modal de upload
+}
+
+async function startTask(taskId) {
+  showLoading();
+  try {
+    const response = await fetch(`/api/tasks/${taskId}/status`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({status: 'running', project_id: PROJECT_ID})
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      hideLoading();
+      showError(errorData.detail || 'No se pudo iniciar la tarea', 'Error');
+      return;
+    }
+    
+    hideLoading();
+    location.reload();
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+async function pauseTask(taskId) {
+  showLoading();
+  try {
+    const response = await fetch(`/api/tasks/${taskId}/status`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({status: 'paused', project_id: PROJECT_ID})
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      hideLoading();
+      showError(errorData.detail || 'No se pudo pausar la tarea', 'Error');
+      return;
+    }
+    
+    hideLoading();
+    location.reload();
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+function openCompleteTaskModal(taskId) {
+  const modal = document.getElementById('completeTaskModal');
+  if (!modal) {
+    console.error('Modal completeTaskModal no encontrado');
+    return;
+  }
+  document.getElementById('taskIdForCompletion').value = taskId;
+  document.getElementById('completionComment').value = '';
+  const preview = document.getElementById('completionEvidencePreview');
+  if (preview) {
+    preview.innerHTML = '';
+    preview.style.display = 'none';
+  }
+  modal.classList.add('open');
+}
+
+function openCompletionFileUpload() {
+  const taskId = document.getElementById('taskIdForCompletion').value;
+  // Cargar archivos existentes de completion_evidence si los hay
+  const task = findTaskInProject(taskId);
+  const existingFiles = task?.completion_evidence || [];
+  openFileUploadModal('completion', taskId, existingFiles);
+}
+
+function closeCompleteTaskModal() {
+  document.getElementById('completeTaskModal').classList.remove('open');
+  document.getElementById('completionComment').value = '';
+  document.getElementById('completionEvidence').value = '';
+}
+
+async function saveCompleteTask() {
+  const taskId = document.getElementById('taskIdForCompletion').value;
+  const comment = document.getElementById('completionComment').value.trim();
+  
+  showLoading();
+  try {
+    // Primero completar la tarea con el comentario
+    const response = await fetch(`/api/tasks/${taskId}/status`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        status: 'completed',
+        project_id: PROJECT_ID,
+        completion_comment: comment || null
+      })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      hideLoading();
+      showError(errorData.detail || 'No se pudo completar la tarea', 'Error');
+      return;
+    }
+    
+    // Si hay evidencias del modal de upload, subirlas
+    if (fileUploadFiles.length > 0) {
+      const formData = new FormData();
+      for (let i = 0; i < fileUploadFiles.length; i++) {
+        formData.append('files', fileUploadFiles[i]);
+      }
+      formData.append('project_id', PROJECT_ID);
+      
+      const evidenceResponse = await fetch(`/api/tasks/${taskId}/completion_evidence`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!evidenceResponse.ok) {
+        console.warn('No se pudieron subir algunas evidencias, pero la tarea se completó');
+      }
+    }
+    
+    hideLoading();
+    closeCompleteTaskModal();
+    fileUploadFiles = [];
+    location.reload();
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+async function deleteTask(taskId) {
+  if (confirm('¿Eliminar esta tarea?')) {
+    showLoading();
+    try {
+      await fetch(`/api/tasks/${taskId}?project_id=${PROJECT_ID}`, {
+        method: 'DELETE'
+      });
+      hideLoading();
+      location.reload();
+    } catch (error) {
+      hideLoading();
+      showError('Error: ' + error.message, 'Error');
+    }
+  }
+}
+
+// Función eliminada - ahora se usa el modal de archivos para subir archivos al proyecto
+// async function uploadFile(event) { ... }
+
+async function addLog() {
+  const text = document.getElementById('logText').value;
+  if (!text.trim()) return;
+  
+  showLoading();
+  try {
+    await fetch(`/api/projects/${PROJECT_ID}/logs`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text})
+    });
+    hideLoading();
+    location.reload();
+  } catch (error) {
+    hideLoading();
+    showError('Error al agregar log: ' + error.message, 'Error');
+  }
+}
+
+function openAddTaskModal(parentId = '') {
+  const modal = document.getElementById('addTaskModal');
+  if (!modal) {
+    console.error('Modal addTaskModal no encontrado');
+    return;
+  }
+  document.getElementById('taskParentId').value = parentId;
+  modal.classList.add('open');
+}
+
+function closeAddTaskModal() {
+  document.getElementById('addTaskModal').classList.remove('open');
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDescription').value = '';
+  // taskAttachmentsPreview ya no existe, se eliminó del modal
+  fileUploadFiles = [];
+}
+
+function openAddChildModal(parentId) {
+  openAddTaskModal(parentId);
+}
+
+function openAddLogModal() {
+  const modal = document.getElementById('addLogModal');
+  if (!modal) {
+    console.error('Modal addLogModal no encontrado');
+    return;
+  }
+  modal.classList.add('open');
+}
+
+function closeAddLogModal() {
+  document.getElementById('addLogModal').classList.remove('open');
+  document.getElementById('logText').value = '';
+}
+
+function openReopenTaskModal(taskId) {
+  const modal = document.getElementById('reopenTaskModal');
+  if (!modal) {
+    console.error('Modal reopenTaskModal no encontrado');
+    return;
+  }
+  document.getElementById('taskIdForReopen').value = taskId;
+  document.getElementById('reopenJustification').value = '';
+  const preview = document.getElementById('reopenEvidencePreview');
+  if (preview) {
+    preview.innerHTML = '';
+    preview.style.display = 'none';
+  }
+  modal.classList.add('open');
+}
+
+function openReopenFileUpload() {
+  const taskId = document.getElementById('taskIdForReopen').value;
+  // Cargar archivos existentes de reopen_evidence si los hay
+  const task = findTaskInProject(taskId);
+  const existingFiles = task?.reopen_evidence || [];
+  openFileUploadModal('reopen', taskId, existingFiles);
+}
+
+function closeReopenTaskModal() {
+  document.getElementById('reopenTaskModal').classList.remove('open');
+  const justificationEl = document.getElementById('reopenJustification');
+  if (justificationEl) justificationEl.value = '';
+  // reopenEvidence no existe, se maneja en el modal de archivos
+}
+
+function openTaskAttachmentsFileUpload(taskId) {
+  // Abrir directamente el modal de upload, sin modal intermedio
+  const task = findTaskInProject(taskId);
+  const existingFiles = task?.attachments || [];
+  openFileUploadModal('task_attachments', taskId, existingFiles);
+}
+
+// Helper para encontrar una tarea en el proyecto
+function findTaskInProject(taskId) {
+  if (!PROJECT_TASKS_JSON) return null;
+  
+  function searchTask(tasks) {
+    for (const task of tasks) {
+      if (task.id === taskId) return task;
+      if (task.children && task.children.length > 0) {
+        const found = searchTask(task.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+  
+  return searchTask(PROJECT_TASKS_JSON);
+}
+
+function openProjectAttachmentsFileUpload() {
+  // Abrir el modal de upload para agregar archivos al proyecto
+  openFileUploadModal('project_attachments', PROJECT_ID, PROJECT_ATTACHMENTS);
+}
+
+async function saveReopenTask() {
+  const taskIdEl = document.getElementById('taskIdForReopen');
+  const justificationEl = document.getElementById('reopenJustification');
+  
+  if (!taskIdEl || !justificationEl) {
+    console.error('Elementos del modal de reabrir tarea no encontrados');
+    return;
+  }
+  
+  const taskId = taskIdEl.value;
+  const justification = justificationEl.value.trim();
+  
+  // La justificación es opcional, el backend usará un valor por defecto si está vacía
+  
+  showLoading();
+  try {
+    // Primero reabrir la tarea con la justificación (puede estar vacía si es opcional)
+    const response = await fetch(`/api/tasks/${taskId}/reopen`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        project_id: PROJECT_ID,
+        justification: justification || 'Tarea reabierta sin justificación específica'
+      })
+    });
+    
+    if (!response.ok) {
+      let errorMessage = 'No se pudo reabrir la tarea';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.detail || errorMessage;
+      } catch (parseError) {
+        // Si la respuesta no es JSON, intentar leer como texto
+        try {
+          const text = await response.text();
+          errorMessage = text || errorMessage;
+        } catch (e) {
+          // Si todo falla, usar el mensaje por defecto
+          errorMessage = `Error ${response.status}: ${response.statusText}`;
+        }
+      }
+      hideLoading();
+      showError(errorMessage, 'Error');
+      return;
+    }
+    
+    // Si hay archivos de evidencia del modal de upload, subirlos
+    if (fileUploadFiles.length > 0) {
+      const formData = new FormData();
+      for (let i = 0; i < fileUploadFiles.length; i++) {
+        formData.append('files', fileUploadFiles[i]);
+      }
+      formData.append('project_id', PROJECT_ID);
+      
+      const evidenceResponse = await fetch(`/api/tasks/${taskId}/reopen_evidence`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!evidenceResponse.ok) {
+        console.warn('No se pudieron subir algunos archivos de evidencia, pero la tarea se reabrió');
+      }
+    }
+    
+    hideLoading();
+    closeReopenTaskModal();
+    location.reload();
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+function openPostponeModal() {
+  document.getElementById('postponeModal').classList.add('open');
+}
+
+function closePostponeModal() {
+  document.getElementById('postponeModal').classList.remove('open');
+}
+
+function openEditModal() {
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+}
+
+async function openAssignUsersModal() {
+  document.getElementById('assignUsersModal').classList.add('open');
+  loadUsersForAssignment();
+}
+
+function closeAssignUsersModal() {
+  document.getElementById('assignUsersModal').classList.remove('open');
+}
+
+async function addTask(event) {
+  event.preventDefault();
+  const parentId = document.getElementById('taskParentId').value;
+  const title = document.getElementById('taskTitle').value.trim();
+  const description = document.getElementById('taskDescription').value.trim();
+  
+  // Validar título
+  if (!title) {
+    showError('El título es requerido', 'Error');
+    return;
+  }
+  
+  let url = `/api/projects/${PROJECT_ID}/tasks`;
+  if (parentId) {
+    url = `/api/projects/${PROJECT_ID}/tasks/${parentId}/child`;
+  }
+  
+  showLoading();
+  try {
+    let response;
+    
+    if (parentId) {
+      // Para subtareas, usar FormData
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description || '');
+      
+      response = await fetch(url, {
+        method: 'POST',
+        body: formData
+      });
+    } else {
+      // Para tareas raíz, usar JSON
+      const requestBody = {
+        title: title,
+        description: description || ''
+      };
+      
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+    }
+    
+    if (response.ok) {
+      hideLoading();
+      closeAddTaskModal();
+      location.reload();
+    } else {
+      const errorData = await response.json().catch(() => ({ detail: 'Error al crear tarea' }));
+      hideLoading();
+      showError(errorData.detail || 'Error al crear tarea', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+      showError('Error al crear tarea: ' + error.message, 'Error');
+  }
+}
+
+async function updateProject(event) {
+  event.preventDefault();
+  const name = document.getElementById('editProjectName').value;
+  const description = document.getElementById('editProjectDesc').value;
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/projects/${PROJECT_ID}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, description})
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      location.reload();
+    } else {
+      hideLoading();
+      showError('Error al actualizar proyecto', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+      showError('Error al actualizar proyecto: ' + error.message, 'Error');
+  }
+}
+
+async function postponeProject(event) {
+  event.preventDefault();
+  const days = parseInt(document.getElementById('postponeDays').value);
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/projects/${PROJECT_ID}/postpone`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({days})
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      location.reload();
+    } else {
+      hideLoading();
+      showError('Error al posponer', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+      showError('Error al posponer: ' + error.message, 'Error');
+  }
+}
+
+let allUsersData = [];
+let allTeamsData = [];
+let filteredUsers = [];
+let filteredTeams = [];
+
+async function loadUsersForAssignment() {
+  showLoading();
+  try {
+    const [usersResponse, teamsResponse] = await Promise.all([
+      fetch('/api/users'),
+      fetch('/api/teams')
+    ]);
+    allUsersData = (await usersResponse.json()).users || [];
+    allTeamsData = (await teamsResponse.json()).teams || [];
+    hideLoading();
+    
+    // Llenar filtros
+    const siteFilter = document.getElementById('filterBySiteModal');
+    const roleFilter = document.getElementById('filterByRoleModal');
+    const teamFilter = document.getElementById('filterByTeamModal');
+    
+    // Obtener sedes únicas
+    const sites = [...new Set(allUsersData.map(u => u.site_name).filter(s => s))].sort();
+    siteFilter.innerHTML = '<option value="">Todas las sedes</option>';
+    sites.forEach(site => {
+      siteFilter.innerHTML += `<option value="${site}">${site}</option>`;
+    });
+    
+    // Obtener roles únicos (roles reales de la DB, no solo ADMIN/MANAGER/USER)
+    const roles = [...new Set(allUsersData.map(u => u.role).filter(r => r))].sort();
+    roleFilter.innerHTML = '<option value="">Todos los roles</option>';
+    roles.forEach(role => {
+      roleFilter.innerHTML += `<option value="${role}">${role}</option>`;
+    });
+    
+    // Llenar equipos en el filtro
+    teamFilter.innerHTML = '<option value="">Todos los equipos</option>';
+    allTeamsData.forEach(team => {
+      teamFilter.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+    });
+    
+    filterUsersInModal();
+  } catch (error) {
+    hideLoading();
+    showError('Error cargando usuarios y equipos', 'Error');
+  }
+}
+
+function filterUsersInModal() {
+  const container = document.getElementById('usersList');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  const searchTerm = (document.getElementById('searchUsersModal')?.value || '').toLowerCase();
+  const roleFilter = document.getElementById('filterByRoleModal')?.value || '';
+  const siteFilter = document.getElementById('filterBySiteModal')?.value || '';
+  const teamFilter = document.getElementById('filterByTeamModal')?.value || '';
+  
+  const assignedUsers = {{ project.assigned_users|tojson }};
+  
+  // Filtrar equipos
+  let filteredTeamsList = allTeamsData;
+  if (teamFilter) {
+    filteredTeamsList = allTeamsData.filter(t => t.id === teamFilter);
+  }
+  if (searchTerm) {
+    filteredTeamsList = filteredTeamsList.filter(t => 
+      t.name.toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  // Filtrar usuarios
+  let filteredUsersList = allUsersData;
+  if (roleFilter) {
+    filteredUsersList = filteredUsersList.filter(u => (u.role || '').toUpperCase() === roleFilter.toUpperCase());
+  }
+  if (siteFilter) {
+    filteredUsersList = filteredUsersList.filter(u => u.site_name === siteFilter);
+  }
+  if (teamFilter) {
+    const team = allTeamsData.find(t => t.id === teamFilter);
+    if (team && team.member_ids) {
+      filteredUsersList = filteredUsersList.filter(u => team.member_ids.includes(u.id));
+    } else {
+      filteredUsersList = [];
+    }
+  }
+  if (searchTerm) {
+    filteredUsersList = filteredUsersList.filter(u => 
+      (u.display_name || u.username || '').toLowerCase().includes(searchTerm) ||
+      (u.username || '').toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  // Sección de Equipos
+  if (filteredTeamsList.length > 0) {
+    const teamsSection = document.createElement('div');
+    teamsSection.style.cssText = 'margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);';
+    teamsSection.innerHTML = '<div style="font-weight: 600; color: var(--text-main); margin-bottom: 0.75rem; font-size: 0.9rem;"><i class="bi bi-diagram-3" style="margin-right: 0.5rem;"></i>Equipos</div>';
+    
+    filteredTeamsList.forEach(team => {
+      const teamDiv = document.createElement('div');
+      teamDiv.style.cssText = 'display: flex; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: var(--radius-sm);';
+      teamDiv.className = 'user-item';
+      const teamMemberIds = team.member_ids || [];
+      const hasAssignedMembers = teamMemberIds.some(id => assignedUsers.includes(id));
+      teamDiv.innerHTML = `
+        <input type="checkbox" id="team_${team.id}" value="${team.id}" class="team-checkbox" ${hasAssignedMembers ? 'checked' : ''} 
+               style="margin-right: 0.75rem;">
+        <label for="team_${team.id}" style="color: var(--text-main); font-size: 0.95rem; cursor: pointer; flex: 1; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="bi bi-diagram-3" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <span style="font-weight: 500;">${team.name}</span>
+          <span style="color: var(--text-muted); font-size: 0.8rem;">(${teamMemberIds.length} ${teamMemberIds.length === 1 ? 'miembro' : 'miembros'})</span>
+        </label>
+      `;
+      teamsSection.appendChild(teamDiv);
+    });
+    container.appendChild(teamsSection);
+  }
+  
+  // Sección de Usuarios Individuales
+  if (filteredUsersList.length > 0) {
+    const usersSection = document.createElement('div');
+    usersSection.innerHTML = '<div style="font-weight: 600; color: var(--text-main); margin-bottom: 0.75rem; font-size: 0.9rem;"><i class="bi bi-people" style="margin-right: 0.5rem;"></i>Usuarios Individuales</div>';
+    
+    filteredUsersList.forEach(user => {
+      const isAssigned = assignedUsers.includes(user.id);
+      const checkbox = document.createElement('div');
+      checkbox.style.cssText = 'display: flex; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: var(--radius-sm);';
+      checkbox.className = 'user-item';
+      const avatarHtml = renderUserAvatar(user, 32);
+      
+      checkbox.innerHTML = `
+        <input type="checkbox" id="user_${user.id}" value="${user.id}" class="user-checkbox" ${isAssigned ? 'checked' : ''} 
+               style="margin-right: 0.75rem;">
+        <div style="margin-right: 0.75rem;">${avatarHtml}</div>
+        <label for="user_${user.id}" style="color: var(--text-main); font-size: 0.95rem; cursor: pointer; flex: 1;">
+          ${user.display_name || user.username} 
+          <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.5rem; display: block;">${user.role || 'USER'}${user.site_name ? ' - ' + user.site_name : ''}</span>
+        </label>
+      `;
+      usersSection.appendChild(checkbox);
+    });
+    container.appendChild(usersSection);
+  }
+  
+  if (filteredTeamsList.length === 0 && filteredUsersList.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No se encontraron resultados</p>';
+  }
+}
+
+function openAssignUsersModal() {
+  document.getElementById('assignUsersModal').classList.add('open');
+  loadUsersForAssignment();
+}
+
+function closeAssignUsersModal() {
+  document.getElementById('assignUsersModal').classList.remove('open');
+  // Limpiar filtros
+  document.getElementById('searchUsersModal').value = '';
+  document.getElementById('filterByRoleModal').value = '';
+  document.getElementById('filterBySiteModal').value = '';
+  document.getElementById('filterByTeamModal').value = '';
+}
+
+async function saveProjectUsers() {
+  const userCheckboxes = document.querySelectorAll('#usersList input.user-checkbox:checked');
+  const teamCheckboxes = document.querySelectorAll('#usersList input.team-checkbox:checked');
+  const userIds = Array.from(userCheckboxes).map(cb => cb.value);
+  const teamIds = Array.from(teamCheckboxes).map(cb => cb.value);
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/projects/${PROJECT_ID}/assign_users`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({user_ids: userIds, team_ids: teamIds})
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      location.reload();
+    } else {
+      hideLoading();
+      showError('Error asignando usuarios y equipos', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+function openAssignTaskUsersModal(taskId) {
+  document.getElementById('taskIdForAssignment').value = taskId;
+  document.getElementById('assignTaskUsersModal').classList.add('open');
+  loadUsersForTaskAssignment();
+}
+
+function closeAssignTaskUsersModal() {
+  document.getElementById('assignTaskUsersModal').classList.remove('open');
+}
+
+async function loadUsersForTaskAssignment() {
+  showLoading();
+  try {
+    const taskId = document.getElementById('taskIdForAssignment').value;
+    const [usersResponse, teamsResponse, projectResponse] = await Promise.all([
+      fetch('/api/users'),
+      fetch('/api/teams'),
+      fetch(`/api/projects/${PROJECT_ID}`)
+    ]);
+    const usersData = await usersResponse.json();
+    const teamsData = await teamsResponse.json();
+    const projectData = await projectResponse.json();
+    const container = document.getElementById('taskUsersList');
+    container.innerHTML = '';
+    hideLoading();
+    
+    // Filtrar usuarios: solo los que están asignados al proyecto
+    const projectAssignedUsers = new Set(projectData.project.assigned_users || []);
+    usersData.users = usersData.users.filter(user => projectAssignedUsers.has(user.id));
+    
+    // Filtrar equipos: solo los que tienen miembros asignados al proyecto
+    teamsData.teams = teamsData.teams.filter(team => {
+      const teamMemberIds = team.member_ids || [];
+      return teamMemberIds.some(id => projectAssignedUsers.has(id));
+    });
+    
+    let assignedToTask = [];
+    try {
+      const taskResponse = await fetch(`/api/projects/${PROJECT_ID}`);
+      const projectData = await taskResponse.json();
+      
+      function findTaskInTree(tasks, targetId) {
+        for (const task of tasks) {
+          if (task.id === targetId) {
+            return task;
+          }
+          if (task.children) {
+            const found = findTaskInTree(task.children, targetId);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+      
+      const task = findTaskInTree(projectData.project.tasks || [], taskId);
+      assignedToTask = task ? (task.assigned_to || []) : [];
+    } catch (error) {
+      assignedToTask = [];
+    }
+    
+    // Sección de Equipos
+    if (teamsData.teams && teamsData.teams.length > 0) {
+      const teamsSection = document.createElement('div');
+      teamsSection.style.cssText = 'margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);';
+      teamsSection.innerHTML = '<div style="font-weight: 600; color: var(--text-main); margin-bottom: 0.75rem; font-size: 0.9rem;"><i class="bi bi-diagram-3" style="margin-right: 0.5rem;"></i>Equipos</div>';
+      
+      teamsData.teams.forEach(team => {
+        const teamDiv = document.createElement('div');
+        teamDiv.style.cssText = 'display: flex; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: var(--radius-sm);';
+        teamDiv.className = 'user-item';
+        const teamMemberIds = team.member_ids || [];
+        const hasAssignedMembers = teamMemberIds.some(id => assignedToTask.includes(id));
+        teamDiv.innerHTML = `
+          <input type="checkbox" id="task_team_${team.id}" value="${team.id}" class="task-team-checkbox" ${hasAssignedMembers ? 'checked' : ''} 
+                 style="margin-right: 0.75rem;">
+          <label for="task_team_${team.id}" style="color: var(--text-main); font-size: 0.95rem; cursor: pointer; flex: 1; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="bi bi-diagram-3" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span style="font-weight: 500;">${team.name}</span>
+            <span style="color: var(--text-muted); font-size: 0.8rem;">(${teamMemberIds.length} ${teamMemberIds.length === 1 ? 'miembro' : 'miembros'})</span>
+          </label>
+        `;
+        teamsSection.appendChild(teamDiv);
+      });
+      container.appendChild(teamsSection);
+    }
+    
+    // Sección de Usuarios Individuales
+    const usersSection = document.createElement('div');
+    usersSection.innerHTML = '<div style="font-weight: 600; color: var(--text-main); margin-bottom: 0.75rem; font-size: 0.9rem;"><i class="bi bi-people" style="margin-right: 0.5rem;"></i>Usuarios Individuales</div>';
+    
+    usersData.users.forEach(user => {
+      const isAssigned = assignedToTask.includes(user.id);
+      const userAvatarHtml = renderUserAvatar(user, 32);
+      
+      const checkbox = document.createElement('div');
+      checkbox.style.cssText = 'display: flex; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: var(--radius-sm);';
+      checkbox.className = 'user-item';
+      checkbox.innerHTML = `
+        <input type="checkbox" id="task_user_${user.id}" value="${user.id}" class="task-user-checkbox" ${isAssigned ? 'checked' : ''}
+               style="margin-right: 0.75rem;">
+        <div style="margin-right: 0.75rem;">${userAvatarHtml}</div>
+        <label for="task_user_${user.id}" style="color: var(--text-main); font-size: 0.95rem; cursor: pointer; flex: 1;">
+          ${user.display_name || user.username} 
+          <span style="color: var(--text-muted); font-size: 0.8rem; display: block;">${user.role || 'USER'}${user.site_name ? ' - ' + user.site_name : ''}</span>
+        </label>
+      `;
+      usersSection.appendChild(checkbox);
+    });
+    container.appendChild(usersSection);
+  } catch (error) {
+    showError('Error cargando usuarios y equipos', 'Error');
+  }
+}
+
+async function saveTaskUsers() {
+  const taskId = document.getElementById('taskIdForAssignment').value;
+  const userCheckboxes = document.querySelectorAll('#taskUsersList input.task-user-checkbox:checked');
+  const teamCheckboxes = document.querySelectorAll('#taskUsersList input.task-team-checkbox:checked');
+  const userIds = Array.from(userCheckboxes).map(cb => cb.value);
+  const teamIds = Array.from(teamCheckboxes).map(cb => cb.value);
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/tasks/${taskId}/assign_users`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({project_id: PROJECT_ID, user_ids: userIds, team_ids: teamIds})
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      location.reload();
+    } else {
+      hideLoading();
+      showError('Error asignando usuarios y equipos', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Helper para formatear duración
+function formatDuration(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  const parts = [];
+  if (hours > 0) parts.push(hours + 'h');
+  if (minutes > 0) parts.push(minutes + 'm');
+  if (secs > 0 || parts.length === 0) parts.push(secs + 's');
+  return parts.join(' ');
+}
+
+// Helper para calcular tiempo total de una tarea (suma de subtareas si las tiene)
+function calculateTaskTotalTime(taskElement) {
+  const hasChildren = taskElement.dataset.hasChildren === 'true';
+  
+  if (hasChildren) {
+    // Si tiene subtareas, sumar el tiempo de todas las subtareas
+    const taskId = taskElement.dataset.taskId;
+    let total = 0;
+    
+    // Buscar el contenedor de la tarea padre
+    const taskContainer = taskElement.closest('[style*="border: 1px solid"]');
+    if (taskContainer) {
+      // Buscar el contenedor de subtareas (el div con border-left)
+      const childrenContainer = taskContainer.querySelector('[style*="border-left"]');
+      if (childrenContainer) {
+        // Buscar todos los timers de las subtareas dentro de este contenedor
+        const childrenTimers = childrenContainer.querySelectorAll('.timer-display[data-task-id]');
+        childrenTimers.forEach(childTimer => {
+          const childStartedAt = parseFloat(childTimer.dataset.startedAt);
+          const childAccumulated = parseInt(childTimer.dataset.accumulated || 0);
+          const childStatus = childTimer.dataset.status;
+          
+          if (childStatus === 'running' && childStartedAt) {
+            const now = Date.now() / 1000;
+            const delta = Math.floor(now - childStartedAt);
+            total += childAccumulated + delta;
+          } else {
+            total += childAccumulated;
+          }
+        });
+      }
+    }
+    
+    return total;
+  } else {
+    // Si no tiene subtareas, usar su tiempo propio
+    const startedAt = parseFloat(taskElement.dataset.startedAt);
+    const accumulated = parseInt(taskElement.dataset.accumulated || 0);
+    if (startedAt) {
+      const now = Date.now() / 1000;
+      const delta = Math.floor(now - startedAt);
+      return accumulated + delta;
+    }
+    return accumulated;
+  }
+}
+
+// Helper para timers en tiempo real
+function updateRunningTimers() {
+  document.querySelectorAll('.timer-display').forEach(timerEl => {
+    const hasChildren = timerEl.dataset.hasChildren === 'true';
+    const status = timerEl.dataset.status;
+    
+    if (hasChildren) {
+      // Para tareas con subtareas, calcular la suma
+      const total = calculateTaskTotalTime(timerEl);
+      timerEl.textContent = formatDuration(total);
+    } else if (status === 'running') {
+      // Para tareas sin subtareas que están corriendo
+      const startedAt = parseFloat(timerEl.dataset.startedAt);
+      const accumulated = parseInt(timerEl.dataset.accumulated || 0);
+      if (startedAt) {
+        const now = Date.now() / 1000;
+        const delta = Math.floor(now - startedAt);
+        const total = accumulated + delta;
+        timerEl.textContent = formatDuration(total);
+      }
+    }
+  });
+}
+
+// Actualizar inmediatamente y luego cada segundo
+updateRunningTimers();
+setInterval(updateRunningTimers, 1000);
+
+// Función para generar resumen de tiempo por tarea
+function updateTimeSummary() {
+  const container = document.getElementById('timeSummaryContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  function calculateTaskTime(task) {
+    if (task.children && task.children.length > 0) {
+      // Si tiene subtareas, sumar el tiempo de todas las subtareas
+      return task.children.reduce((sum, child) => {
+        let childTime = child.accumulated_sec || 0;
+        if (child.status === 'running' && child.started_at) {
+          const now = Date.now() / 1000;
+          childTime += Math.floor(now - child.started_at);
+        }
+        return sum + childTime;
+      }, 0);
+    } else {
+      // Si no tiene subtareas, usar su tiempo propio
+      let time = task.accumulated_sec || 0;
+      if (task.status === 'running' && task.started_at) {
+        const now = Date.now() / 1000;
+        time += Math.floor(now - task.started_at);
+      }
+      return time;
+    }
+  }
+  
+  function processTask(task, level = 0) {
+    const totalTime = calculateTaskTime(task);
+    
+    const taskDiv = document.createElement('div');
+    taskDiv.style.cssText = `padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid var(--border); margin-left: ${level * 1.5}rem; margin-bottom: 0.5rem;`;
+    
+    taskDiv.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1;">
+          <div style="font-weight: 600; color: var(--text-main); margin-bottom: 0.25rem;">${task.title || 'Sin título'}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">
+            <span class="badge" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">${task.status || 'pending'}</span>
+          </div>
+        </div>
+        <div style="font-weight: 600; color: var(--primary); font-variant-numeric: tabular-nums; font-size: 1.1rem;">
+          ${formatDuration(totalTime)}
+        </div>
+      </div>
+    `;
+    
+    container.appendChild(taskDiv);
+    
+    // Procesar subtareas
+    if (task.children && task.children.length > 0) {
+      task.children.forEach(child => processTask(child, level + 1));
+    }
+  }
+  
+  // Obtener tareas raíz desde el template y actualizar con datos en tiempo real
+  const projectTasks = {{ project_tasks_json|tojson }};
+  
+  // Actualizar datos en tiempo real desde los elementos del DOM
+  function updateTaskData(tasks) {
+    tasks.forEach(task => {
+      const timerEl = document.querySelector(`.timer-display[data-task-id="${task.id}"]`);
+      if (timerEl) {
+        task.status = timerEl.dataset.status || task.status;
+        task.started_at = timerEl.dataset.startedAt ? parseFloat(timerEl.dataset.startedAt) : task.started_at;
+        task.accumulated_sec = parseInt(timerEl.dataset.accumulated || task.accumulated_sec || 0);
+      }
+      
+      if (task.children && task.children.length > 0) {
+        updateTaskData(task.children);
+      }
+    });
+  }
+  
+  updateTaskData(projectTasks);
+  projectTasks.forEach(task => processTask(task, 0));
+}
+
+// Actualizar resumen cada segundo junto con los timers
+// Calcular tiempo total de un proyecto incluyendo timers activos
+function calculateProjectTotalTime(tasks, now) {
+  let total = 0;
+  for (const task of tasks) {
+    if (task.children && task.children.length > 0) {
+      // Si tiene subtareas, sumar el tiempo de todas las subtareas
+      for (const child of task.children) {
+        let childTotal = child.accumulated_sec || 0;
+        if (child.status === 'running' && child.started_at) {
+          childTotal += Math.floor(now - child.started_at);
+        }
+        total += childTotal;
+        // Recursivamente sumar subtareas de las subtareas
+        if (child.children && child.children.length > 0) {
+          total += calculateProjectTotalTime(child.children, now);
+        }
+      }
+    } else {
+      // Si no tiene subtareas, usar su tiempo propio + tiempo activo si está corriendo
+      let taskTotal = task.accumulated_sec || 0;
+      if (task.status === 'running' && task.started_at) {
+        taskTotal += Math.floor(now - task.started_at);
+      }
+      total += taskTotal;
+    }
+  }
+  return total;
+}
+
+// Actualizar timer en la card de resumen
+function updateProjectDetailTimer() {
+  const timerEl = document.querySelector('.project-detail-timer');
+  if (!timerEl) return;
+  
+  const hasRunning = timerEl.dataset.hasRunning === 'true';
+  if (!hasRunning) return; // Solo actualizar si hay timers corriendo
+  
+  try {
+    // Usar la constante global PROJECT_TASKS_JSON en lugar del atributo data-*
+    // para evitar problemas de escape de JSON en atributos HTML
+    let tasks;
+    if (typeof PROJECT_TASKS_JSON !== 'undefined' && PROJECT_TASKS_JSON) {
+      tasks = PROJECT_TASKS_JSON;
+    } else {
+      // Fallback: intentar parsear desde el atributo data-*
+      const tasksJson = timerEl.dataset.tasksJson;
+      if (!tasksJson || tasksJson.trim() === '') return;
+      
+      try {
+        tasks = JSON.parse(tasksJson);
+      } catch (parseError) {
+        // Si falla, no hacer nada
+        return;
+      }
+    }
+    
+    if (!tasks || !Array.isArray(tasks)) return;
+    
+    const now = Date.now() / 1000;
+    const totalSec = calculateProjectTotalTime(tasks, now);
+    timerEl.textContent = formatDuration(totalSec);
+    
+    // Agregar clase para animación si está corriendo
+    if (!timerEl.classList.contains('timer-running')) {
+      timerEl.classList.add('timer-running');
+    }
+  } catch (e) {
+    // Silenciar errores de actualización del timer para no spamear la consola
+    // console.error('Error actualizando timer de resumen:', e);
+  }
+}
+
+function updateAll() {
+  updateRunningTimers();
+  updateTimeSummary();
+  updateProjectDetailTimer();
+}
+
+updateAll();
+setInterval(updateAll, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,1414 @@
+[
+  {
+    "path": "colors.json",
+    "name": "colors.json",
+    "extension": "json",
+    "size_bytes": 3395,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "db.json",
+    "name": "db.json",
+    "extension": "json",
+    "size_bytes": 73732,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "get_structura.py",
+    "name": "get_structura.py",
+    "extension": "py",
+    "size_bytes": 14107,
+    "is_binary": false,
+    "truncated": false,
+    "summary": {
+      "type": "python",
+      "parse_ok": true,
+      "functions": [
+        {
+          "name": "is_binary_file",
+          "lineno": 39,
+          "async": false,
+          "args": [
+            "path",
+            "sample_size"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "safe_read_text",
+          "lineno": 50,
+          "async": false,
+          "args": [
+            "path",
+            "max_bytes"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_is_ignored_path",
+          "lineno": 57,
+          "async": false,
+          "args": [
+            "path",
+            "ignore_dirs"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "build_tree",
+          "lineno": 65,
+          "async": false,
+          "args": [
+            "root",
+            "ignore_dirs",
+            "ignore_files"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_target_names_from_assign",
+          "lineno": 137,
+          "async": false,
+          "args": [
+            "target"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_short_value_repr",
+          "lineno": 148,
+          "async": false,
+          "args": [
+            "node"
+          ],
+          "kwonlyargs": [
+            "max_len"
+          ],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "summarize_python_source",
+          "lineno": 167,
+          "async": false,
+          "args": [
+            "source"
+          ],
+          "kwonlyargs": [
+            "filename"
+          ],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "collect_files_summary",
+          "lineno": 297,
+          "async": false,
+          "args": [
+            "root",
+            "ignore_dirs",
+            "ignore_files",
+            "max_bytes"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "write_json",
+          "lineno": 362,
+          "async": false,
+          "args": [
+            "path",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "main",
+          "lineno": 366,
+          "async": false,
+          "args": [],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        }
+      ],
+      "classes": [],
+      "variables": [
+        {
+          "names": [
+            "DEFAULT_IGNORE_DIRS"
+          ],
+          "lineno": 25,
+          "value": "{'__pycache__', 'venv', '.venv', '.git'}",
+          "annotation": "Set[str]"
+        },
+        {
+          "names": [
+            "DEFAULT_IGNORE_FILES"
+          ],
+          "lineno": 27,
+          "value": "{'.gitignore', '.gitattributes', '.gitmodules', '.gitkeep', '.git-blame-ignore-revs'}",
+          "annotation": "Set[str]"
+        }
+      ]
+    }
+  },
+  {
+    "path": "main.py",
+    "name": "main.py",
+    "extension": "py",
+    "size_bytes": 1032,
+    "is_binary": false,
+    "truncated": false,
+    "summary": {
+      "type": "python",
+      "parse_ok": true,
+      "functions": [],
+      "classes": [],
+      "variables": [
+        {
+          "names": [
+            "app"
+          ],
+          "lineno": 11,
+          "value": "FastAPI()"
+        }
+      ]
+    }
+  },
+  {
+    "path": "project_files.json",
+    "name": "project_files.json",
+    "extension": "json",
+    "size_bytes": 312778,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "project_structure.json",
+    "name": "project_structure.json",
+    "extension": "json",
+    "size_bytes": 1913,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "requirements.txt",
+    "name": "requirements.txt",
+    "extension": "txt",
+    "size_bytes": 88,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "routers/video_router.py",
+    "name": "video_router.py",
+    "extension": "py",
+    "size_bytes": 80502,
+    "is_binary": false,
+    "truncated": false,
+    "summary": {
+      "type": "python",
+      "parse_ok": true,
+      "functions": [
+        {
+          "name": "_now_ts",
+          "lineno": 70,
+          "async": false,
+          "args": [],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_read_json_file_nolock",
+          "lineno": 74,
+          "async": false,
+          "args": [
+            "path",
+            "default"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_write_json_file_nolock",
+          "lineno": 84,
+          "async": false,
+          "args": [
+            "path",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "load_colors",
+          "lineno": 95,
+          "async": false,
+          "args": [],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_pbkdf2_hash_password",
+          "lineno": 107,
+          "async": false,
+          "args": [
+            "password",
+            "salt_hex"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_verify_password",
+          "lineno": 118,
+          "async": false,
+          "args": [
+            "password",
+            "salt_hex",
+            "hash_hex"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_sha256_hex",
+          "lineno": 123,
+          "async": false,
+          "args": [
+            "s"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_audit",
+          "lineno": 127,
+          "async": false,
+          "args": [
+            "db",
+            "action",
+            "actor_user_id",
+            "meta"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_ensure_entity_defaults",
+          "lineno": 137,
+          "async": false,
+          "args": [
+            "entity"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_password_from_dni",
+          "lineno": 147,
+          "async": false,
+          "args": [
+            "dni"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_normalize_site",
+          "lineno": 152,
+          "async": false,
+          "args": [
+            "s"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_normalize_role",
+          "lineno": 156,
+          "async": false,
+          "args": [
+            "s"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_is_admin",
+          "lineno": 160,
+          "async": false,
+          "args": [
+            "user"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_count_admins",
+          "lineno": 165,
+          "async": false,
+          "args": [
+            "db"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_ensure_db_schema",
+          "lineno": 169,
+          "async": false,
+          "args": [
+            "db_raw"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "load_db",
+          "lineno": 266,
+          "async": false,
+          "args": [],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "save_db",
+          "lineno": 274,
+          "async": false,
+          "args": [
+            "db"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_today_bogota_str",
+          "lineno": 279,
+          "async": false,
+          "args": [],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_find_school",
+          "lineno": 286,
+          "async": false,
+          "args": [
+            "db",
+            "school_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_all_schools_sorted",
+          "lineno": 293,
+          "async": false,
+          "args": [
+            "db"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_find_course",
+          "lineno": 299,
+          "async": false,
+          "args": [
+            "db",
+            "course_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_all_courses_sorted",
+          "lineno": 306,
+          "async": false,
+          "args": [
+            "db"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_courses_for_school",
+          "lineno": 316,
+          "async": false,
+          "args": [
+            "db",
+            "school_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_find_user_by_username",
+          "lineno": 322,
+          "async": false,
+          "args": [
+            "db",
+            "username"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_find_user",
+          "lineno": 330,
+          "async": false,
+          "args": [
+            "db",
+            "user_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_is_enrolled",
+          "lineno": 337,
+          "async": false,
+          "args": [
+            "db",
+            "user_id",
+            "course_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_filter_employees",
+          "lineno": 344,
+          "async": false,
+          "args": [
+            "db",
+            "site_name",
+            "role"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_normalize_employees_payload",
+          "lineno": 368,
+          "async": false,
+          "args": [
+            "payload"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_hash_employees_for_cache",
+          "lineno": 404,
+          "async": false,
+          "args": [
+            "items"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_bootstrap_admin_if_needed",
+          "lineno": 419,
+          "async": false,
+          "args": [
+            "db"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "sync_users_if_stale",
+          "lineno": 448,
+          "async": false,
+          "args": [
+            "force"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "generate_thumbnail",
+          "lineno": 623,
+          "async": false,
+          "args": [
+            "video_path",
+            "thumb_path"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_login_user",
+          "lineno": 640,
+          "async": false,
+          "args": [
+            "db",
+            "user_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_logout_sid",
+          "lineno": 647,
+          "async": false,
+          "args": [
+            "db",
+            "sid"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_get_current_user",
+          "lineno": 652,
+          "async": false,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "require_user",
+          "lineno": 683,
+          "async": false,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "require_admin",
+          "lineno": 690,
+          "async": false,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "admin_set_user_role",
+          "lineno": 703,
+          "async": true,
+          "args": [
+            "data",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "admin_make_admin",
+          "lineno": 775,
+          "async": true,
+          "args": [
+            "data",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "admin_unlock_role",
+          "lineno": 785,
+          "async": true,
+          "args": [
+            "data",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_safe_ext",
+          "lineno": 814,
+          "async": false,
+          "args": [
+            "filename"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_save_attachment",
+          "lineno": 820,
+          "async": false,
+          "args": [
+            "upload",
+            "actor_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "get_attachment",
+          "lineno": 861,
+          "async": true,
+          "args": [
+            "filename",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_attach_to_entity",
+          "lineno": 875,
+          "async": false,
+          "args": [
+            "db",
+            "entity",
+            "attach_meta"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_delete_entity_attachment",
+          "lineno": 880,
+          "async": false,
+          "args": [
+            "entity",
+            "attachment_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_add_comment",
+          "lineno": 897,
+          "async": false,
+          "args": [
+            "db",
+            "video_id",
+            "user_id",
+            "text"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_list_comments",
+          "lineno": 916,
+          "async": false,
+          "args": [
+            "db",
+            "video_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "login_page",
+          "lineno": 926,
+          "async": true,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "login_action",
+          "lineno": 932,
+          "async": true,
+          "args": [
+            "request",
+            "username",
+            "password"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "logout_action",
+          "lineno": 959,
+          "async": true,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "dashboard",
+          "lineno": 983,
+          "async": true,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_build_enrolled_users_payload",
+          "lineno": 1037,
+          "async": false,
+          "args": [
+            "db",
+            "course_id",
+            "role",
+            "site_name"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "manager",
+          "lineno": 1096,
+          "async": true,
+          "args": [
+            "request",
+            "school_id",
+            "course_id",
+            "role",
+            "site_name"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "admin_enrollments",
+          "lineno": 1164,
+          "async": true,
+          "args": [
+            "request",
+            "course_id",
+            "role",
+            "site_name"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_add_enrollment_if_missing",
+          "lineno": 1181,
+          "async": false,
+          "args": [
+            "db",
+            "course_id",
+            "user_id",
+            "actor_id",
+            "mode"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "enroll_user",
+          "lineno": 1198,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "enroll_by_site",
+          "lineno": 1227,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "enroll_by_role",
+          "lineno": 1259,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "enroll_by_site_role",
+          "lineno": 1291,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "unenroll_user",
+          "lineno": 1328,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "unenroll_bulk",
+          "lineno": 1350,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "_mark_watch",
+          "lineno": 1412,
+          "async": false,
+          "args": [
+            "db",
+            "user_id",
+            "video_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "watch_video",
+          "lineno": 1434,
+          "async": true,
+          "args": [
+            "request",
+            "video_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "add_video_comment",
+          "lineno": 1499,
+          "async": true,
+          "args": [
+            "video_id",
+            "request",
+            "text"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "course_page",
+          "lineno": 1523,
+          "async": true,
+          "args": [
+            "request",
+            "course_id"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "create_school",
+          "lineno": 1564,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "update_school",
+          "lineno": 1598,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "upload_school_attachment",
+          "lineno": 1624,
+          "async": true,
+          "args": [
+            "school_id",
+            "request",
+            "file"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "create_course",
+          "lineno": 1645,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "update_course",
+          "lineno": 1684,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "upload_course_attachment",
+          "lineno": 1714,
+          "async": true,
+          "args": [
+            "course_id",
+            "request",
+            "file"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "delete_attachment",
+          "lineno": 1735,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "my_courses",
+          "lineno": 1787,
+          "async": true,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "admin_sync_users",
+          "lineno": 1804,
+          "async": true,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "admin_users",
+          "lineno": 1811,
+          "async": true,
+          "args": [
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "upload_video",
+          "lineno": 1840,
+          "async": true,
+          "args": [
+            "request",
+            "file",
+            "title",
+            "project_id",
+            "description"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "update_video",
+          "lineno": 1901,
+          "async": true,
+          "args": [
+            "video_id",
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "upload_video_attachment",
+          "lineno": 1929,
+          "async": true,
+          "args": [
+            "video_id",
+            "request",
+            "file"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "move_video",
+          "lineno": 1950,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "delete_video",
+          "lineno": 1982,
+          "async": true,
+          "args": [
+            "video_id",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "report_course",
+          "lineno": 2031,
+          "async": true,
+          "args": [
+            "course_id",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "report_video",
+          "lineno": 2087,
+          "async": true,
+          "args": [
+            "video_id",
+            "request"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        },
+        {
+          "name": "delete_course",
+          "lineno": 2130,
+          "async": true,
+          "args": [
+            "request",
+            "data"
+          ],
+          "kwonlyargs": [],
+          "vararg": null,
+          "kwarg": null
+        }
+      ],
+      "classes": [],
+      "variables": [
+        {
+          "names": [
+            "router"
+          ],
+          "lineno": 22,
+          "value": "APIRouter(prefix='/videos', tags=['Videos'])"
+        },
+        {
+          "names": [
+            "templates"
+          ],
+          "lineno": 23,
+          "value": "Jinja2Templates(directory='templates')"
+        },
+        {
+          "names": [
+            "UPLOAD_DIR"
+          ],
+          "lineno": 25,
+          "value": "Path('uploads')"
+        },
+        {
+          "names": [
+            "THUMB_DIR"
+          ],
+          "lineno": 26,
+          "value": "Path('thumbnails')"
+        },
+        {
+          "names": [
+            "ATTACH_DIR"
+          ],
+          "lineno": 27,
+          "value": "Path('attachments')"
+        },
+        {
+          "names": [
+            "COLORS_FILE"
+          ],
+          "lineno": 28,
+          "value": "Path('colors.json')"
+        },
+        {
+          "names": [
+            "DB_FILE"
+          ],
+          "lineno": 30,
+          "value": "Path('db.json')"
+        },
+        {
+          "names": [
+            "LOCK_FILE"
+          ],
+          "lineno": 31,
+          "value": "Path('db.json.lock')"
+        },
+        {
+          "names": [
+            "BOGOTA_TZ"
+          ],
+          "lineno": 33,
+          "value": "timezone(timedelta(hours=-5))"
+        },
+        {
+          "names": [
+            "DEFAULT_SCHOOL_ID"
+          ],
+          "lineno": 39,
+          "value": "'general'"
+        },
+        {
+          "names": [
+            "DEFAULT_COURSE_ID"
+          ],
+          "lineno": 40,
+          "value": "'general'"
+        },
+        {
+          "names": [
+            "SESSION_COOKIE"
+          ],
+          "lineno": 41,
+          "value": "'sm_sid'"
+        },
+        {
+          "names": [
+            "EMPLOYERS_URL"
+          ],
+          "lineno": 44,
+          "value": "'https://backend.salchimonster.com/employers-basic'"
+        },
+        {
+          "names": [
+            "EMPLOYERS_SYNC_TTL_SECONDS"
+          ],
+          "lineno": 45,
+          "value": "3600"
+        },
+        {
+          "names": [
+            "BOOTSTRAP_ADMIN_USER"
+          ],
+          "lineno": 48,
+          "value": "os.getenv('ADMIN_USER', 'andrew19f')"
+        },
+        {
+          "names": [
+            "BOOTSTRAP_ADMIN_PASS"
+          ],
+          "lineno": 49,
+          "value": "os.getenv('ADMIN_PASS', 'change-me-please')"
+        },
+        {
+          "names": [
+            "MAX_ATTACH_MB"
+          ],
+          "lineno": 52,
+          "value": "float(os.getenv('MAX_ATTACH_MB', '25'))"
+        },
+        {
+          "names": [
+            "MAX_ATTACH_BYTES"
+          ],
+          "lineno": 53,
+          "value": "int(MAX_ATTACH_MB * 1024 * 1024)"
+        },
+        {
+          "names": [
+            "ALLOWED_ATTACH_EXT"
+          ],
+          "lineno": 56,
+          "value": "{'pdf', 'png', 'jpg', 'jpeg', 'webp', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'zip', 'rar', 'mp3',..."
+        },
+        {
+          "names": [
+            "COLORS_CACHE"
+          ],
+          "lineno": 92,
+          "value": "{}",
+          "annotation": "Dict[str, Dict[str, str]]"
+        }
+      ]
+    }
+  },
+  {
+    "path": "templates/course.html",
+    "name": "course.html",
+    "extension": "html",
+    "size_bytes": 17106,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "templates/dashboard.html",
+    "name": "dashboard.html",
+    "extension": "html",
+    "size_bytes": 10720,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "templates/login.html",
+    "name": "login.html",
+    "extension": "html",
+    "size_bytes": 2101,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "templates/manager.html",
+    "name": "manager.html",
+    "extension": "html",
+    "size_bytes": 65281,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  },
+  {
+    "path": "templates/watch.html",
+    "name": "watch.html",
+    "extension": "html",
+    "size_bytes": 21409,
+    "is_binary": false,
+    "truncated": false,
+    "summary": null
+  }
+]

@@ -1,0 +1,418 @@
+{
+  "id": "81e097ced6ba",
+  "name": "CUADRE 10 DE FEBREO",
+  "description": "ES PARA CUADRES",
+  "area_id": "5cebcf9d",
+  "group_id": "8834eeac",
+  "deadline": 1774656000.0,
+  "created_at": 1768451328.2496214,
+  "created_by": "lKcOg_oVer0lRAYS",
+  "assigned_users": [
+    "lKcOg_oVer0lRAYS",
+    "55a7766da6b5",
+    "f44a05f545c5",
+    "77f928de2fd7",
+    "5c2f94acd387",
+    "985d4078c281",
+    "8fb75dbe6b1e",
+    "087364e0cfa0",
+    "e488d3b6bcc3",
+    "08123ade1b22",
+    "1f25874ad49c",
+    "68ab25873c86",
+    "9c5ccec48150"
+  ],
+  "tasks": [
+    {
+      "id": "d814c38797",
+      "title": "JUNTAR LOS EXCELS",
+      "description": "",
+      "status": "completed",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": 1768452676.1391582,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [
+        "5c2f94acd387"
+      ],
+      "children": [
+        {
+          "id": "3199109da4",
+          "title": "VER EL TIEMPO",
+          "description": "FSFA",
+          "status": "pending",
+          "accumulated_sec": 6,
+          "started_at": null,
+          "completed_at": null,
+          "completed_by": null,
+          "completion_comment": null,
+          "completion_evidence": [],
+          "assigned_to": [
+            "lKcOg_oVer0lRAYS"
+          ],
+          "children": [],
+          "attachments": [
+            {
+              "id": "218b0862d7",
+              "filename": "218b0862d7.jpg",
+              "original_name": "6ee9a2bd-8dee-46be-90a2-a0d724736dce.jpg",
+              "url": "/attachments/218b0862d7.jpg",
+              "size": 193482,
+              "content_type": "image/jpeg",
+              "uploaded_at": 1768452623.43405,
+              "uploaded_by": "lKcOg_oVer0lRAYS"
+            },
+            {
+              "id": "bb201acc9e",
+              "filename": "bb201acc9e.jpg",
+              "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+              "url": "/attachments/bb201acc9e.jpg",
+              "size": 53239,
+              "content_type": "image/jpeg",
+              "uploaded_at": 1768452623.4346635,
+              "uploaded_by": "lKcOg_oVer0lRAYS"
+            },
+            {
+              "id": "0c26a60327",
+              "filename": "0c26a60327.jpg",
+              "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+              "url": "/attachments/0c26a60327.jpg",
+              "size": 60385,
+              "content_type": "image/jpeg",
+              "uploaded_at": 1768452623.4355657,
+              "uploaded_by": "lKcOg_oVer0lRAYS"
+            },
+            {
+              "id": "51dbd2284b",
+              "filename": "51dbd2284b.jpg",
+              "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+              "url": "/attachments/51dbd2284b.jpg",
+              "size": 171698,
+              "content_type": "image/jpeg",
+              "uploaded_at": 1768452623.4364605,
+              "uploaded_by": "lKcOg_oVer0lRAYS"
+            },
+            {
+              "id": "cdb303a9f5",
+              "filename": "cdb303a9f5.jpg",
+              "original_name": "dea5259d-a4b6-4a23-9173-c34125a864fd.jpg",
+              "url": "/attachments/cdb303a9f5.jpg",
+              "size": 201695,
+              "content_type": "image/jpeg",
+              "uploaded_at": 1768452623.4375029,
+              "uploaded_by": "lKcOg_oVer0lRAYS"
+            },
+            {
+              "id": "7a5101261a",
+              "filename": "7a5101261a.xlsx",
+              "original_name": "ffs.xlsx",
+              "url": "/attachments/7a5101261a.xlsx",
+              "size": 43345,
+              "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "uploaded_at": 1768452623.438127,
+              "uploaded_by": "lKcOg_oVer0lRAYS"
+            }
+          ],
+          "reopen_evidence": []
+        }
+      ],
+      "attachments": [
+        {
+          "id": "8cbcbaffcf",
+          "filename": "8cbcbaffcf.jpg",
+          "original_name": "6ee9a2bd-8dee-46be-90a2-a0d724736dce.jpg",
+          "url": "/attachments/8cbcbaffcf.jpg",
+          "size": 193482,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489704.3625495,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "2c94436f44",
+          "filename": "2c94436f44.jpg",
+          "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+          "url": "/attachments/2c94436f44.jpg",
+          "size": 53239,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489704.3631227,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "ee3372d755",
+          "filename": "ee3372d755.jpg",
+          "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+          "url": "/attachments/ee3372d755.jpg",
+          "size": 60385,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489704.3640313,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "2b3c587068",
+          "filename": "2b3c587068.jpg",
+          "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+          "url": "/attachments/2b3c587068.jpg",
+          "size": 171698,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489704.3650367,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "e38192a025",
+          "filename": "e38192a025.jpg",
+          "original_name": "dea5259d-a4b6-4a23-9173-c34125a864fd.jpg",
+          "url": "/attachments/e38192a025.jpg",
+          "size": 201695,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489704.3663092,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "43b9b63bcf",
+          "filename": "43b9b63bcf.xlsx",
+          "original_name": "ffs.xlsx",
+          "url": "/attachments/43b9b63bcf.xlsx",
+          "size": 43345,
+          "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "uploaded_at": 1768489704.3669097,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        }
+      ],
+      "reopen_evidence": []
+    },
+    {
+      "id": "4c57413602",
+      "title": "fa",
+      "description": "fa",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": [],
+      "assigned_to": [
+        "lKcOg_oVer0lRAYS"
+      ],
+      "children": [],
+      "attachments": [
+        {
+          "id": "378254092a",
+          "filename": "378254092a.jpg",
+          "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+          "url": "/attachments/378254092a.jpg",
+          "size": 53239,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489733.523675,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "7551d3dc8d",
+          "filename": "7551d3dc8d.jpg",
+          "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+          "url": "/attachments/7551d3dc8d.jpg",
+          "size": 60385,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489733.5243776,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "7ee66604d1",
+          "filename": "7ee66604d1.jpg",
+          "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+          "url": "/attachments/7ee66604d1.jpg",
+          "size": 171698,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489733.5320907,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "d8dfe030a0",
+          "filename": "d8dfe030a0.jpg",
+          "original_name": "dea5259d-a4b6-4a23-9173-c34125a864fd.jpg",
+          "url": "/attachments/d8dfe030a0.jpg",
+          "size": 201695,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489733.5328147,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "fdf4f6153a",
+          "filename": "fdf4f6153a.jpg",
+          "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+          "url": "/attachments/fdf4f6153a.jpg",
+          "size": 53239,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489780.0487585,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "06f9f5cf47",
+          "filename": "06f9f5cf47.jpg",
+          "original_name": "607434306_1500511498740672_6534024371366471780_n.jpg",
+          "url": "/attachments/06f9f5cf47.jpg",
+          "size": 60385,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489780.0494192,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        },
+        {
+          "id": "8e9fe09fec",
+          "filename": "8e9fe09fec.jpg",
+          "original_name": "607440972_1501580671967088_291045622906432195_n.jpg",
+          "url": "/attachments/8e9fe09fec.jpg",
+          "size": 171698,
+          "content_type": "image/jpeg",
+          "uploaded_at": 1768489780.0508885,
+          "uploaded_by": "lKcOg_oVer0lRAYS"
+        }
+      ],
+      "reopen_evidence": []
+    }
+  ],
+  "logs": [
+    {
+      "id": "a907edbdf0",
+      "text": "Fecha de entrega pospuesta 72 días",
+      "created_at": 1768492850.6489472,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    },
+    {
+      "id": "bedf9911a2",
+      "text": "Administrador reabrió la tarea 'VER EL TIEMPO'. Justificación: Tarea reabierta sin justificación específica",
+      "created_at": 1768492823.2176259,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3199109da4",
+      "action_type": "task_reopen"
+    },
+    {
+      "id": "91553eb757",
+      "text": "Administrador agregó 3 archivo(s) a la tarea 'fa'",
+      "created_at": 1768489780.0564191,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "4c57413602",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "c6ee233cad",
+      "text": "Administrador agregó 4 archivo(s) a la tarea 'fa'",
+      "created_at": 1768489733.5384612,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "4c57413602",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "0f814b48f7",
+      "text": "Administrador agregó 6 archivo(s) a la tarea 'JUNTAR LOS EXCELS'",
+      "created_at": 1768489704.372349,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "d814c38797",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "065f2a1a63",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768488351.4870496,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "4c57413602",
+      "action_type": "task_create"
+    },
+    {
+      "id": "2a716d68fa",
+      "text": "Administrador completó la tarea 'VER EL TIEMPO'. Comentario: FSFF",
+      "created_at": 1768452676.1391082,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3199109da4",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "f4ff0e2931",
+      "text": "Administrador pausó la tarea 'VER EL TIEMPO'",
+      "created_at": 1768452659.9716291,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3199109da4",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "ac5aa701d6",
+      "text": "Administrador agregó 6 archivo(s) a la tarea 'VER EL TIEMPO'",
+      "created_at": 1768452623.4462075,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3199109da4",
+      "action_type": "task_attachment_added"
+    },
+    {
+      "id": "3fdd76ccb3",
+      "text": "Administrador creó la tarea 'VER EL TIEMPO'",
+      "created_at": 1768451413.1617398,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3199109da4",
+      "action_type": "task_create"
+    },
+    {
+      "id": "69873f4095",
+      "text": "Administrador creó la tarea 'JUNTAR LOS EXCELS'",
+      "created_at": 1768451392.215611,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "d814c38797",
+      "action_type": "task_create"
+    },
+    {
+      "id": "ec197c410f",
+      "text": "Proyecto creado",
+      "created_at": 1768451329.2895007,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    }
+  ],
+  "attachments": [
+    {
+      "id": "a1f460db84",
+      "filename": "a1f460db84.png",
+      "original_name": "male.png",
+      "url": "/attachments/a1f460db84.png",
+      "size": 144145,
+      "content_type": "image/png",
+      "uploaded_at": 1768488705.8343823,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "07c792de1a",
+      "filename": "07c792de1a.json",
+      "original_name": "main.json",
+      "url": "/attachments/07c792de1a.json",
+      "size": 1564,
+      "content_type": "application/json",
+      "uploaded_at": 1768488455.0301507,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    },
+    {
+      "id": "6c3fb9e098",
+      "filename": "6c3fb9e098.jpg",
+      "original_name": "600355781_1499887228803099_6932629904990263801_n.jpg",
+      "url": "/attachments/6c3fb9e098.jpg",
+      "size": 53239,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768453221.8599858,
+      "uploaded_by": "lKcOg_oVer0lRAYS"
+    }
+  ],
+  "dirty": false
+}

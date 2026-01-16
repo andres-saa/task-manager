@@ -1,0 +1,46 @@
+{
+  "areas": [
+    {
+      "id": "general",
+      "name": "General",
+      "description": "Area por defecto",
+      "created_at": 1768450892.2868826,
+      "created_by": "system"
+    },
+    {
+      "id": "5cebcf9d",
+      "name": "CUADRES",
+      "description": "",
+      "created_at": 1768451259.4594252,
+      "created_by": "user"
+    }
+  ],
+  "groups": [
+    {
+      "id": "general",
+      "name": "General",
+      "area_id": "general",
+      "description": "Grupo por defecto",
+      "created_at": 1768450892.286911,
+      "created_by": "system"
+    },
+    {
+      "id": "8834eeac",
+      "name": "CUADRE DIARIO",
+      "area_id": "5cebcf9d",
+      "description": "",
+      "created_at": 1768451274.434253,
+      "created_by": "user"
+    }
+  ],
+  "projects": {
+    "81e097ced6ba": {
+      "area_id": "5cebcf9d",
+      "group_id": "8834eeac"
+    },
+    "20c555eabff2": {
+      "area_id": "general",
+      "group_id": "general"
+    }
+  }
+}

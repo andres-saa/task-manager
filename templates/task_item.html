@@ -1,0 +1,217 @@
+{% set task_level = task_level|default(0) %}
+{% set hierarchy_colors = ['rgb(255, 98, 0)', 'rgb(59, 130, 246)', 'rgb(16, 185, 129)', 'rgb(234, 179, 8)', 'rgb(139, 92, 246)', 'rgb(239, 68, 68)'] %}
+{% set border_color = hierarchy_colors[task_level % hierarchy_colors|length] %}
+<div style="border: 1px solid var(--border); border-left: 4px solid {{ border_color }}; border-radius: var(--radius); padding: 1rem; margin-bottom: 0.75rem; background: var(--bg-card); {% if task.status == 'completed' %}opacity: 0.7;{% endif %}" class="task-card task-level-{{ task_level }}" data-task-id="{{ task.id }}" data-level="{{ task_level }}">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+    <div style="flex: 1; min-width: 0;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+        {% if task.children and task.children|length > 0 %}
+        <button onclick="toggleTaskCollapse('{{ task.id }}')" class="task-collapse-btn" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;" title="Colapsar/Expandir">
+          <i class="bi bi-chevron-down task-collapse-icon" id="collapse-icon-{{ task.id }}"></i>
+        </button>
+        {% else %}
+        <span style="width: 24px; display: inline-block;"></span>
+        {% endif %}
+        <h3 style="margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-main); {% if task.status == 'completed' %}text-decoration: line-through; color: var(--text-muted);{% endif %}">
+          {{ task.title }}
+        </h3>
+        <span class="badge" style="{% if task.status == 'completed' %}background: rgba(16, 185, 129, 0.15); color: var(--success);{% elif task.status == 'running' %}background: rgba(59, 130, 246, 0.15); color: var(--info);{% elif task.status == 'paused' %}background: rgba(234, 179, 8, 0.15); color: #fbbf24;{% else %}background: rgba(255,255,255,0.1);{% endif %}">
+          {{ task.status }}
+        </span>
+      </div>
+      
+      {% if task.description %}
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.5;">{{ task.description }}</p>
+      {% endif %}
+      
+      <!-- Usuarios asignados -->
+      {% if task.assigned_to %}
+      <div style="margin-bottom: 0.75rem;">
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Asignado a:</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          {% for user_id in task.assigned_to %}
+            {% for u in all_users %}
+              {% if u.id == user_id %}
+              <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: var(--info); font-size: 0.7rem;">
+                {{ u.display_name or u.username }}
+              </span>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Timer -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        <i class="bi bi-clock"></i>
+        <span class="timer-display" 
+              data-task-id="{{ task.id }}" 
+              data-status="{{ task.status }}"
+              data-started-at="{{ task.started_at or '' }}"
+              data-accumulated="{{ task.accumulated_sec }}"
+              {% if task.children %}data-has-children="true"{% endif %}>
+          {% if task.children %}
+            {# Si tiene subtareas, sumar el tiempo de todas las subtareas #}
+            {% set total = get_task_total_seconds(task, now()) %}
+          {% else %}
+            {# Si no tiene subtareas, usar su tiempo propio #}
+            {% set total = task.accumulated_sec %}
+            {% if task.status == 'running' and task.started_at %}
+              {% set total = total + ((now()|int - task.started_at|int)) %}
+            {% endif %}
+          {% endif %}
+          {{ total|format_duration }}
+        </span>
+      </div>
+      
+      <!-- Archivos adjuntos de la tarea -->
+      {% if task.attachments and task.attachments|length > 0 %}
+      <div style="margin-bottom: 0.75rem;">
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600;">Archivos adjuntos:</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          {% for attachment in task.attachments %}
+          <a href="/attachments/{{ attachment.filename }}" target="_blank" class="file-item" style="text-decoration: none; max-width: 200px;">
+            {% set ext = attachment.filename.split('.')[-1].lower() if '.' in attachment.filename else '' %}
+            {% if ext in ['png', 'jpg', 'jpeg', 'gif', 'webp'] %}
+            <img src="/attachments/{{ attachment.filename }}" alt="{{ attachment.original_name or attachment.filename }}" class="file-preview" style="width: 40px; height: 40px; object-fit: cover; border-radius: var(--radius-sm);">
+            {% else %}
+            <div class="file-icon {{ ext }}" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-radius: var(--radius-sm); background: rgba(139, 92, 246, 0.1);">
+              <i class="bi bi-file-earmark"></i>
+            </div>
+            {% endif %}
+            <div class="file-info" style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.8rem; color: var(--text-main); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ attachment.original_name or attachment.filename }}</div>
+              {% if attachment.uploaded_at %}
+              <div style="font-size: 0.7rem; color: var(--text-muted);">{{ attachment.uploaded_at|timestamp_to_date }}</div>
+              {% endif %}
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Información de completado -->
+      {% if task.status == 'completed' %}
+      <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+        {% if task.completion_comment %}
+        <div style="margin-bottom: 0.75rem;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600;">Razón de completado:</div>
+          <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5; margin: 0;">{{ task.completion_comment }}</p>
+        </div>
+        {% endif %}
+        
+        {% if task.completion_evidence and task.completion_evidence|length > 0 %}
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600;">Archivos adjuntos:</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            {% for evidence in task.completion_evidence %}
+            <a href="/attachments/{{ evidence.filename }}" target="_blank" class="file-item" style="text-decoration: none; max-width: 200px;">
+              {% set ext = evidence.filename.split('.')[-1].lower() if '.' in evidence.filename else '' %}
+              {% if ext in ['png', 'jpg', 'jpeg', 'gif', 'webp'] %}
+              <img src="/attachments/{{ evidence.filename }}" alt="{{ evidence.original_name or evidence.filename }}" class="file-preview" style="width: 40px; height: 40px; object-fit: cover; border-radius: var(--radius-sm);">
+              {% else %}
+              <div class="file-icon {{ ext }}" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-radius: var(--radius-sm); background: rgba(139, 92, 246, 0.1);">
+                <i class="bi bi-file-earmark"></i>
+              </div>
+              {% endif %}
+              <div class="file-info" style="flex: 1; min-width: 0;">
+                <div style="font-size: 0.8rem; color: var(--text-main); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ evidence.original_name or evidence.filename }}</div>
+                {% if evidence.uploaded_at %}
+                <div style="font-size: 0.7rem; color: var(--text-muted);">{{ evidence.uploaded_at|timestamp_to_date }}</div>
+                {% endif %}
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Acciones - Menú de elipsis -->
+    <div class="task-menu-container" style="position: relative; flex-shrink: 0;">
+      <button onclick="toggleTaskMenu('{{ task.id }}', event)" class="task-menu-toggle" title="Opciones">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      
+      <!-- Menú desplegable -->
+      <div id="taskMenu{{ task.id }}" class="task-menu-overlay" onclick="closeTaskMenu('{{ task.id }}')">
+        <div class="task-menu" onclick="event.stopPropagation();">
+          {% if task.status != 'completed' %}
+            {# Solo mostrar opción de iniciar/pausar si NO tiene subtareas Y el usuario está asignado #}
+            {% if not task.children and (not task.assigned_to or user.id in task.assigned_to) %}
+              {% if task.status == 'running' %}
+              <button onclick="pauseTask('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item">
+                <i class="bi bi-pause-fill"></i>
+                <span>Pausar</span>
+              </button>
+              {% else %}
+              <button onclick="startTask('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item task-menu-item-success">
+                <i class="bi bi-play-fill"></i>
+                <span>Iniciar</span>
+              </button>
+              {% endif %}
+            {% endif %}
+            {# Solo usuarios asignados pueden completar #}
+            {% if task.assigned_to and user.id in task.assigned_to %}
+            <button onclick="openCompleteTaskModal('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item task-menu-item-info">
+              <i class="bi bi-check-circle"></i>
+              <span>Completar</span>
+            </button>
+            {% endif %}
+          {% else %}
+            {# Solo usuarios asignados pueden reabrir #}
+            {% if task.assigned_to and user.id in task.assigned_to %}
+            <button onclick="openReopenTaskModal('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item task-menu-item-warning">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              <span>Reabrir</span>
+            </button>
+            {% endif %}
+          {% endif %}
+          {% if task.status != 'completed' and is_project_creator %}
+          <button onclick="openAddChildModal('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item">
+            <i class="bi bi-plus-circle"></i>
+            <span>Agregar subtarea</span>
+          </button>
+          {% endif %}
+          {% if is_project_creator %}
+          <button onclick="openAssignTaskUsersModal('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item">
+            <i class="bi bi-people"></i>
+            <span>Asignar usuarios</span>
+          </button>
+          {% endif %}
+          {% if is_project_creator %}
+          <button onclick="openTaskAttachmentsFileUpload('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item task-menu-item-primary">
+            <i class="bi bi-paperclip"></i>
+            <span>Agregar archivos</span>
+          </button>
+          {% endif %}
+          {% if is_project_creator %}
+          <div class="task-menu-divider"></div>
+          <button onclick="deleteTask('{{ task.id }}'); closeTaskMenu('{{ task.id }}');" class="task-menu-item task-menu-item-danger">
+            <i class="bi bi-trash3"></i>
+            <span>Eliminar</span>
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Subtareas - Fuera del flex para ocupar todo el ancho -->
+  {% if task.children %}
+  <div class="task-children-container" id="task-children-{{ task.id }}" style="margin-left: -1rem; margin-right: -1rem; margin-top: 0.75rem; padding: 1rem 0.75rem 0.75rem 1rem; width: calc(100% + 2rem); box-sizing: border-box;">
+    {% for child in task.children %}
+      {% set task = child %}
+      {% set task_level = task_level + 1 %}
+      {% set all_users = all_users %}
+      {% set user = user %}
+      {% set is_project_creator = is_project_creator %}
+      {% include "task_item.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>

@@ -1,0 +1,299 @@
+{
+  "id": "e1897546bea4",
+  "name": "proy;ecto de jainr",
+  "description": "faga",
+  "area_id": "general",
+  "group_id": "general",
+  "deadline": 1768435200.0,
+  "created_at": 1768431396.3664305,
+  "created_by": "user",
+  "assigned_users": [
+    "lKcOg_oVer0lRAYS",
+    "55a7766da6b5",
+    "f44a05f545c5",
+    "77f928de2fd7",
+    "5c2f94acd387",
+    "985d4078c281",
+    "8fb75dbe6b1e",
+    "e488d3b6bcc3",
+    "08123ade1b22",
+    "1f25874ad49c",
+    "5c66537f689f",
+    "68ab25873c86",
+    "9c5ccec48150"
+  ],
+  "tasks": [
+    {
+      "id": "36b7d1c71b",
+      "title": "fa",
+      "description": "",
+      "status": "pending",
+      "accumulated_sec": 0,
+      "started_at": null,
+      "completed_at": null,
+      "completed_by": null,
+      "completion_comment": null,
+      "completion_evidence": null,
+      "assigned_to": [
+        "lKcOg_oVer0lRAYS"
+      ],
+      "children": [
+        {
+          "id": "febf65a835",
+          "title": "fa",
+          "description": "",
+          "status": "pending",
+          "accumulated_sec": 0,
+          "started_at": null,
+          "completed_at": null,
+          "completed_by": null,
+          "completion_comment": null,
+          "completion_evidence": null,
+          "assigned_to": [
+            "55a7766da6b5"
+          ],
+          "children": [],
+          "attachment": null
+        },
+        {
+          "id": "ef39e1a70b",
+          "title": "fa",
+          "description": "",
+          "status": "completed",
+          "accumulated_sec": 4,
+          "started_at": null,
+          "completed_at": 1768450569.8504744,
+          "completed_by": "lKcOg_oVer0lRAYS",
+          "completion_comment": "faga",
+          "completion_evidence": null,
+          "assigned_to": [],
+          "children": [],
+          "attachment": null
+        }
+      ],
+      "attachment": null
+    }
+  ],
+  "logs": [
+    {
+      "id": "3859594da3",
+      "text": "Administrador completó la tarea 'fa'. Comentario: faga",
+      "created_at": 1768450569.8562164,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ef39e1a70b",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "1952251a28",
+      "text": "Administrador pausó la tarea 'fa'",
+      "created_at": 1768450566.0469942,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ef39e1a70b",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "dc0fbab1d5",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768450558.340784,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "ef39e1a70b",
+      "action_type": "task_create"
+    },
+    {
+      "id": "4d63f6f84d",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768450535.516979,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "febf65a835",
+      "action_type": "task_create"
+    },
+    {
+      "id": "3b846158df",
+      "text": "Administrador creó la tarea 'fa'",
+      "created_at": 1768450508.9501653,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "36b7d1c71b",
+      "action_type": "task_create"
+    },
+    {
+      "id": "28433e12ff",
+      "text": "Administrador pausó la tarea 'FAGA'",
+      "created_at": 1768450200.2368202,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "c375288758",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "74e28b39b2",
+      "text": "Administrador pausó la tarea 'FAGA'",
+      "created_at": 1768450195.1356719,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "c375288758",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "65ae7bd82f",
+      "text": "Administrador creó la tarea 'FAGA'",
+      "created_at": 1768449408.8918924,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "c375288758",
+      "action_type": "task_create"
+    },
+    {
+      "id": "9bba4bff04",
+      "text": "Administrador completó la tarea 'FAGA'. Comentario: fa",
+      "created_at": 1768449271.4287293,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3a98d85728",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "eb802aae8d",
+      "text": "Administrador pausó la tarea 'FAGA'",
+      "created_at": 1768449263.1433578,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "3a98d85728",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "e08aa1c5b7",
+      "text": "Administrador completó la tarea 'FA'. Comentario: fs",
+      "created_at": 1768448938.9569352,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "7d7db54d97",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "44af9cecb5",
+      "text": "Administrador pausó la tarea 'FA'",
+      "created_at": 1768448933.2656364,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "7d7db54d97",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "1a91f42cc3",
+      "text": "Administrador reabrió la tarea 'FA'. Justificación: fa",
+      "created_at": 1768448874.032344,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "7d7db54d97",
+      "action_type": "task_reopen"
+    },
+    {
+      "id": "9cec88a8db",
+      "text": "Administrador completó la tarea 'FAFA'. Comentario: fa",
+      "created_at": 1768448865.7371702,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "eefd64ef00",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "b4df65091e",
+      "text": "Administrador completó la tarea 'FA'. Comentario: f",
+      "created_at": 1768448859.694167,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "7d7db54d97",
+      "action_type": "task_complete"
+    },
+    {
+      "id": "f28b6d6fc9",
+      "text": "Administrador reabrió la tarea 'FAGA'. Justificación: fagga",
+      "created_at": 1768448779.1230907,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "20041ecf02",
+      "action_type": "task_reopen"
+    },
+    {
+      "id": "ae2e83d86b",
+      "text": "Administrador pausó la tarea 'FAFA'",
+      "created_at": 1768448476.547574,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "eefd64ef00",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "a99b8845aa",
+      "text": "Administrador pausó la tarea 'FAFA'",
+      "created_at": 1768448461.3003435,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "eefd64ef00",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "c3b217ba48",
+      "text": "Administrador pausó la tarea 'FAFA'",
+      "created_at": 1768448350.0066748,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "eefd64ef00",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "e1fbf83cbb",
+      "text": "Administrador pausó la tarea 'FAFA'",
+      "created_at": 1768448340.6866663,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": "eefd64ef00",
+      "action_type": "task_pause"
+    },
+    {
+      "id": "55b45b06c5",
+      "text": "Administrador: FAG",
+      "created_at": 1768448299.0020525,
+      "created_by": "lKcOg_oVer0lRAYS",
+      "attachment": null,
+      "task_id": null,
+      "action_type": "log_entry"
+    },
+    {
+      "id": "10e4c8ddcc",
+      "text": "no se puedo",
+      "created_at": 1768447324.5249805,
+      "created_by": "user",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    },
+    {
+      "id": "e737f61d62",
+      "text": "Proyecto creado",
+      "created_at": 1768431398.3948846,
+      "created_by": "system",
+      "attachment": null,
+      "task_id": null,
+      "action_type": null
+    }
+  ],
+  "attachments": [
+    {
+      "id": "65137f2222",
+      "filename": "65137f2222.jpg",
+      "original_name": "6ee9a2bd-8dee-46be-90a2-a0d724736dce.jpg",
+      "url": "/attachments/65137f2222.jpg",
+      "size": 193482,
+      "content_type": "image/jpeg",
+      "uploaded_at": 1768433157.8846667,
+      "uploaded_by": "bx9zP6IWP1TIzk3g"
+    }
+  ],
+  "dirty": false
+}

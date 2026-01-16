@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Equipos - SalchiManager Pro Time{% endblock %}
+
+{% block content %}
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="UI.toggleSidebar()"></div>
+
+<div class="app-shell">
+  
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+        <img class="logo" src="https://gestion.salchimonster.com/images/logo.png" alt="">
+        <div>SalchiManager</div>
+      </div>
+      <button class="close-sidebar-btn" onclick="UI.toggleSidebar()" aria-label="Cerrar menú">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">
+        Navegación
+      </div>
+      <a href="/" class="nav-item">
+        <i class="bi bi-speedometer2" style="margin-right:.5rem;"></i>Dashboard
+      </a>
+      <a href="/admin/users" class="nav-item">
+        <i class="bi bi-people" style="margin-right:.5rem;"></i>Usuarios
+      </a>
+      <a href="/admin/teams" class="nav-item active">
+        <i class="bi bi-diagram-3" style="margin-right:.5rem;"></i>Equipos
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div class="topbar">
+      <div style="display: flex; align-items: center; min-width: 0;">
+        <button class="menu-toggle" onclick="UI.toggleSidebar()" aria-label="Abrir menú">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="current-context">
+          <strong>Gestión de Equipos</strong>
+        </div>
+      </div>
+      
+      <div class="user-menu">
+        <button onclick="toggleTheme()" class="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+          <i class="bi bi-moon-stars"></i>
+        </button>
+        <span class="user-name">
+          <i class="bi bi-person-circle" style="margin-right:.35rem;"></i>
+          {{ user.display_name if user else 'Admin' }}
+        </span>
+        <button onclick="openCreateTeamModal()" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-lg"></i> Nuevo Equipo
+        </button>
+        <a href="/logout" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </a>
+      </div>
+    </div>
+
+    <div class="view-area">
+      <!-- Lista de equipos -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="bi bi-diagram-3" style="margin-right:.5rem; color:var(--text-muted);"></i> Equipos ({{ teams|length }})</h3>
+        </div>
+        
+        {% if teams %}
+        <div style="display: grid; gap: 1rem;">
+          {% for team in teams %}
+          <div class="card" style="margin-bottom: 0; padding: 1.25rem; background: var(--bg-input); border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+              <div>
+                <h4 style="margin: 0 0 0.25rem 0; color: var(--text-main); font-size: 1.05rem;">{{ team.name }}</h4>
+                {% if team.description %}
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">{{ team.description }}</p>
+                {% endif %}
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button onclick="openEditTeamModal('{{ team.id }}')" class="icon-btn" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button onclick="deleteTeam('{{ team.id }}')" class="icon-btn danger" title="Eliminar">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div style="margin-top: 0.75rem;">
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <i class="bi bi-people" style="margin-right: 0.25rem;"></i>
+                Miembros ({{ team.member_ids|length }})
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                {% for member_id in team.member_ids %}
+                  {% for u in users %}
+                    {% if u.id == member_id %}
+                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(139, 92, 246, 0.15); border-radius: var(--radius-sm); border: 1px solid rgba(139, 92, 246, 0.3);">
+                      <img src="{{ u.avatar_url or '/api/avatars/default.png' }}" 
+                           alt="{{ u.display_name or u.username }}" 
+                           onerror="this.src='/api/avatars/default.png'; this.onerror=null;"
+                           style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border);">
+                      <span style="color: var(--primary); font-size: 0.85rem; font-weight: 500;">
+                        {{ u.display_name or u.username }}
+                      </span>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+                {% if team.member_ids|length == 0 %}
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Sin miembros</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          <i class="bi bi-diagram-3" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+          <p>No hay equipos creados aún.</p>
+          <button onclick="openCreateTeamModal()" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Crear Primer Equipo
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal Crear/Editar Equipo -->
+<div id="teamModal" class="modal-backdrop">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header">
+      <div class="modal-title" id="teamModalTitle">Nuevo Equipo</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeTeamModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="teamForm" onsubmit="saveTeam(event)">
+        <input type="hidden" id="teamId" value="">
+        <div class="form-group">
+          <label>Nombre del Equipo *</label>
+          <input type="text" id="teamName" required placeholder="Ej: Equipo de Desarrollo">
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="teamDescription" rows="2" placeholder="Descripción opcional del equipo"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Miembros</label>
+          
+          <!-- Filtros -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Filtrar por Rol</label>
+              <select id="teamFilterByRole" onchange="filterTeamMembers()" style="width: 100%;">
+                <option value="">Todos los roles</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Filtrar por Sede</label>
+              <select id="teamFilterBySite" onchange="filterTeamMembers()" style="width: 100%;">
+                <option value="">Todas las sedes</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Buscar</label>
+            <input type="text" id="teamSearchUsers" placeholder="Buscar por nombre o usuario..." onkeyup="filterTeamMembers()">
+          </div>
+          
+          <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; background: var(--bg-input);">
+            <div id="teamMembersList">
+              <!-- Se llena dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeTeamModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="teamForm" class="btn btn-primary"><i class="bi bi-check-circle"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let allUsers = {{ users|tojson }};
+let currentTeamId = null;
+// Variable global para mantener los IDs seleccionados
+let currentSelectedMemberIds = [];
+
+function openCreateTeamModal() {
+  currentTeamId = null;
+  currentSelectedMemberIds = []; // Resetear selecciones
+  document.getElementById('teamModalTitle').textContent = 'Nuevo Equipo';
+  document.getElementById('teamId').value = '';
+  document.getElementById('teamName').value = '';
+  document.getElementById('teamDescription').value = '';
+  populateTeamFilters();
+  renderTeamMembers([]);
+  document.getElementById('teamModal').classList.add('open');
+}
+
+function openEditTeamModal(teamId) {
+  currentTeamId = teamId;
+  fetch(`/api/teams/${teamId}`)
+    .then(r => r.json())
+    .then(data => {
+      const team = data.team;
+      document.getElementById('teamModalTitle').textContent = 'Editar Equipo';
+      document.getElementById('teamId').value = team.id;
+      document.getElementById('teamName').value = team.name;
+      document.getElementById('teamDescription').value = team.description || '';
+      populateTeamFilters();
+      renderTeamMembers(team.member_ids || []);
+      document.getElementById('teamModal').classList.add('open');
+    })
+    .catch(err => {
+      showError('Error cargando equipo: ' + err.message, 'Error');
+    });
+}
+
+function closeTeamModal() {
+  document.getElementById('teamModal').classList.remove('open');
+}
+
+// Función para renderizar avatar de usuario (usa avatar_url del backend)
+function renderUserAvatar(user, size = 32) {
+  if (!user) {
+    return '<img src="/api/avatars/default.png" alt="Usuario" onerror="this.style.display=\'none\';" style="width: ' + size + 'px; height: ' + size + 'px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border);">';
+  }
+  const avatarUrl = user.avatar_url || '/api/avatars/default.png';
+  return `<img src="${avatarUrl}" alt="${user.display_name || user.username || 'Usuario'}" onerror="this.src='/api/avatars/default.png'; this.onerror=null;" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border);">`;
+}
+
+function populateTeamFilters() {
+  const siteFilter = document.getElementById('teamFilterBySite');
+  const roleFilter = document.getElementById('teamFilterByRole');
+  
+  // Obtener sedes únicas
+  const sites = [...new Set(allUsers.map(u => u.site_name).filter(s => s))].sort();
+  siteFilter.innerHTML = '<option value="">Todas las sedes</option>';
+  sites.forEach(site => {
+    siteFilter.innerHTML += `<option value="${site}">${site}</option>`;
+  });
+  
+  // Obtener roles únicos (roles reales de la DB)
+  const roles = [...new Set(allUsers.map(u => u.role).filter(r => r))].sort();
+  roleFilter.innerHTML = '<option value="">Todos los roles</option>';
+  roles.forEach(role => {
+    roleFilter.innerHTML += `<option value="${role}">${role}</option>`;
+  });
+}
+
+function filterTeamMembers() {
+  const searchTerm = (document.getElementById('teamSearchUsers')?.value || '').toLowerCase();
+  const roleFilter = document.getElementById('teamFilterByRole')?.value || '';
+  const siteFilter = document.getElementById('teamFilterBySite')?.value || '';
+  
+  // Obtener los IDs seleccionados actualmente (de checkboxes existentes primero, luego de la variable global)
+  const existingCheckboxes = document.querySelectorAll('#teamMembersList input[type="checkbox"]:checked');
+  let selectedMemberIds = currentSelectedMemberIds;
+  if (existingCheckboxes.length > 0) {
+    selectedMemberIds = Array.from(existingCheckboxes).map(cb => cb.value);
+    currentSelectedMemberIds = selectedMemberIds;
+  }
+  
+  // Filtrar usuarios
+  let filteredUsers = allUsers;
+  
+  if (roleFilter) {
+    filteredUsers = filteredUsers.filter(u => (u.role || '').toUpperCase() === roleFilter.toUpperCase());
+  }
+  
+  if (siteFilter) {
+    filteredUsers = filteredUsers.filter(u => (u.site_name || '') === siteFilter);
+  }
+  
+  if (searchTerm) {
+    filteredUsers = filteredUsers.filter(u => {
+      const displayName = (u.display_name || '').toLowerCase();
+      const username = (u.username || '').toLowerCase();
+      return displayName.includes(searchTerm) || username.includes(searchTerm);
+    });
+  }
+  
+  // Renderizar usuarios filtrados
+  const container = document.getElementById('teamMembersList');
+  container.innerHTML = '';
+  
+  filteredUsers.forEach(user => {
+    const isSelected = selectedMemberIds.includes(user.id);
+    const userAvatarHtml = renderUserAvatar(user, 32);
+    
+    const div = document.createElement('div');
+    div.style.cssText = 'display: flex; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: var(--radius-sm);';
+    div.className = 'user-item';
+    div.innerHTML = `
+      <input type="checkbox" id="member_${user.id}" value="${user.id}" ${isSelected ? 'checked' : ''} 
+             onchange="updateSelectedMembers()"
+             style="margin-right: 0.75rem;">
+      <div style="margin-right: 0.75rem;">${userAvatarHtml}</div>
+      <label for="member_${user.id}" style="color: var(--text-main); font-size: 0.95rem; cursor: pointer; flex: 1;">
+        ${user.display_name || user.username} 
+        <span style="color: var(--text-muted); font-size: 0.8rem; display: block;">${user.role || 'USER'}${user.site_name ? ' - ' + user.site_name : ''}</span>
+      </label>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateSelectedMembers() {
+  const checkboxes = document.querySelectorAll('#teamMembersList input[type="checkbox"]');
+  currentSelectedMemberIds = Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+}
+
+function renderTeamMembers(selectedMemberIds) {
+  // Guardar los IDs seleccionados
+  currentSelectedMemberIds = selectedMemberIds || [];
+  
+  // Limpiar filtros
+  document.getElementById('teamSearchUsers').value = '';
+  document.getElementById('teamFilterByRole').value = '';
+  document.getElementById('teamFilterBySite').value = '';
+  
+  // Renderizar todos los usuarios
+  filterTeamMembers();
+}
+
+async function saveTeam(event) {
+  event.preventDefault();
+  
+  const teamId = document.getElementById('teamId').value;
+  const name = document.getElementById('teamName').value.trim();
+  const description = document.getElementById('teamDescription').value.trim();
+  
+  // Actualizar la lista de seleccionados antes de guardar
+  updateSelectedMembers();
+  const memberIds = currentSelectedMemberIds;
+  
+  if (!name) {
+    showWarning('El nombre es requerido', 'Advertencia');
+    return;
+  }
+  
+  try {
+    const url = teamId ? `/api/teams/${teamId}/update` : '/api/teams/create';
+    const method = 'POST';
+    const body = JSON.stringify({
+      name: name,
+      description: description,
+      member_ids: memberIds
+    });
+    
+    const response = await fetch(url, {
+      method: method,
+      headers: {'Content-Type': 'application/json'},
+      body: body
+    });
+    
+    if (response.ok) {
+      location.reload();
+    } else {
+      const data = await response.json();
+      alert('Error: ' + (data.detail || 'Error guardando equipo'));
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+async function deleteTeam(teamId) {
+  if (!confirm('¿Estás seguro de eliminar este equipo?')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/teams/${teamId}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      location.reload();
+    } else {
+      const data = await response.json();
+      showError(data.detail || 'Error eliminando equipo', 'Error');
+    }
+  } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Función helper para avatar por género (usado en Jinja2)
+function getGenderAvatar(gender, size) {
+  const genderValue = gender || '';
+  let avatarUrl = '/api/avatars/default.png';
+  
+  if (genderValue === 'Masculino') {
+    avatarUrl = '/api/avatars/masculino.png';
+  } else if (genderValue === 'Femenino') {
+    avatarUrl = '/api/avatars/femenino.png';
+  }
+  
+  return `<img src="${avatarUrl}" alt="${genderValue || 'Usuario'}" onerror="this.src='/api/avatars/default.png'; this.onerror=null;" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border);">`;
+}
+
+// UI helper
+const UI = {
+  toggleSidebar: function() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+  }
+};
+</script>
+{% endblock %}

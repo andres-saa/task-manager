@@ -1,0 +1,99 @@
+{
+  "name": "class-manager",
+  "type": "dir",
+  "path": ".",
+  "children": [
+    {
+      "name": "colors.json",
+      "type": "file",
+      "path": "colors.json",
+      "extension": "json"
+    },
+    {
+      "name": "db.json",
+      "type": "file",
+      "path": "db.json",
+      "extension": "json"
+    },
+    {
+      "name": "get_structura.py",
+      "type": "file",
+      "path": "get_structura.py",
+      "extension": "py"
+    },
+    {
+      "name": "main.py",
+      "type": "file",
+      "path": "main.py",
+      "extension": "py"
+    },
+    {
+      "name": "project_files.json",
+      "type": "file",
+      "path": "project_files.json",
+      "extension": "json"
+    },
+    {
+      "name": "project_structure.json",
+      "type": "file",
+      "path": "project_structure.json",
+      "extension": "json"
+    },
+    {
+      "name": "requirements.txt",
+      "type": "file",
+      "path": "requirements.txt",
+      "extension": "txt"
+    },
+    {
+      "name": "routers",
+      "type": "dir",
+      "path": "routers",
+      "children": [
+        {
+          "name": "video_router.py",
+          "type": "file",
+          "path": "routers/video_router.py",
+          "extension": "py"
+        }
+      ]
+    },
+    {
+      "name": "templates",
+      "type": "dir",
+      "path": "templates",
+      "children": [
+        {
+          "name": "course.html",
+          "type": "file",
+          "path": "templates/course.html",
+          "extension": "html"
+        },
+        {
+          "name": "dashboard.html",
+          "type": "file",
+          "path": "templates/dashboard.html",
+          "extension": "html"
+        },
+        {
+          "name": "login.html",
+          "type": "file",
+          "path": "templates/login.html",
+          "extension": "html"
+        },
+        {
+          "name": "manager.html",
+          "type": "file",
+          "path": "templates/manager.html",
+          "extension": "html"
+        },
+        {
+          "name": "watch.html",
+          "type": "file",
+          "path": "templates/watch.html",
+          "extension": "html"
+        }
+      ]
+    }
+  ]
+}
