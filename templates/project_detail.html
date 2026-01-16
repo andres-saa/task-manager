@@ -51,9 +51,14 @@
         <button onclick="openPostponeModal()" class="btn btn-secondary btn-sm">
           <i class="bi bi-calendar-plus"></i> Posponer
         </button>
+        {% if is_project_creator or user.role == 'ADMIN' or user.role == 'MANAGER' %}
         <button onclick="openEditModal()" class="btn btn-secondary btn-sm">
           <i class="bi bi-pencil-square"></i> Editar
         </button>
+        <button onclick="openDeleteProjectModal()" class="btn btn-danger btn-sm">
+          <i class="bi bi-trash3"></i> Eliminar
+        </button>
+        {% endif %}
         <a href="/logout" class="btn btn-danger btn-sm">
           <i class="bi bi-box-arrow-right"></i> Salir
         </a>
@@ -1358,6 +1363,73 @@ function openEditModal() {
 
 function closeEditModal() {
   document.getElementById('editModal').classList.remove('open');
+}
+
+function openDeleteProjectModal() {
+  const modal = document.getElementById('deleteProjectModal');
+  const confirmInput = document.getElementById('deleteProjectConfirm');
+  const deleteBtn = document.getElementById('deleteProjectBtn');
+  
+  modal.classList.add('open');
+  confirmInput.value = '';
+  deleteBtn.disabled = true;
+  
+  // Obtener el nombre del proyecto desde el DOM
+  const projectNameEl = document.getElementById('deleteProjectName');
+  const projectName = projectNameEl ? projectNameEl.textContent.trim() : '';
+  
+  // Remover listeners anteriores si existen
+  const newInput = confirmInput.cloneNode(true);
+  confirmInput.parentNode.replaceChild(newInput, confirmInput);
+  
+  // Validar en tiempo real que el nombre coincida
+  newInput.addEventListener('input', function() {
+    deleteBtn.disabled = newInput.value.trim() !== projectName;
+  });
+}
+
+function closeDeleteProjectModal() {
+  document.getElementById('deleteProjectModal').classList.remove('open');
+  document.getElementById('deleteProjectConfirm').value = '';
+  document.getElementById('deleteProjectBtn').disabled = true;
+}
+
+async function deleteProject() {
+  const confirmInput = document.getElementById('deleteProjectConfirm');
+  const projectNameEl = document.getElementById('deleteProjectName');
+  const projectName = projectNameEl ? projectNameEl.textContent.trim() : '';
+  
+  if (confirmInput.value.trim() !== projectName) {
+    showError('El nombre del proyecto no coincide', 'Error');
+    return;
+  }
+  
+  if (!confirm('¿Estás completamente seguro de que deseas eliminar este proyecto? Esta acción es irreversible.')) {
+    return;
+  }
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/projects/${PROJECT_ID}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      showSuccess('Proyecto eliminado correctamente', 'Éxito');
+      // Redirigir al dashboard después de un breve delay
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    } else {
+      const errorData = await response.json().catch(() => ({ detail: 'Error al eliminar proyecto' }));
+      hideLoading();
+      showError(errorData.detail || 'Error al eliminar proyecto', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+    showError('Error al eliminar proyecto: ' + error.message, 'Error');
+  }
 }
 
 async function openAssignUsersModal() {

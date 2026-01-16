@@ -98,6 +98,39 @@
   </div>
 </div>
 
+<!-- Modal Eliminar Proyecto -->
+<div id="deleteProjectModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Eliminar Proyecto</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeDeleteProjectModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+        <p><strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.</p>
+        <p>Al eliminar el proyecto se perderán permanentemente:</p>
+        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+          <li>Todas las tareas y subtareas</li>
+          <li>Todos los archivos adjuntos</li>
+          <li>Toda la bitácora (logs)</li>
+          <li>Todos los tiempos registrados</li>
+        </ul>
+      </div>
+      <p style="margin-top: 1rem;">¿Estás seguro de que deseas eliminar el proyecto <strong id="deleteProjectName">{{ project.name }}</strong>?</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Escribe el nombre del proyecto para confirmar:</p>
+      <input type="text" id="deleteProjectConfirm" placeholder="Escribe el nombre del proyecto" style="width: 100%; padding: 0.75rem; margin-top: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-main); color: var(--text-main);">
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeDeleteProjectModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="button" onclick="deleteProject()" class="btn btn-danger" id="deleteProjectBtn" disabled>
+        <i class="bi bi-trash3"></i> Eliminar Proyecto
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Asignar Usuarios a Proyecto -->
 <div id="assignUsersModal" class="modal-backdrop">
   <div class="modal-content" style="max-width: 700px;">

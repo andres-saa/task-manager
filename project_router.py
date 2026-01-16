@@ -493,10 +493,15 @@ async def update_project(project_id: str, request: Request, data: dict = Body(..
 
 @router.delete("/api/projects/{project_id}")
 async def delete_project_endpoint(project_id: str, request: Request):
-    """Elimina un proyecto."""
+    """Elimina un proyecto. Solo el creador o administradores pueden eliminar."""
+    user = require_user(request)
     project = load_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    
+    # Solo el creador del proyecto o administradores pueden eliminar
+    if not _is_admin(user) and project.created_by != user["id"]:
+        raise HTTPException(status_code=403, detail="Solo el creador del proyecto o administradores pueden eliminar proyectos")
     
     # Eliminar del índice
     index = load_index()
