@@ -1201,9 +1201,36 @@ async def create_group(request: Request, data: dict = Body(...)):
     return JSONResponse({"status": "ok", "group_id": group.id})
 
 
+@router.patch("/api/areas/{area_id}")
+async def update_area(area_id: str, request: Request, data: dict = Body(...)):
+    """Actualiza un área."""
+    user = require_user(request)
+    index = load_index()
+    
+    area = next((a for a in index.areas if a.id == area_id), None)
+    if not area:
+        raise HTTPException(status_code=404, detail="Área no encontrada")
+    
+    name = (data.get("name") or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Nombre requerido")
+    
+    # Verificar duplicados (excluyendo el área actual)
+    if any(a.name.lower() == name.lower() and a.id != area_id for a in index.areas):
+        raise HTTPException(status_code=400, detail="Ya existe un área con ese nombre")
+    
+    area.name = name
+    area.description = (data.get("description") or "").strip()
+    
+    save_index(index)
+    return JSONResponse({"status": "ok", "area": area.model_dump()})
+
+
 @router.delete("/api/areas/{area_id}")
 async def delete_area(area_id: str, request: Request):
     """Elimina un área y reasigna proyectos."""
+    user = require_user(request)
+    
     if area_id == DEFAULT_AREA_ID:
         raise HTTPException(status_code=400, detail="No se puede eliminar el área por defecto")
     
@@ -1239,9 +1266,43 @@ async def delete_area(area_id: str, request: Request):
     return JSONResponse({"status": "ok"})
 
 
+@router.patch("/api/groups/{group_id}")
+async def update_group(group_id: str, request: Request, data: dict = Body(...)):
+    """Actualiza un grupo."""
+    user = require_user(request)
+    index = load_index()
+    
+    group = next((g for g in index.groups if g.id == group_id), None)
+    if not group:
+        raise HTTPException(status_code=404, detail="Grupo no encontrado")
+    
+    name = (data.get("name") or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Nombre requerido")
+    
+    area_id = (data.get("area_id") or group.area_id).strip()
+    
+    # Verificar área existe
+    if not any(a.id == area_id for a in index.areas):
+        raise HTTPException(status_code=404, detail="Área no encontrada")
+    
+    # Verificar duplicados (excluyendo el grupo actual)
+    if any(g.name.lower() == name.lower() and g.area_id == area_id and g.id != group_id for g in index.groups):
+        raise HTTPException(status_code=400, detail="Ya existe un grupo con ese nombre en esa área")
+    
+    group.name = name
+    group.area_id = area_id
+    group.description = (data.get("description") or "").strip()
+    
+    save_index(index)
+    return JSONResponse({"status": "ok", "group": group.model_dump()})
+
+
 @router.delete("/api/groups/{group_id}")
 async def delete_group(group_id: str, request: Request):
     """Elimina un grupo y reasigna proyectos."""
+    user = require_user(request)
+    
     if group_id == DEFAULT_GROUP_ID:
         raise HTTPException(status_code=400, detail="No se puede eliminar el grupo por defecto")
     

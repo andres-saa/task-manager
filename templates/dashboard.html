@@ -28,8 +28,20 @@
       <div id="area-list">
         {% for area in index.areas %}
         <div class="nav-item {% if area_id == area.id %}active{% endif %}" 
-             onclick="window.location.href='/?area_id={{ area.id }}'">
-          {{ area.name }}
+             style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+          <span style="flex: 1; cursor: pointer;" onclick="window.location.href='/?area_id={{ area.id }}'">
+            {{ area.name }}
+          </span>
+          <div style="display: flex; gap: 0.25rem; flex-shrink: 0;" onclick="event.stopPropagation();">
+            <button class="btn-icon-add" onclick="openEditAreaModal('{{ area.id }}', '{{ area.name|replace("'", "\\'") }}', '{{ area.description|replace("'", "\\'") }}')" title="Editar área" style="width: 24px; height: 24px; font-size: 0.85rem;">
+              <i class="bi bi-pencil"></i>
+            </button>
+            {% if area.id != 'general' %}
+            <button class="btn-icon-add" onclick="openDeleteAreaModal('{{ area.id }}', '{{ area.name|replace("'", "\\'") }}')" title="Eliminar área" style="width: 24px; height: 24px; font-size: 0.85rem; background: rgba(239, 68, 68, 0.2);">
+              <i class="bi bi-trash3"></i>
+            </button>
+            {% endif %}
+          </div>
         </div>
         {% endfor %}
       </div>
@@ -45,11 +57,31 @@
       <div id="group-list">
         {% for group in index.groups %}
         <div class="nav-item {% if group_id == group.id %}active{% endif %}" 
-             onclick="window.location.href='/?group_id={{ group.id }}'">
-          {{ group.name }}
+             style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+          <span style="flex: 1; cursor: pointer;" onclick="window.location.href='/?group_id={{ group.id }}'">
+            {{ group.name }}
+          </span>
+          <div style="display: flex; gap: 0.25rem; flex-shrink: 0;" onclick="event.stopPropagation();">
+            <button class="btn-icon-add" onclick="openEditGroupModal('{{ group.id }}', '{{ group.name|replace("'", "\\'") }}', '{{ group.area_id }}', '{{ group.description|replace("'", "\\'") }}')" title="Editar grupo" style="width: 24px; height: 24px; font-size: 0.85rem;">
+              <i class="bi bi-pencil"></i>
+            </button>
+            {% if group.id != 'general' %}
+            <button class="btn-icon-add" onclick="openDeleteGroupModal('{{ group.id }}', '{{ group.name|replace("'", "\\'") }}')" title="Eliminar grupo" style="width: 24px; height: 24px; font-size: 0.85rem; background: rgba(239, 68, 68, 0.2);">
+              <i class="bi bi-trash3"></i>
+            </button>
+            {% endif %}
+          </div>
         </div>
         {% endfor %}
       </div>
+    </div>
+
+    <!-- Botón de Documentación -->
+    <div class="sidebar-footer" style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+      <a href="/documentation" class="nav-item" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; margin-bottom: 0;">
+        <i class="bi bi-book" style="font-size: 1.1rem;"></i>
+        <span>Documentación</span>
+      </a>
     </div>
   </aside>
 
@@ -371,6 +403,64 @@
   </div>
 </div>
 
+<!-- Modal Editar Área -->
+<div id="modal-edit-area" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Editar Área</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeEditAreaModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="editAreaForm" onsubmit="updateArea(event)">
+        <input type="hidden" id="edit-area-id">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="edit-area-name" required>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="edit-area-description" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeEditAreaModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="editAreaForm" class="btn btn-primary"><i class="bi bi-save2"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Eliminar Área -->
+<div id="modal-delete-area" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Eliminar Área</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeDeleteAreaModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+        <p style="margin-bottom: 0.5rem;"><strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.</p>
+        <p style="margin-bottom: 0.5rem;">Al eliminar el área:</p>
+        <ul style="margin-top: 0.5rem; margin-left: 1.5rem; margin-bottom: 0;">
+          <li>Los proyectos se reasignarán al área por defecto</li>
+          <li>Los grupos del área se eliminarán</li>
+        </ul>
+      </div>
+      <p style="margin-top: 1rem;">¿Estás seguro de que deseas eliminar el área <strong id="delete-area-name"></strong>?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeDeleteAreaModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="button" onclick="deleteArea()" class="btn btn-danger">
+        <i class="bi bi-trash3"></i> Eliminar Área
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Crear Grupo -->
 <div id="modal-create-group" class="modal-backdrop">
   <div class="modal-content">
@@ -399,6 +489,71 @@
     <div class="modal-footer">
       <button type="button" onclick="UI.modals.closeCreateGroup()" class="btn btn-secondary">Cancelar</button>
       <button type="submit" form="createGroupForm" class="btn btn-primary"><i class="bi bi-check-circle"></i> Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Grupo -->
+<div id="modal-edit-group" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Editar Grupo</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeEditGroupModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="editGroupForm" onsubmit="updateGroup(event)">
+        <input type="hidden" id="edit-group-id">
+        <div class="form-group">
+          <label>Área</label>
+          <select id="edit-group-area-id">
+            {% for area in index.areas %}
+            <option value="{{ area.id }}">{{ area.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="edit-group-name" required>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="edit-group-description" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeEditGroupModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="editGroupForm" class="btn btn-primary"><i class="bi bi-save2"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Eliminar Grupo -->
+<div id="modal-delete-group" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Eliminar Grupo</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeDeleteGroupModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+        <p style="margin-bottom: 0.5rem;"><strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer.</p>
+        <p style="margin-bottom: 0.5rem;">Al eliminar el grupo:</p>
+        <ul style="margin-top: 0.5rem; margin-left: 1.5rem; margin-bottom: 0;">
+          <li>Los proyectos se reasignarán al grupo por defecto</li>
+        </ul>
+      </div>
+      <p style="margin-top: 1rem;">¿Estás seguro de que deseas eliminar el grupo <strong id="delete-group-name"></strong>?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" onclick="closeDeleteGroupModal()" class="btn btn-secondary">Cancelar</button>
+      <button type="button" onclick="deleteGroup()" class="btn btn-danger">
+        <i class="bi bi-trash3"></i> Eliminar Grupo
+      </button>
     </div>
   </div>
 </div>
@@ -691,6 +846,178 @@ async function createGroup(event) {
       showError(error.detail || 'Error desconocido', 'Error');
     }
   } catch (error) {
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Funciones para editar área
+function openEditAreaModal(areaId, areaName, areaDescription) {
+  document.getElementById('edit-area-id').value = areaId;
+  document.getElementById('edit-area-name').value = areaName || '';
+  document.getElementById('edit-area-description').value = areaDescription || '';
+  document.getElementById('modal-edit-area').classList.add('open');
+}
+
+function closeEditAreaModal() {
+  document.getElementById('modal-edit-area').classList.remove('open');
+}
+
+async function updateArea(event) {
+  event.preventDefault();
+  const areaId = document.getElementById('edit-area-id').value;
+  const name = document.getElementById('edit-area-name').value;
+  const description = document.getElementById('edit-area-description').value;
+  
+  if (!name) {
+    showError('Nombre requerido', 'Error');
+    return;
+  }
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/areas/${areaId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, description: description || ''})
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      window.location.reload();
+    } else {
+      const error = await response.json();
+      hideLoading();
+      showError(error.detail || 'Error al actualizar área', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Funciones para eliminar área
+let currentDeleteAreaId = null;
+
+function openDeleteAreaModal(areaId, areaName) {
+  currentDeleteAreaId = areaId;
+  document.getElementById('delete-area-name').textContent = areaName;
+  document.getElementById('modal-delete-area').classList.add('open');
+}
+
+function closeDeleteAreaModal() {
+  currentDeleteAreaId = null;
+  document.getElementById('modal-delete-area').classList.remove('open');
+}
+
+async function deleteArea() {
+  if (!currentDeleteAreaId) return;
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/areas/${currentDeleteAreaId}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      showSuccess('Área eliminada correctamente', 'Éxito');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else {
+      const error = await response.json();
+      hideLoading();
+      showError(error.detail || 'Error al eliminar área', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Funciones para editar grupo
+function openEditGroupModal(groupId, groupName, areaId, groupDescription) {
+  document.getElementById('edit-group-id').value = groupId;
+  document.getElementById('edit-group-name').value = groupName || '';
+  document.getElementById('edit-group-area-id').value = areaId || '';
+  document.getElementById('edit-group-description').value = groupDescription || '';
+  document.getElementById('modal-edit-group').classList.add('open');
+}
+
+function closeEditGroupModal() {
+  document.getElementById('modal-edit-group').classList.remove('open');
+}
+
+async function updateGroup(event) {
+  event.preventDefault();
+  const groupId = document.getElementById('edit-group-id').value;
+  const name = document.getElementById('edit-group-name').value;
+  const areaId = document.getElementById('edit-group-area-id').value;
+  const description = document.getElementById('edit-group-description').value;
+  
+  if (!name) {
+    showError('Nombre requerido', 'Error');
+    return;
+  }
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/groups/${groupId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, area_id: areaId, description: description || ''})
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      window.location.reload();
+    } else {
+      const error = await response.json();
+      hideLoading();
+      showError(error.detail || 'Error al actualizar grupo', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
+    showError('Error: ' + error.message, 'Error');
+  }
+}
+
+// Funciones para eliminar grupo
+let currentDeleteGroupId = null;
+
+function openDeleteGroupModal(groupId, groupName) {
+  currentDeleteGroupId = groupId;
+  document.getElementById('delete-group-name').textContent = groupName;
+  document.getElementById('modal-delete-group').classList.add('open');
+}
+
+function closeDeleteGroupModal() {
+  currentDeleteGroupId = null;
+  document.getElementById('modal-delete-group').classList.remove('open');
+}
+
+async function deleteGroup() {
+  if (!currentDeleteGroupId) return;
+  
+  showLoading();
+  try {
+    const response = await fetch(`/api/groups/${currentDeleteGroupId}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      hideLoading();
+      showSuccess('Grupo eliminado correctamente', 'Éxito');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else {
+      const error = await response.json();
+      hideLoading();
+      showError(error.detail || 'Error al eliminar grupo', 'Error');
+    }
+  } catch (error) {
+    hideLoading();
     showError('Error: ' + error.message, 'Error');
   }
 }
